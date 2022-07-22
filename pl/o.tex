@@ -1,0 +1,48 @@
+%\chapter{The Syntax of Oberon}
+\chapter{Library}
+\section{Symbols and Keywords}
+\begin{verbatim}
+  (  )   + - * /   <  = >    . , ;  :  :=  ..
+  [  ]   & | ~ ^   <= # >=   ARRAY    IMPORT
+  {  }     DIV      CASE     BEGIN    MODULE
+           END      ELSE     CONST    RECORD
+  BY IS    FOR      PROC     ELSIF    REPEAT
+  DO OF    MOD      THEN     FALSE    RETURN
+  IF OR    NIL      TRUE     UNTIL
+  IN TO    VAR      TYPE     WHILE    POINTER
+\end{verbatim}
+
+\section{Standard Functions}
+\begin{table}[h!]
+  \centering
+  \begin{tabular}{l c c l}
+    Name     & ArgType & ResType& Function \\\hline
+    ABS(x)   & numeric & type(x)& absolute value \\
+    ODD(x)   & INT     & BOOL& x MOD 2 = 1 \\
+    LEN(v)   & array   & INT & length \\
+    LSL(x,n) & INT     & INT & logical shift left \\
+    ASR(x,n) & INT     & INT & signed shift right \\
+    ROR(x,n) & INT     & INT & rotated right \\
+    ORD(x)   & CHAR|   & INT & ordinal \# of \\
+             & BOOL|SET \\
+    CHR(x)   & INT     & CHAR& character of \\
+    FLOOR(x) & REAL    & INT & round down \\
+    FLT(x)   & INT     & REAL& identity \\
+  \end{tabular}
+\end{table}
+
+\section{Standard Procedures}
+\begin{table}[h!]
+  \centering
+  \begin{tabular}{l c l}
+    Name      & ArgType  & Procedure \\\hline
+    INC(v)    & INT      & v := v + 1 \\
+    INC(v, n) & INT      & v := v + n \\
+    DEC(v)    & INT      & v := v - 1 \\
+    DEC(v, n) & INT      & v := v - n \\
+    INCL(v, x)& SET, INT & v := v + {x} \\
+    EXCL(v, x)& SET, INT & v := v - {x} \\
+    ASSERT(b) & BOOL     & abort if \~{}b \\
+    NEW(v)    & pointer type & allocate v\^{}
+  \end{tabular}
+\end{table}

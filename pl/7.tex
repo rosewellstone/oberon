@@ -1,0 +1,310 @@
+\chapter{Elementary Data Types}
+We have previously stated that all variables need be declared. This means that their names are
+introduced in the heading of the program. In addition to introducing the name (and thereby enabling
+a compiler to detect and indicate misspelled identifiers), declarations have the purpose of
+associating a data type with each variable. This data type represents information about the variable
+which is permanent in contrast, for example, to its value. This information may again aid in
+detecting inconsistencies in an erroneous program, inconsistencies that are detectable by mere
+inspection of the program text without requiring its interpretation.
+
+The type of a variable determines its set of possible values and the operations which may be
+applied to it. Each variable has a single type that may be deduced from its declaration. Each
+operator requires operands of a specific type and produces a result of a specific type. It is therefore
+visible from the program text, whether or not a given operator is applicable to a given variable.
+
+Data types may be declared in the program. Such constructed types are usually based on
+composition of basic types. There exist a number of most frequently used, elementary types that
+are basic to the language and need not be declared. They are called standard types and will be
+introduced in this chapter, although some have already appeared in previous examples.
+
+In fact, not only variables have a type, but so do constants, functions, operands and (results of)
+operators. In the case of a constant, the type is usually deducible from the constant's notation,
+otherwise from its explicit declaration.
+
+First we describe the standard data types of Oberon, and thereafter elaborate on the form of
+declarations of variables and constants. Further kinds of data types and declarations are deferred
+to later chapters.
+
+\section{INT}
+This type represents the whole numbers, and any value of type INT is therefore an integer.
+Operators applicable to integers include the basic arithmetic operations
+\begin{table}[h!]
+  \centering
+  \begin{tabular}{c|l}
+        & Operations \\\hline
+    $+$ & addition \\
+    $-$ & subtraction \\
+    $*$ & multiplication \\
+    DIV & division \\
+    MOD & modulus (remainder)
+  \end{tabular}
+  \caption{Operations on sets}
+\end{table}
+
+Integer division is denoted by \verb|DIV|. If we define the integer quotient and the modulus of $x$
+and $y$ by \verb|q = x DIV y|, \verb|r = x MOD y|, then $q$ and $r$ are related by the equation
+\verb|x = q*y +r| and by the constraint $0 \le r < y$.
+
+For example
+\begin{verbatim}
+   15 DIV 4 =  3   15 MOD 4 = 3   15 =    3*4+3
+  -15 DIV 4 = -4  -15 MOD 4 = 1  -15 = (-4)*4+1
+\end{verbatim}
+Sign inversion is denoted by the monadic minus sign. Furthermore, there exist the operators
+\verb|ABS(x)| and \verb|ODD(x)|, the former yielding the absolute value of $x$, the latter
+the boolean result "$x$ is odd".
+
+Every computer will restrict the set of values of type INT to a finite set of integers, usually the
+interval $[-2^{N-1}, 2^{N-1}-1]$, where $N$ is a small integer, often 16 or 32, depending on the
+number of bits a computer uses to represent an integer. If an arithmetic operation produces a result
+that lies outside that interval, then overflow is said to have occured. The computer will give an
+appropriate indication and, usually, terminate the computation. The programmer should ensure that
+overflows will not result during execution of the program.
+
+\section{REAL}
+Values of type REAL are real numbers. The available operators are again the basic arithmetic
+operations and ABS. Division is denoted by / (instead of DIV). Constants of type REAL are
+characterized by having a decimal point and possibly a decimal scale factor. Examples of real
+number denotations are
+\begin{verbatim}
+  1.5   1.50   1.5E2   2.34E-2   0.0
+\end{verbatim}
+The scale factor consists of the capital letter \verb|E| followed by an integer. It means that the
+preceding real number is to be multiplied by 10 raised to the scale factor. Hence
+\begin{verbatim}
+  1.5E2 = 150.0,    2.34E-2 = 0.0234
+\end{verbatim}
+The important point to remember is that real values are internally represented as pairs consisting of
+a fractional number and a scale factor. This is called floating-point representation. Of course, both
+parts consist of a finite number of digits. As a consequence, the representation is inherently inexact,
+and computations involving real values are inexact because each operation may be subject to
+truncation or rounding.
+
+The following program makes that inherent imprecision of computations involving operands of type
+REAL apparent. It computes the harmonic function
+\begin{verbatim}
+  H(n) = 1 + 1/2 + 1/3 + ... + 1/n
+\end{verbatim}
+in 2 different ways, namely once by summing terms from left to right, once from right to left.
+According to the rules of arithmetic, the 2 sums ought to be equal. However, if values are truncated
+(or even rounded), the sums will differ for sufficiently large $n$. The correct way is evidently
+to start with the small terms.
+\begin{verbatim}
+  PROC Harmonic*;
+    VAR i, n: INT; x, d, s1, s2: REAL;
+        S: Texts.Scanner;
+  BEGIN
+    Texts.OpenScanner(S, Oberon.Par.text,
+                         Oberon.Par.pos);
+    Texts.Scan(S);
+    WHILE S.class = Texts.Int DO
+      n := S.i; Texts.WriteString(W, "n =");
+                Texts.Writelnt(W, n, 6);
+      s1 := 0.0; d := 0.0; i := 0;
+      REPEAT d := d + 1.0; INC(i);
+            s1 :=s1 + 1.0/d;
+      UNTIL i >= n;
+      Texts.WriteReal(W, s1, 16);
+      s2 := 0.0;
+      REPEAT s2 := s2 + 1.0/d;
+              d :=  d - 1.0; DEC(i)
+      UNTIL i = 0;
+      Texts.WriteReal(W, s2, 16);
+      Texts.WriteLn(W); Texts.Scan(S)
+    END;
+    Texts.Append(Oberon.Log, W.buf)
+  END Harmonic.
+\end{verbatim}
+The major reason for strictly distinguishing between real numbers and integers lies in the different
+representation used internally. Hence, also the arithmetic operations are implemented by
+instructions which are distinct for each type. Oberon postulates that expressions with mixed
+operands always are of type REAL.
+
+A real number $x$ is transformed into an integer by the standard function \verb|FLOOR(x)|. It yields
+the largest integer not greater than $x$.
+\begin{verbatim}
+  FLOOR(3.1416) = 3   FLOOR(-2.7) = -3   FLOOR(-5.0) = -5
+\end{verbatim}
+
+\section{BOOL}
+A \verb|BOOL| value is one of the two logical truth values denoted by the symbols \verb|TRUE| and
+\verb|FALSE|. Boolean variables are usually denoted by identifiers which are adjectives, the value
+\verb|TRUE| implying the presence, \verb|FALSE| the absence of the indicated property. A set of logical
+operators is provided which, together with \verb|BOOL| variables, form \verb|BOOL| expressions. These
+operators are \& (and), OR, and \~{} (not). Their results are explained as follows:
+\begin{verbatim}
+  p  & q = "both p and q are TRUE"
+  p OR q = "either p or q or both are TRUE"
+  ~p = "p is FALSE"
+\end{verbatim}
+The operators’ exact definition, however, is slightly different, although the results are identical:
+\begin{verbatim}
+  p  & q = IF p THEN q    ELSE FALSE
+  p OR q = IF p THEN TRUE ELSE q
+\end{verbatim}
+This definition implies that the second operand need not be evaluated, if the result is already known
+from the evaluation of the first operand. The notable property of this definition of Boolean
+connectives is that their result may be well-defined even in cases where the second operand is
+undefined. As a consequence, the order of the operands may be significant.
+
+Sometimes it is possible to simplify Boolean expressions by application of simple transformation
+rules. A particularly useful rule is de Morgan's law stating the equivalences
+\begin{verbatim}
+  ~p  & ~q = ~(p OR q)
+  ~p OR ~q = ~(p  & q)
+\end{verbatim}
+Relations produce a result of type BOOL, i.e. TRUE if the relation is satisfied, FALSE if not.
+For example
+\begin{verbatim}
+  7 = 12       FALSE
+  7 < 12       TRUE
+  1.5 >= 1.6   FALSE
+\end{verbatim}
+Relations are syntactically classified as expressions, and the two comparands are so-called
+SimpleExpressions (see also chapter on expressions and statements). The result of a comparison
+is of type BOOL and can be used in control structures such as if, while, and repeat statements.
+The symbol \# stands for unequal.
+\begin{verbatim}
+  expr = exp [rel exp]
+  rel  = = | # | < | <= | > | >= | IN
+\end{verbatim}
+It should be noted that, similar to arithmetic operators, there exists a precedence hierarchy among
+the Boolean operators. \~{} has the highest precedence, then follows \&, then OR, and last are the
+relations. As with arithmetic expressions, parentheses may be used freely to make the association
+of operators explicit. Examples of Boolean expressions are
+\begin{verbatim}
+  x = y
+  (x <= y) & (y <Z)
+  (x > y) OR (y >= Z)
+  ~p OR q
+\end{verbatim}
+Note that a construct such as \verb|x<y & z<w| is illegal.
+
+The example above draws attention to the rule that the operands of an operator (including relational
+operators) must be of the same type. The following relations are therefore illegal:
+\begin{verbatim}
+    1   = TRUE
+    5   = 5.0
+  i + j = p OR q
+\end{verbatim}
+Also incorrect is e.g. \verb|x <= y < z|, which must be expanded into \verb|(x <= y) & (y < z)|.
+However, the following are correct Boolean expressions:
+\begin{verbatim}
+  it < k - m
+  p OR q = (i < j)
+\end{verbatim}
+A final hint: although "p = TRUE" is legal, it is considered poor style and better expressed as p.
+Similarly, replace "p = FALSE" by "~p".
+
+\section{CHAR}
+Every computer system communicates with its environment via some input and output devices.
+They read, write, or print elements taken from a fixed set of characters. This set constitutes the
+value range of the type CHAR. Unfortunately, different brands of computers may use different
+character sets, which makes communication between them (i.e. the exchange of programs and
+data) difficult and often tedious. However, there exist internationally standardised sets. Here we
+refer to ISO’s Latin-1 set.
+
+The Latin-1 standard defines a set of 128 characters, 33 of which are so-called (non-printing)
+control characters. The remaining 95 elements are visible printing characters shown in the following
+table. The set is ordered, and each character has a fixed position or ordinal number. For example,
+A is the 66th character and has the ordinal number 65. The ISO standard, however, leaves a few
+places open, and they can be filled with different characters according to national desires to
+establish national standards. Most widely used is the American standard, also called ASCII
+(American Standard Code for Information Interchange). Here we tabulate the ASCII set.
+\begin{table}[h!]
+  \centering
+  \begin{tabular}{r c c c c c c c c}
+      &  0  &  1  &  2 & 3 & 4 &              5 & 6 &  7 \\
+    0 & nul & dle &    & 0 & @ &              P & ` &  p \\
+    1 & soh & dc1 &  ! & 1 & A &              Q & a &  q \\
+    2 & stx & dc2 &  " & 2 & B &              R & b &  r \\
+    3 & etx & dc3 & \# & 3 & C &              S & c &  s \\
+    4 & eot & dc4 & \$ & 4 & D &              T & d &  t \\
+    5 & enq & nak & \% & 5 & E &              U & e &  u \\
+    6 & ack & syn & \& & 6 & F &              V & f &  v \\
+    7 & bel & etb &  ' & 7 & G &              W & g &  w \\
+    8 & bs  & can &  ( & 8 & H &              X & h &  x \\
+    9 & ht  & em  &  ) & 9 & I &              Y & i &  y \\
+    A & lf  & sub &  * & : & J &              Z & j &  z \\
+    B & vt  & esc &  + & ; & K &              [ & k & \{ \\
+    C & ff  & fs  &  , & < & L & \textbackslash & l &  | \\
+    D & cr  & gs  &  - & = & M &              ] & m & \} \\
+    E & so  & rs  &  . & > & N &           \^{} & n & \~{} \\
+    F & si  & us  &  / & ? & O &             \_ & o & del
+  \end{tabular}
+  \caption{Table of ASCII characters}
+\end{table}
+The ordinal number of a character is obtained by taking its row number and adding its column number. These
+numbers are customarily given in hexadecimal form, and we follow this habit here too. The first two
+columns contain the control characters; they are customarily denoted by abbreviations hinting at
+their intended meaning. However, this meaning is not inherent in the character code, but only
+defined by its interpretation. At this point it suffices to remember that these characters are (usually)
+not printable.
+
+Constants of type CHAR are denoted by the character being enclosed in quote marks (single-
+character string). They can be assigned to variables of type CHAR. These values cannot be used in
+arithmetic operations. Arithmetic operators can be applied, however, to their ordinal numbers
+obtained from the transfer function ORD(c). Inversely the character with the ordinal number n is
+obtained with the transfer function CHR(n). These two complementary functions are related by the
+equations
+\begin{verbatim}
+  CHR(ORD(c)) = c and ORD(CHR(n)) =n
+\end{verbatim}
+for $0 \le n< 128$. They permit to compute the numeric value represented by the digit $c$ as
+\begin{verbatim}
+  ORD(c) - ORD("0")
+\end{verbatim}
+and to compute the digit representing the numeric value $n$ as
+\begin{verbatim}
+  CHR(n + ORD("0"))
+\end{verbatim}
+These 2 formulas depend on the adjacency of the 10 digits in the ISO character set, where
+\verb|ORD("0") = 30H = 48|. They are typically used in routines converting sequences of digits into
+numbers and vice-versa. The following program piece reads digits and assigns the decimally
+represented number to a variable $x$.
+\begin{verbatim}
+  x := 0; Texts.Read(R, c);
+  WHILE ("0" <= c) & (c <= "9") DO
+    x := 10*x + (ORD(c) - ORD('0"));
+    Texts.Read(R, c)
+  END
+\end{verbatim}
+Control characters are used for various purposes, mainly to control the functions of devices, but
+also to delineate and structure text. An important role of control characters is to specify the end of a
+line or of a page of text. There is no universally accepted standard for this purpose. We shall
+denote the control character signifying a line end by the identifier EOL (end of line); its actual value
+depends on the system used.
+
+In order to be able to denote non-printable characters, Oberon uses their hexadecimal ordinal
+number followed by the capital letter \verb|X|. For example, \verb|ODX| is the value of type \verb|CHAR|
+denoting the control character \verb|cr| (carriage return, line end) with ordinal number 13.
+
+\section{SET}
+The values which belong to the type SET are sets of integers between 0 and N-1, where N is a
+constant defined by the computer system used. It is usually the computer's word length or a small
+multiple of it, typically 32. Constants of this type are denoted as sets. Examples are
+\begin{verbatim}
+  {2, 3, 5, 7, 11} {0} {8, 15}
+\end{verbatim}
+The notation \verb|m..n| is a shorthand for \verb|m, m+1,... , n-1, n|.
+\begin{verbatim}
+  set = [qualident] "{" [element{, element}] "}"
+  element = expression [.. expression]
+\end{verbatim}
+\begin{table}[h!]
+  \centering
+  \begin{tabular}{l r|c}
+    \multicolumn{2}{r|}{Operations on sets $u$ and $v$} & Set of elements that are in\\\hline
+    $+$ &                union $u+v$ & either $u$ or $v$ \\
+    $-$ &           difference $u-v$ &   $u$ but not $v$ \\
+    $*$ &         intersection $u*v$ &  both $u$ and $v$ \\
+    $/$ & symmetric difference $u/v$ & either $u$ or $v$, but not both
+  \end{tabular}
+  \caption{Operations on sets}
+\end{table}
+The membership operator \verb|IN| is regarded as a relational operator. The expression \verb|i IN u|
+is of type \verb|BOOL|. It is \verb|TRUE|, if $i$ is a member of the set $u$. Sets are represented in
+computer systems as sets of bits, i.e. by the characteristic function of the set. The $i$-th bit of $u$,
+for example, is 1, if $i$ is a member of $u$, 0 otherwise. Hence, the set operators are implemented as
+logical operations applied to the $N$ members of the set variable. They are therefore very efficient and
+their execution time is usually even less than that of an addition of integers.

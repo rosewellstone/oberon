@@ -1,0 +1,77 @@
+\chapter{The Concept of Locality}
+If we inspect the preceding example of procedure \verb|Add|, we notice that the role of the
+variable $i$ is strictly confined to the procedure body. This inherent locality should be expressed
+explicitly, and can be done by declaring $i$ inside the procedure declaration. $i$ thereby becomes
+a local variable.
+\begin{verbatim}
+  PROC Add;
+    VAR i: INT;
+  BEGIN sum := 0.0;
+    FOR i:=0 TO N-1 DO
+      sum := a[i] + sum
+    END
+  END Add
+\end{verbatim}
+In some sense, the procedure declaration assumes the form of a separate program. In fact, any
+declaration possible in a program, such as constant, type, variable, or procedure declaration,
+may also occur in a procedure declaration. This implies that procedure declarations may be
+nested and are defined recursively.
+
+It is good programming practice to declare objects local, i.e. to confine the existence of an object
+to that procedure in which it has meaning. The procedure, i.e. the section of program text in which
+a name is declared, is called its scope. Since declarations can be nested, scopes are also nestable.
+The possibility of having objects local to some scope has several consequences. For example, the
+same name can be used to denote different objects. In fact, this is a most useful consequence,
+because a programmer is free to choose local identifiers without knowledge of those existing in the
+surrounding scope, as long as they do not denote objects used in the local scope (in which case he
+must obviously be aware of them anyhow). This decoupling of knowledge about different program
+parts is particularly useful and perhaps even vital in the case of large programs.
+
+The rules of scope (validity of identifiers) are as follows:
+\begin{enumerate}
+  \item The scope of an identifier is the procedure in which its declaration occurs, and all
+    procedures enclosed by that procedure, subject to rule 2.
+  \item If an identifier $i$ declared in a procedure $P$ is redeclared in some inner procedure $Q$
+    enclosed in $P$, then procedure $Q$ and all procedures enclosed in $Q$ are excluded from the
+    scope of $i$ declared in $P$.
+  \item The standard identifiers of Oberon are considered to be declared in an imaginary scope
+    enclosing the program.
+\end{enumerate}
+These rules may also be remembered by the algorithm in which the declaration of a given identifier
+$i$ is searched:
+\begin{itemize}
+  \item[] First, search the declarations of the procedure $P$ in whose body $i$ occurs; if the
+    declaration of $i$ is not among them, continue the search in the procedure surrounding $P$;
+  \item[] Then repeat this same rule until the declaration is encountered.
+\end{itemize}
+\begin{verbatim}
+  VAR a: INT;
+  PROC P;
+    VAR b: INT;
+    PROC Q;
+      VAR b, c: BOOL;
+    BEGIN
+      (* here a, b(BOOL), c are visible *)
+    END Q;
+  BEGIN
+    (* here a, b(INT) are visible *)
+  END P
+\end{verbatim}
+
+A consequence of the locality concept and of the rule that a variable does not exist outside its
+scope is that its value is lost when its declaring procedure is terminated. This implies that, when the
+same procedure is later called again, this value is unknown. The values of local variables are
+undefined when the procedure is (re)entered. Hence, if a variable must retain its value between two
+calls, it must be declared outside the procedure. The "lifetime" of a variable is the time during which
+its declaring procedure is active.
+
+The use of local declarations has 3 significant advantages:
+\begin{enumerate}
+  \item It makes clear that an object is confined to a procedure, usually a small part of the entire
+    program.
+  \item It ensures that inadvertent use of a local object by other parts of the program is detected
+    by the compiler.
+  \item It enables the implementation to minimize storage, because a variable's storage is released
+    when the procedure to which the variable is local is terminated. This storage can then be reused
+    for other variables.
+\end{enumerate}

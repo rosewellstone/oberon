@@ -1,0 +1,179 @@
+\chapter{Dynamic Data Structures and Pointers}
+\label{ch:ptr}
+Array and record structures share the common property that they are static. This implies
+that variables of such a structure maintain the same structure during the whole time of
+their existence.  In many applications, this is an intolerable restriction; they require
+data which do not only change their value, but also their composition, size, and structure.
+Typical examples are lists and trees that grow and shrink dynamically. Instead of providing
+list and tree structures, a collection that for some applications would again not suffice,
+Oberon offers a basic tool to construct arbitrary structures.  This is the pointer type.
+
+Every complex data structure ultimately consists of elements whose structure is static.
+Pointers, i.e. values of pointer types, are themselves not structured, but rather are used
+to establish relationships among those static elements, usually called \emph{nodes}. We
+also say that pointers link elements or point to elements. Evidently, different pointer
+variables may point to the same element, hence providing the possibility to compose
+arbitrarily complex structures, and at the same time opening many pitfalls for programming
+mistakes that are difficult to pinpoint. Operating with pointers indeed requires utmost care.
+
+Pointers in Oberon cannot point to arbitrary variables. The type of variable to which they
+point must be specified in the pointer type's declaration, and the pointer type is said to
+be bound to the referenced object's type. Example:
+\begin{verbatim}
+  TYPE Node = POINTER TO NodeDescriptor
+  VAR p0, p1: Node
+\end{verbatim}
+Here Node (and thereby also variables \verb|p0| and \verb|p1|) are bound to the type
+\verb|NodeDescriptor|, i.e. they can point to variables of type \verb|NodeDescriptor| only.
+These variables, typically of record type, are not created by the declaration of \verb|p0|
+and \verb|p1|. Instead, they are created by an allocation procedure call. In Oberon, it is
+represented by a predefined operator called \verb|NEW|. The statement \verb|NEW(p0)| then
+creates a (record) variable of type \verb|NodeDescriptor| and assigns a pointer referring
+to that variable (i.e. a value of type \verb|Node|) to \verb|p0|. The created variable is
+said to be dynamically created (allocated); it has no name, is anonymous, and can be accessed
+only via a pointer using the dereferencing operator \^{}. The said variable is denoted by
+the designator \verb|p0^|. If the referenced variable is of record type with, say, fields
+$x$ and $y$, then the fileds are denoted, for example, by \verb|p0^.x, p1^.y|.  Since in
+this case it is clear that field selection applies to the referenced record rather than to
+the pointer, the designators may be abbreviated into \verb|p0.x| and \verb|p1.y|.
+\begin{verbatim}
+  PointerType = POINTER TO type.
+\end{verbatim}
+What really makes pointers such a powerful tool is the circumstance that they may point to
+variables which themselves contain pointers. This reminds us of procedures that call procedures
+and thereby introduce recursion. In fact, pointers are the tool to implement recursively
+defined data structures (such as lists and trees). The nature of the recursive data structure
+is evident from the declaration of the type of its elements.
+
+Just as every recursion of procedure activation must terminate at some time, so must every
+recursion in referencing terminate at some point. The role of the if statement to terminate
+procedural recursion is here taken by the special pointer value \verb|NIL| terminating
+referencing recursion. \verb|NIL| points to no object. It is an obvious consequence that a
+designator of the form \verb|p^ (p^.x, p.x)| must never be evaluated, if \verb|p = NIL|.
+We summarize the following essential points:
+\begin{enumerate}
+  \item Every pointer type is bound to a type; its values are pointers which point to
+    variables of that type.
+  \item The referenced variables are anonymous and can be accessed via pointers only.
+  \item The referenced variables are dynamically created by an allocation procedure which
+    assigns the variable's pointer to $p$.
+  \item The pointer constant \verb|NIL| belongs to every pointer type and points to no object.
+  \item The variable referenced by a pointer $p$ is denoted by the designator \verb|p^|.
+    In order for \verb|p^| to be meaningful, $p$ must not have the value \verb|NIL|.
+  \item Field designators of the form \verb|p^.x| may be abbreviated to \verb|p.x|.
+\end{enumerate}
+Lists, also called linear lists or chains, are characterized by consisting of record typed
+nodes that each have exactly 1 element being a pointer to a record of the same type as itself.
+This implies recursion. A list pointer declaration then assumes the characteristic form
+\begin{verbatim}
+  List = POINTER TO ListDesc;
+  ListDesc = RECORD key: INT;
+                    Data: ...
+                    next: List
+             END
+\end{verbatim}
+"Data" actually stands for any number of fields representing data pertaining to the listed
+node.  Key is part of these data; it is mentioned separately here because it is quite common
+to associate with each element a unique identifying key, and also because it will be used
+in subsequent examples of operations on lists. The essential ingredient here, however, is
+the field \verb|next|, so labelled because it evidently is the pointer to the next element
+in the list. Direct recursion in data type declarations is not permitted for the obvious
+reason that there would be no evident termination. The declaration given above can NOT be
+abbreviated into
+\begin{verbatim}
+  List = RECORD key: INT; next: List END
+\end{verbatim}
+Assume now that a list is accessible in a program via its 1st element, denoted by the
+pointer variable
+\begin{verbatim}
+  first: List
+\end{verbatim}
+The empty list is represented by \verb|first = NIL|. A non-empty list is most conveniently
+constructed by inserting new elements at its front. The following assignments are needed
+to insert one element (let $p$ be an auxiliary variable of type \verb|List|)
+\begin{verbatim}
+  NEW(p); (*assign values to p.key and p.data*)
+  p.next := first; first := p
+\end{verbatim}
+Having constructed a list by repeated insertion of nodes, we may wish to search the list
+for a node with key value equal to a given $x$. We evidently use a repetition; the while
+statement is appropriate, because we do not know the number of nodes (and hence repetitions)
+beforehand. It is wise to include the case of the empty list!
+\begin{verbatim}
+  p := first;
+  WHILE (p # NIL) & (p.key # x) DO
+    p := p.next
+  END;
+  IF p # NIL THEN found END
+\end{verbatim}
+We draw attention to the fact that here we make use of the rule that the term $b$ is not
+evaluated, if in the expression \verb|a & b|, the factor $a$ is found to be \verb|FALSE|.
+If this rule would not hold, the factor \verb|p.key # x| might be evaluated with
+\verb|p = NIL|, which is illegal.
+
+The 2nd frequently encountered dynamic data structure is the tree. It is characterized by
+its nodes having $n$ pointer fields each, where $n$ is the degree of the tree. The common
+and in some sense optimal case is the binary tree with $n = 2$. Lists now appear as
+degenerate trees of degree 1.  The respective declarations are
+\begin{verbatim}
+  Tree = POINTER TO TreeNode;
+  TreeNode = RECORD key: INT:
+                   data: ...
+                   left,
+                  right: Tree
+             END
+\end{verbatim}
+The place of the variable \verb|first| in the case of lists is taken by a variable to be
+\begin{verbatim}
+  root: Tree
+\end{verbatim}
+with \verb|root = NIL| denoting the empty tree. Trees are commonly used to represent
+collections of data in order of ascending key values, making retrieval very efficient.
+The following statements represent a search in an ordered binary tree, whose similarity
+to the binary search in an ordered array is remarkable. Again, $p$ is an auxiliary
+variable (of type \verb|Tree|).
+\begin{verbatim}
+  p := root:
+  WHILE (p # NIL) & (p.key # x) DO
+    IF p.key <x THEN p := p.right
+                ELSE p := p.left END
+  END;
+  IF p # NIL THEN found END
+\end{verbatim}
+This example is a repetitive version of the tree search. Next we show the recursive version.
+It is, in addition, extended such that a new node is created and inserted at the appropriate
+place, whenever no node with key value $x$ exists.
+\begin{verbatim}
+  PROC search(VAR p: Tree; x: INT): Tree;
+    VAR q: Tree;
+  BEGIN
+    IF p # NIL THEN
+      IF p.key < x THEN
+        q := search(p.right, x)
+      ELSIF p.key > x THEN
+        q := search(p^.left, x)
+      ELSE
+        q := p
+      END
+    ELSE (*not found, hence insert*)
+      NEW(q); q.key := x;
+      q.left:= NIL; q.right := NIL
+    END;
+    RETURN q
+  END search
+\end{verbatim}
+The call \verb|search(root, x)| now stands for a search of $x$ in the tree represented by
+the variable \verb|root|.
+
+And this concludes our examples of operations on lists and trees to illustrate pointer
+handling. Lists and trees have nodes which are all of the same type. We draw attention to
+the fact that the pointer facility admits the construction of even more general data
+structures consisting of nodes of various types. Typical for all these structures is that
+all nodes are declared as record types. Hence, the record emerges as a particularly useful
+data structure in conjunction with pointers.
+
+Creation of nodes is expressed by the standard procedure \verb|NEW|, which is part of a
+system's storage management. We assume that retrieval of storage is performed automatically
+by a so-called storage reclamation mechanism, also called \emph{garbage collector}. It
+relies on the fact that records that are no longer referenced by any pointer may be
+recollected, i.e. their storage can be recycled.

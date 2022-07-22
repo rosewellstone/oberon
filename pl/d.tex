@@ -1,0 +1,91 @@
+\chapter{Function Procedures}
+So far we have encountered 2 possibilities to pass a result from a procedure body to its calling
+place: the result is either assigned to a non-local variable or to a variable parameter. There
+exists a 3rd method: the function procedure. It permits the use of the computed result (as an
+intermediate value) in an expression. The function procedure identifier stands for a computation
+as well as for the computed result. The procedure declaration is characterized by the indication
+of the type of the result following the parameter list. As an example, we rephrase the power
+computation given above.
+\begin{verbatim}
+  PROC power(x: REAL; i: INT): REAL;
+    VAR z: REAL;
+  BEGIN z := 1.0:
+    WHILE i > 0 DO
+      IF ODD(i) THEN z := z*x END;
+      x := x*x; i := 1 DIV 2
+    END;
+    RETURN z
+  END power
+\end{verbatim}
+Possible calls are
+\begin{verbatim}
+  u    := power(2.5, 3)
+  A[i] := power(B[i], 2)
+  u    := x + power(y, i+1) / power(z, i-1)
+\end{verbatim}
+The result of the function evaluation is specified as an expression following the symbol
+\verb|RETURN| and immediately preceding the symbpl \verb|END|.
+
+Calls inside an expression are called \emph{function designators}. Their syntax is the same
+as that of procedure calls. However, a parameter list is mandatory, although it may be empty.
+\begin{verbatim}
+  ReturnStatement = "RETURN" [expression].
+\end{verbatim}
+We now revisit the previous example of adding the elements of an array and formulate it as
+a function procedure:
+\begin{verbatim}
+  PROC sum(VAR a: Vector; n: INT): REAL;
+    VAR i: INT; s: REAL;
+  BEGIN s := 0.0:
+    FOR i := 0 TO n-1 DO s := a[i]+s END;
+    RETURN s
+  END sum
+\end{verbatim}
+This procedure, as previously specified, sums the elements $a[0] \dots a[n-1]$, where $n$
+is given as a value parameter, and may be different from (but not larger than!) the number
+of elements $N$. A more elegant solution specifies $a$ as an open array, omitting the
+explicit indication of the array's size.
+\begin{verbatim}
+  PROC sum(VAR x: ARRAY OF REAL): REAL;
+    VAR i: INT; s: REAL;
+  BEGIN s := 0.0:
+    FOR i := 0 TOLEN(x)-1 DO's := x{i] +s END;
+    RETURN s
+  END sum
+\end{verbatim}
+Obviously, procedures are capable of generating more than one result by making assignments
+to several variables. Only one value, however, can be returned as the result of a function.
+This value, moreover, cannot be of a structured type. Therefore, the other results must be
+passed to the caller via VAR parameter or assignment to variables that are not local to the
+function procedure. Consider for example the following procedure which computes a primary
+result denoted as the function's value and a secondary result used to count the number of
+times the procedure is called.
+\begin{verbatim}
+  PROC square(x: INT): INT;
+  BEGIN INC(n); RETURN x*x
+  END square
+\end{verbatim}
+There is nothing remarkable about this example as long as the secondary result is used for
+its indicated purpose. However, it might be misused as follows:
+\begin{verbatim}
+  m := square(m) +n
+\end{verbatim}
+Here the secondary result occurs as an argument of the expression containing the function
+designator itself. The consequence is that e.g. the values \verb|square(m)+n| and
+\verb|n+square(m)| differ, seemingly defying the basic law of commutativity of addition.
+
+Assignments of values from within function procedures to non-local variables are called
+\emph{side-effects}. The programmer should be fully aware of their capability of producing
+unexpected results when the function is used inappropriately. We summarize:
+\begin{enumerate}
+  \item A function procedure specifies a result which is used at its place of call as an
+    argument of an expression.
+  \item The result of a function procedure cannot be structured.
+  \item If a function procedure generates secondary results, it is said to have side-effects.
+    These must be used with care. It is advisable to use a regular procedure instead,
+    which passes its results via \verb|VAR| parameters.
+  \item We recommend to choose function identifiers which are nouns rather than verbs. The
+    noun then denotes the function's result. Boolean functions are appropriately labelled
+    by an adjective.  In contrast, regular procedures should be designated by a verb
+    describing their action.
+\end{enumerate}

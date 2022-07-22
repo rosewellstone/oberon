@@ -1,0 +1,164 @@
+\chapter{1st Example}
+\label{ch:1ex}
+Let us follow the steps of development of a simple program and thereby explain some of the
+fundamental concepts of programming and of the basic facilities of Oberon. The task shall be,
+given 2 natural numbers $x$ and $y$, to compute their greatest common divisor ($gcd$).
+The mathematical knowledge needed for this problem is the following:
+\begin{enumerate}
+  \item if $x$ equals $y$, $x$ (or $y$) is the desired result
+  \item the $gcd$ of 2 numbers remains unchanged, if we replace the larger number by the difference
+    of the numbers, i.e. subtract the smaller number from the larger one.
+\end{enumerate}
+Expressed in mathematical terms, these rules take the form
+\begin{enumerate}
+  \item $gcd(x, x) = x$
+  \item if $x>y$, $gcd(x, y) = gcd(x-y, y)$
+\end{enumerate}
+
+The basic recipe, the so-called algorithm, is then the following: Change the numbers $x$ and $y$
+according to rule 2 such that their difference decreases. Repeat this until they are equal. Rule
+2 guarantees that the changes are such that $gcd(x,y)$ always remains the same, and rule 1
+guarantees that we finally find the result.
+
+Now we must put these recommendations into terms of Oberon. A 1st attempt leads to the following
+sketch. Note that the symbol \# means "unequal".
+\begin{verbatim}
+  WHILE x # y DO
+    "apply rule 2, reducing the difference
+     and maintaining x > 0 and y > 0"
+  END
+\end{verbatim}
+The sentence within quotes is plain English. The 2nd version refines the 1st one by replacing
+it with formal terms:
+\begin{verbatim}
+  WHILE x # y DO
+    IF x > y THEN x := x-y ELSE y := y-x END
+  END
+\end{verbatim}
+This piece of text is not yet a complete program, but it shows already the essential characteristic
+of a structured programming language. Version 1 is a statement, and this statement contains another,
+subordinate statement (within quotes). In version 2 this is elaborated, and yet further subordinate
+statements emerge (expressing the replacement of a value $x$ by another value $x-y$). This hierarchy
+of statements expresses the underlying structure of the algorithm. It becomes explicit due to the
+structure of the language, allowing the nesting of components of a program. It is therefore important
+to know the language's structure (syntax) in full detail. Textually we express nesting or
+subordination by appropriate indentation. Although this is not required by the rules of the language,
+it helps in the understanding of a text very considerably.
+
+Reflecting an algorithm's inherent structure by the textual structure of the program is a key idea of
+structured programming. It is virtually impossible to recognise the meaning of a program when its
+structure is removed, such as done by a compiler when producing computer code. And we should keep in
+mind that a program is worthless, unless it exists in some form in which a human can understand it
+and gain confidence in its design.
+
+We now proceed towards the goal of producing a complete program from the above fragment. We realize
+that we need to specify an action that assigns initial values to the variables $x$ and $y$, as well
+as an action that makes the result visible. For this purpose we should actually know about a
+computer's facilities to communicate with its user. Since we do not wish to refer to a specific
+machinery, and particularly not in such a frequent and important case as the generation of output,
+we introduce abstractions of such communication facilities. These facilities are not directly part of
+the language, but are procedures declared in some (library) modules, to which all programs have
+access. We postulate read and write procedures as shown in the following example, and will assume
+that data are thus read from a keyboard and written on a display.
+\begin{verbatim}
+  Texts.Scan(S); x := S.i;
+  Texts.Scan(S); y := S.i;
+  WHILE x # y DO
+    IF x > y THEN x := x-y ELSE y := y-x END
+  END;
+  Texts.WriteInt(W, x, 6)
+\end{verbatim}
+
+The procedure \verb|Scan| scans an input text and reads a (non-negative) integer ($S.i$).
+The procedure \verb|WriteInt| outputs an integer as specified by its 1st parameter ($x$).
+The 2nd parameter (6) indicates the number of digits available for the representation of
+this value in the output text. Both procedures are taken from the imported (library)
+module \verb|Texts|, and they use a locally declared scanner $S$ and a globally declared
+writer $W$, connecting to an input source (the text following the command) and output sink
+(the Log text) imported from the environment Oberon. Details are explained in Chapter
+\ref{ch:seq} of this tutorial.
+
+In the next and final version we complete it such that it becomes a genuine Oberon text:
+\begin{verbatim}
+  PROC Gcd*;
+    VAR x, y: INT; S: Texts.Scanner;
+  BEGIN
+    Texts.OpenScanner(S, Oberon.Par.text,
+                         Oberon.Par.pos);
+    Texts.Scan(S); x := S.i;
+    Texts.WriteString(W, " x =");
+    Texts.WriteInt(W, x, 6);
+
+    Texts.Scan(S); y := S.i;
+    Texts.WriteString(W, " y =");
+    Texts.WriteInt(W, y, 6);
+
+    WHILE x # y DO
+      IF x > y THEN x := x-y ELSE y := y-x END
+    END;
+    Texts.WriteString(W, " gcd =");
+    Texts.WriteInt(W, x, 6);
+    Texts.WriteLn(W);
+    Texts.Append(Oberon.Log, W.buf)
+  END Gcd.
+\end{verbatim}
+
+The essential additions in this step are declarations. In Oberon, all names of objects
+occurring in a program, such as variables and constants, have to be declared. A declaration
+introduces the object's identifier (name), specifies the kind of the object (whether it
+is a variable, a constant, or something else) and indicates general, invariant properties,
+such as the type of a variable or the value of a constant.
+
+The entire piece of text is called a procedure, given a name, and has the following format
+(see also Chapter \ref{ch:proc}):
+\begin{verbatim}
+  PROC name;
+    <declarations>
+  BEGIN
+    <statements>
+  END name
+\end{verbatim}
+
+In this and the following examples, a particular property of the Oberon system becomes
+apparent.  Whereas in older languages, the notions of program and executable unit were
+identical, we distinguish carefully between them in Oberon terminology: What used to be
+called a program is now called a module, a system unit typically incorporating variables
+and executable statements resident in a system (see also Chapter \ref{ch:mod}). Compilers
+accept a module as a compilable unit of text.  An executable unit of program we call a
+procedure. In the Oberon system, any parameterless procedure can be used as a command, if
+its name is marked with an asterisk. It can be activated by clicking on its name visible
+anywhere on the display. A module may contain one or several commands. As a consequence,
+the preceding and following examples of “programs” appear in the form of procedures
+(commands), and we will always assume that they are embedded in a module importing 2
+service modules Texts and Oberon and containing the declaration of a writer $W$ for output:
+\begin{verbatim}
+  MODULE Pattern;
+    IMPORT Texts, Oberon:
+    VAR W: Texts.Writer;
+
+    PROC command*; (*such as Gcd*)
+    BEGIN ... (*using W for output*) ...
+      Texts.Append(Oberon.Log, W.buf)
+    END command;
+  BEGIN Texts.OpenWriter(W)
+  END Pattern.
+\end{verbatim}
+
+A few more comments concerning our Gcd example are in order. As already mentioned, the procedures
+\verb|WriteLn|, \verb|WriteString|, \verb|WriteInt| and \verb|Scan| are not part of the language
+Oberon itself.  They are defined in a module called \verb|Texts| which is presumed to be available.
+The often encountered modules \verb|Texts|, \verb|Files| and \verb|Oberon| will be defined and
+explained in Chapter \ref{ch:seq} of this book.  Here we merely point out that they need to be
+imported in order to be known in a program. This is done by including the names of these modules
+in the import list in the importing module’s heading.
+
+The procedure \verb|WriteString| outputs a string, i.e. a Sequence of characters (enclosed in quotes).
+The procedure \verb|WriteLn| inserts a line break in the output text. For further explanations we
+refer to chapters \ref{sec:texts} and \ref{sec:stdio} of this book.
+
+And this concludes the discussion of our 1st example. It has been kept quite informal. This is
+admissible because the goal was to explain an existing program. However, programming is designing,
+creating new programs. For this purpose, only a precise, formal description of our tool is
+adequate. In the next chapter, we introduce a formalism for the precise description of correct,
+"legal" program texts. This formalism makes it possible to determine in a rigorous manner
+whether a written text meets the language's rules.

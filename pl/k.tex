@@ -1,0 +1,145 @@
+\chapter{Definitions and Implementations}
+A definition or interface specifies those properties of a module which are relevant to its
+clients (importers, users). It consists of the declarations of the exported identifiers.
+We will here consider definitions and implementations as disjoint texts. However, in Oberon
+there is only one text, namely the module, in which the exported objects are explicitly marked
+(by an asterisk). The definition may here be considered as an extract of the module text.
+
+Variables declared in a definition are global in the sense that they exist during the entire
+lifetime of the program, although they are visible and accessible only in those modules
+(clients) which import the module of their declaration. In other modules they remain invisible.
+Such variables are typically state variables. But in general, export of variables should
+be used \emph{rarely}, and if so, preferrably imported variables should be \emph{read only}.
+
+In definitions, procedures are specified by their headings only. A heading specifies the
+procedure’s parameters, i.e. their types, and in the case of function procedures the
+result type. This information constitutes the procedure’s \emph{signature}.
+
+If a type is declared in a definition module, the full details of its declaration are
+visible in importing modules. In the case of a record type, the definition specifies only
+those fields, which are visisble by clients.
+
+The following simple example exhibits the essential characteristics of modules, although
+typically modules are considerably larger pieces of program and contain a longer list of
+declarations. This example exports 2 procedures, \verb|put| and \verb|get|, adding data to
+and fetching data from a buffer which is hidden. Effectively, the buffer can only be
+accessed through these 2 procedures; it is therefore possible to guarantee the buffer's
+proper functioning, i.e. sequential access without loss of elements.
+\begin{verbatim}
+  DEFINITION Buffer;
+    VAR nonempty, nonfull: BOOL:
+    PROC put(x: INT);
+    PROC get(VAR x: INT);
+  END Buffer.
+\end{verbatim}
+This definition part contains all the information about the buffer that a client is supposed
+to know. The details of its operation, its realization, are contained in the corresponding
+implementation.
+\begin{verbatim}
+  MODULE Buffer; (*cyclic buffer of integers*)
+    CONST N = 100;
+    VAR nonempty*, nonfull*: BOOL;
+    in, out, n: INT;
+    buf: ARRAY N OF INT;
+ 
+    PROC put*(x: INT);
+    BEGIN
+      IF n < N THEN
+        buf[in] := x; in := (in+1) MOD N;
+        INC(n); nonfull := n < N; nonempty := TRUE
+      END
+    END put;
+ 
+    PROC get*(VAR x: INT);
+    BEGIN
+      IF n > O THEN
+        x := buf[out]; out := (out+1) MOD N;
+        DEC(n); nonempty := n > 0; nonfull := TRUE
+      END
+    END get:
+ 
+  BEGIN (*initialize*) n := 0; in := 0; out := 0;
+    nonempty := FALSE; nonfull := TRUE
+  END Buffer.
+\end{verbatim}
+The definition is the relevant extract from the module listed here, implementing a fifo
+(first in first out) queue. This fact, however, is not evident from the definition alone;
+normally the semantics are mentioned in the form of a comment or other documentation.
+Such comments will usually explain what the module performs, but not how this is achieved.
+Therefore, different implementations may be provided for the same definition. The differences
+may lie in the details of the mechanism, for example, the buffer might be represented as a
+linked list instead of an array (allocating buffer portions as needed, hence not limiting
+the buffer's size). Or, the differences may even lie in the semantics. The following program
+implements a stack (i.e. a lifo queue) instead of a fifo queue, nevertheless fitting the same
+definition part. Any change in a module's semantics necessitates corresponding adjustments
+in the module's clients, and must therefore be made with utmost care.
+\begin{verbatim}
+  MODULE Buffer; (*stack of integers*)
+    CONST N = 100;
+    VAR n: INT;
+    nonempty*, nonfull*: BOOL:
+    buf: ARRAY N OF INT;
+ 
+    PROC put*(x: INT);
+    BEGIN
+      IF n < N THEN
+        buf[n] := x; INC(n); nonfull := n < N;
+        nonempty := TRUE
+      END
+    END put:
+ 
+    PROC get*(VAR x: INT);
+    BEGIN
+      IF n>O THEN
+        DEC(n); x := buf[n]; nonempty := n > 0;
+        nonfull := TRUE
+      END
+    END get:
+ 
+  BEGIN n := 0; nonempty := FALSE; nonfull := TRUE
+  END Buffer.
+\end{verbatim}
+Evidently, \verb|nonempty| is the precondition for \verb|get|, and so is \verb|nonfull|
+for \verb|put|. Let's conclude this example here.
+
+The syntax of modules and definitions:
+\begin{verbatim}
+  Definition = DEFINITION identifier:
+                 {import} {declaration}
+               END identifier.
+  declaration = CONST {ConstantDeclaration;} |
+                TYPE  {identifier[ = type];} |
+                VAR   {VariableDeclaration;} |
+                ProcedureHeading;
+  Module = MODULE identifier;
+             [IMPORT IdList] block
+           END identifier.
+\end{verbatim}
+The import list names the modules which are imported. If a client module \verb|M1| is a
+client of \verb|M0|, i.e. imports \verb|M0|, then the objects exported from \verb|M0|,
+say $a$, $b$, are referenced by qualified identifiers of the form \verb|M.x|, for example
+\verb|M0.a|, \verb|M0.b|. This facility permits to import different objects with the same
+name from different modules and to avoid conflicts of names. Standard identifiers are
+automatically imported into all modules.
+
+The possibility to publicize a module in the form of its definition and at the same time
+to retain its operational details hidden in its implementation specification, is particularly
+convenient for the establishment of program libraries. Such collections of standard routines
+belong to every programming environment. They typically include routines for IO operations,
+for file handling, and for the computation of mathematical functions. Although there exists
+no rigid standard for Oberon, the modules \verb|Files| and \verb|Texts| can be considered
+as standard modules available in all implementations of Oberon (see Chapter \ref{ch:seq}).
+Here we present the definition of module \verb|Math| as the 1st example,
+featuring standard mathematical functions:
+\begin{verbatim}
+  DEFINITION Math;
+    PROC sqrt  (x: REAL): REAL;
+    PROC exp   (x: REAL): REAL;
+    PROC ln    (x: REAL): REAL;
+    PROC sin   (x: REAL): REAL;
+    PROC cos   (x: REAL): REAL;
+    PROC arctan(x: REAL): REAL;
+    PROC real  (x: INT ): REAL;
+    PROC entier(x: REAL): INT;
+  END Math.
+\end{verbatim}

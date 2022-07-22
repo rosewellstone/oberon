@@ -1,0 +1,42 @@
+\chapter{Constant \& Variable Declarations}
+It has been mentioned previously that all identifiers used in a program must be declared
+in the program's heading, unless they are standard identifiers known in every program (or
+are imported from some other module).
+
+If an identifier is to denote a constant value, it must be introduced by a constant
+declaration which indicates the value for which the constant identifier stands. A
+constant declaration has the form:
+\begin{verbatim}
+  ConstantDeclaration = identifier = ConstExpression
+  ConstExpression = expression
+\end{verbatim}
+A \verb|ConstExpression| is an expression containing constants only. More precisely, its
+evaluation must be possible by a \emph{mere textual scan} without execution of the program.
+A sequence of constant declarations is preceded by the symbol \verb|CONST|. Example:
+\begin{verbatim}
+  CONST N = 16;
+      EOL = ODX;
+    empty = {};
+        M = N - 1;
+\end{verbatim}
+Constants with explicit names aid in making a program readable, provided that the constants
+are given suggestive names. If, e.g., the identifier $N$ is used instead of its value
+throughout a program, a change of that constant can be achieved by changing the program
+in a single place only, namely in the declaration of $N$. This avoids the common mistake
+that some instances of the constant, spread over the entire program text, remain undetected
+and therefore are not updated, leading to inconsistencies.
+
+A variable declaration looks similar to a constant declaration. The place of the constant's
+value is taken by the variable's type which, in a sense, can be regarded as the variable's
+constant property.  Instead of an equal sign, a colon is used.
+\begin{verbatim}
+  VariableDeclaration = IdentList: type
+  IdentList = identifier {, identifier}
+\end{verbatim}
+Variables of the same type may be listed in the same declaration, and a sequence of
+declarations is preceded by the symbol \verb|VAR|. Example:
+\begin{verbatim}
+  VAR i, j, k: INT;
+      x, y, Z: REAL;
+           ch: CHAR
+\end{verbatim}

@@ -1,0 +1,53 @@
+\chapter{Procedure Types}
+So far, we have regarded procedures exclusively as program parts, i.e. as texts that specify actions
+to be performed on variables whose values are numbers, logical values, characters, etc. However,
+we may take the view that procedures themselves are objects that can be assigned to variables. In
+this light, a procedure declaration appears as a special kind of constant declaration, the value of
+this constant being a procedure. If we allow variables in addition to constants, it must be possible to
+declare types whose values are procedures. These are called \emph{procedure types}.
+
+A procedure type declaration specifies the number and the types of parameters and, if it is to be a
+function procedure, the type of the result. For example, a procedure type with a \verb|REAL| argument
+and a result of the same type is declared by
+\begin{verbatim}
+  Function = PROC(x: REAL): REAL
+\end{verbatim}
+Mathematical functions, sine, cosine, square root, exponential and logarithm are all of this type.
+The general syntax is
+\begin{verbatim}
+  ProcedureType = PROC [TypeListl]
+  TypeList = ([[VAR] Type{, [VAR] Type}])[: returnType]
+\end{verbatim}
+If we declare a variable \verb|f: Function|, we can then assign \verb|f := Math.sin|.
+Thus, the call \verb|f(x)| is equivalent to \verb|Math.sin(x)|.
+
+It is now also possible to declare functions and procedures which themselves have functions
+and procedures as parameters. For example, a function procedure to integrate any function
+over a certain interval can be expressed in the following way. It adds the values of the
+given parametric function over the given interval $a$ to $b$ in $n$ steps.
+\begin{verbatim}
+  PROC integral(f: Function; a, b: REAL; n: INT): REAL;
+    VAR i: INT; sum, dx: REAL;
+  BEGIN dx := (b-a)/n; sum := 0;
+    FOR i:= 0 TO n-1 DO
+      sum := f(a + i*dx + 0.5*dx) + sum
+    END;
+    RETURN sum * dx
+  END integral
+\end{verbatim}
+The integrations of, for example, the sine function over the interval $0$ to $\pi$, and
+that of the exponential function from $0$ to $1$ are expressed simply as
+\begin{table}[h!]
+  \begin{tabular}{r|c|l}
+    integration call                          & yield  & truth \\\hline
+    \verb|integral(Math.sin, 0, 3.14159, 20)| & 2.0020 & 2 \\
+    \verb|integral(Math.exp, 0, 1      , 20)| & 1.7181 & $e-1$
+  \end{tabular}
+\end{table}
+
+To conclude, we emphasize the restriction of Oberon:
+Procedures assigned to variables or passed as parameters,
+\begin{itemize}
+  \item must NOT be declared local to any other procedures.
+  \item Neither can they be standard procedures (such as \verb|ODD|, \verb|INCL|, etc.).
+\end{itemize}

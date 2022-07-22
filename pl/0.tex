@@ -1,0 +1,53 @@
+\setcounter{chapter}{-1}
+\chapter{Preface}
+
+This text is an introduction to programming in general, and a guide to programming in the language
+Oberon in particular. It is primarily oriented towards people who have already acquired some basic
+knowledge of programming and would like to deepen their understanding in a more structured way.
+Nevertheless, an introductory chapter is added for the benefit of the beginner, displaying in a
+concise form some of the fundamental concepts of computers and of programming them. The text
+is therefore also suitable as a self-contained tutorial. The notation used is Oberon, which lends itself
+well for a structured approach and leads the student to a working style that has generally become
+known under the heading of structured programming.
+
+As a manual for programming in Oberon, the text covers (almost) all facilities of this language. Part
+1 covers the basic notions of variable, expression, assignment, conditional and repeated statement,
+and the data structure of the indexable array. Together with Part 2, which introduces the important
+concept of the procedure or subroutine, it contains essentially the material commonly discussed in
+introductory programming courses. Part 2 also presents data types and structures and constitutes
+the core of an advanced course on programming. Part 3 introduces the notion of a module, a
+concept that is fundamental in the design of large programming systems, and to programming in
+teams. The two basic notions of files and texts are introduced in the forms of modules containing
+the operations performed on files and texts. Texts are presented as our standard medium for
+program input and output.
+
+The language Oberon, published in 1988, has a long history. It is a descendant of Algol 60 (1960),
+Pascal (1970), and Modula (1979). Algol 60 [1] was designed by an international committee of 13
+scientists, and it was the first language to be specified with a rigorous formalism, a syntax, in
+machine-independent form. Algol was largely oriented toward numerical algorithms, as were
+computers at that time. Pascal [2] was the result of an enduring debate about widening the range of
+application of Algol, and it became widely used, in particular but not only, in education. Modula-2 [3]
+introduced the concept of modules, the parts of large systems connected by clearly specified
+interfaces. The module allows to hide details of procedures and variables from its users (clients),
+and it embodies the principle of information hiding. The language Oberon [4] emerged from the
+urge to reduce the complexity of programming languages, of Modula in particular. This effort
+resulted in a remarkably concise language. The extent of Oberon, the number of its features and
+constructs, is smaller even than that of Pascal. Yet it is considerably more powerful.
+
+The one feature that was added in Oberon was the extensibility of data types (record types).
+Whereas in strongly types languages, such as Algol, Pascal, and Modula, every constant, variable,
+or function has a fixed type, recognizable from the program text, Oberon allows to define
+hierarchies of types, and to determine the actual type of a variable (within the hierarchy) at run-
+time. This, together with records containing fields of procedural types, is the stem of object-oriented
+programming. Such records are then called objects, and the procedural fields are called methods.
+Here, we do not touch upon this subject.
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~Zurich, Oct. 1, 2004 N.W.
+
+\section*{Reference}
+\begin{enumerate}
+  \item P. Naur, Ed. \emph{Revised Report on the Algorithmic Language Algol 60.} Comp. J. 5, 349-367 (1962), and Comm. ACM, 6 (1963) 1-17.
+  \item N. Wirth. \emph{The Programming Language Pascal.} Acta Informatica, 1 (1971), 35-63.
+  \item N. Wirth. \emph{Programming in Modula-2.} Springer-Verlag, 1982. ISBN 0-387-50150-9
+  \item N. Wirth. \emph{The Programming Language Oberon.} Software - Practice and Experience, 18, 7, (July 1988), 671-690.
+\end{enumerate}

@@ -1,0 +1,341 @@
+\chapter{Object-oriented Programming (OOP)}
+\section{Origins of OOP}
+The term OOP originated around 1975. It expressed a shift in the paradigm of programming.
+\begin{itemize}
+  \item In the conventional, \emph{procedural} programming style, the algorithm stands in
+    the foreground of the programmer's concerns, the algorithm operating on a set of data.
+  \item In the OO view, the datum on which algorithms are applied stand in the foreground,
+    They are grouped into what is called an \emph{object}.
+\end{itemize}
+
+Programming is a notoriously difficult task, and the rapidly increasing power of modern computers
+made the situation worse. The tasks to be modeled and solved became more and more complicated.
+Their complexity often surpassed the capabilities of the human mind. In this situation, it is not
+surprising that the demand for better tools, for a new discipline, even for panaceas became urgent
+and ardent. The new paradigm of OOP was therefore welcomed, as their proponents raised hopes for
+an easier approach to complex problems. Partly, these hopes were exaggerated, partly the essence
+of OOP was driven to unwise extremes for the sake of unity of doctrine. For example, even simple
+integers were to be regarded as objects in the new sense. What was this “new sense”?
+
+Before we try to answer this question, we should point out that the notion, but not the term OOP
+was introduced at least 10 years earlier. In 1965 the language Simula was introduced as a variant
+of Algol adapted to and extended for the needs of simulation of systems governed by discrete
+events. (What later became objects were then called elements). A well-known example of such a
+system was a supermarket. Here customers, merchandise, cashiers, personnel, shelves, carts, were
+all modeled as objects, and they formed classes. For modeling such systems, this was the obvious
+approach. Only 10 years later, under the leadership of Smalltalk, was the new viewpoint extended
+to other applications. Of foremost interest were operating systems (OS), where resource pools,
+processors, windows, texts and devices became regarded as autonomous agents. Graphics editors
+were another suitable application. They are used to handle various figures such as lines, circles,
+rectangles, ellipses, text captions, each forming their own class.
+
+In these examples, the objects constitute almost autonomous entities, in the simulated models as
+well as the operating systems. They not only feature attributes and properties common to all
+members of their class, but also a common behavior represented by associated procedures. These
+are typically activated by a “higher power” such as a scheduler in the case of simulation, or a
+human being in the case of an OS or a graphics editor. Both data and procedures together
+constitute and characterize objects.
+
+The Smalltalk designers clearly wished to present not only a new language, but also a new paradigm,
+a new approach to programming. To be effective and convincing in this endeavor, they provided also
+a new terminology to underscore a different quality of programming. In this effort,
+record-structured variables became objects, their associated procedures became methods, a data type
+became a class, and procedure calls are now termed sending messages to objects. This is denoted as
+\begin{verbatim}
+  object.method (message)
+\end{verbatim}
+In Simula, the ancestor of OOP, there was not a set of methods to be invoked by messages, but
+rather a single coroutine representing the algorithmic behavior of the simulated object, which was
+regarded as continuously alive. We may now consider the parts between breakpoints as methods,
+although the analogy is somewhat lacking. For example, a customer of the supermarket would be
+characterized by 1st entering the scene, picking up a cart, wandering along the shelves, picking
+up merchandise, passing a cashier, and finally returning the cart and leaving the scene. Objects
+(customers) would emerge (be allocated), proceed, and leave (be deallocated). Hence, typically a
+dynamic data structure, a linked list, is used to represent the set of currently involved objects.
+
+It now seems that OOP merely provides (or dictates?) a different view of familiar programming
+concepts, but does not require any additional features in a language, except perhaps some notational
+conventions. The same old contents in a new form? Subsequently, we will investigate this question.
+
+\section{Type extensions and inhomogeneous data structures}
+Let us consider a simple, rudimentary line drawing editor. It is typical for many applications in so
+far as it operates on a set of objects. In this case, the objects are straight lines, rectangles,
+circles, ellipses, text captions, and others. These objects are typically represented as a linked
+list, to which it is easy to add and delete new instances.
+
+However, using a statically typed language, we immediately encounter a difficulty. Declaring each of
+the figures by its own record type, we are prevented from forming a single list. Declaring a separate
+list for each type of figure appears as artificial and cumbersome. On the other hand, integrating all
+figure types into a single declaration appears as equally contorted and cumbersome:
+\begin{enumerate}
+  \item a discrimination field is necessary, subsequently giving rise to various IF statements.
+  \item a single declaration will contain record fields that pertain to only a few, but not to all
+    figure types.
+\end{enumerate}
+Whatever one chooses to do, the solution remains unsatisfactory.
+
+We therefore introduce a new feature in the language Oberon. It is called type extension. Basically,
+in our example, we declare a base type called \verb|Figure|, and then a derived type for each
+individual kind of figure, here called \verb|Line|, \verb|Rectangle|, \verb|Circle|, etc. The key
+is that each instance of these subtypes is also considered as of its base type \verb|Figure|. Such
+declarations of derived types have the form:
+\begin{verbatim}
+  RecordType = RECORD (Base) FieldListSequence END
+\end{verbatim}
+The \verb|Base| specifies the base type of the new, derived record type, which thereby becomes a
+subtype. Evidently, it now becomes possible to define entire types hierarchies. For our example:
+\begin{verbatim}
+  TYPE Figure = POINTER TO FigureDesc;
+  FigureDesc  = RECORD (*this is the base type*)
+    x,y,w,h: INT; (*coordinates, width & height*)
+       next: Figure (*next in list of figures*)
+  END;
+  LineDesc      = RECORD (FigureDesc) END;
+  RectangleDesc = RECORD (FigureDesc) lw : INT END;
+  CircleDesc    = RECORD (FigureDesc) r  : INT END;
+  EllipseDesc   = RECORD (FigureDesc) a,b: INT END;
+  CaptionDesc   = RECORD (FigureDesc) cap:
+                               ARRAY 32 OF INT END
+\end{verbatim}
+Accordingly, a descriptor of a rectangle consists of the fields $x$, $y$, $w$, $h$, and $lw$ (line width),
+the one for a circle of the fields $x$, $y$, $w$, $h$, $r$(adius), the one for an ellipse of $x$, $y$,
+$w$, $h$, $a$, $b$, and the one for a text caption of $x$, $y$, $w$, $h$, $cap$. The derived types retain
+all fields of the base type. In OO terminology, they are said to inherit the properties of the base. We
+will not adopt this anthropomorphic term.
+
+We call the derived types extended types, because they extend the base type with additional properties.
+In OO terminology, the base type is called an abstract type, on which the concrete types, the extended
+types, rest. All of them are compatible also with their base type.  Therefore, it is possible to link
+them into a single list through the base type’s field next, and therefore to build data structures that
+contain elements of different types, that is, inhomogeneous structures.  For many applications, this is
+an important and necessary requirement.
+
+When, for example, traversing such an inhomogeneous list, it may be necessary to determine the type of
+each encountered object. It is only known that every element in the list is of type \verb|Figure|, but
+now we wish to determine the subtype of an individual element. This is possible through the new facility
+of the type test, which is classified as a \verb|Boolean| expression, and has the form (syntax)
+\begin{verbatim}
+  expression = variable IS identifier
+\end{verbatim}
+Assume a variable $p$ of type \verb|Figure|, then the traversal of a list and the discriminated application
+of a drawing procedure can be expressed as follows:
+\begin{verbatim}
+  WHILE p # NIL DO
+       IF p IS Line   THEN DrawLine(p)
+    ELSIF p IS Circle THEN DrawCircle(p)
+    END ;
+    p := p.next
+  END
+\end{verbatim}
+We will discover in the next section that there is actually a better, shorter way of expressing this
+action.
+
+The type test is a necessary feature, because Oberon has deviated from the dogma of strictly static
+data typing. Note, however, that the actual type \verb|T| of a variable declared to be of base type
+\verb|T0| can only be a subtype of \verb|T0|. A \verb|Figure| can be a \verb|Line|, \verb|Circle|,
+etc., but not, for example, an integer. Type tests are therefore not needed for most data accesses.
+Furthermore, type tests can be implemented very efficiently.
+
+In addition to the type test, Oberon also offers the construct of type guard, which has the form of
+a selector in variable designators.
+\begin{verbatim}
+  designator = qualident {. ident | "[" ExpList "]"
+                                  | (qualident) | ^ }
+\end{verbatim}
+Consider the example of the designator
+\begin{verbatim}
+  p(Circle).r
+\end{verbatim}
+The simple designator \verb|p.r| would not be acceptable, because $p$ is of type \verb|Figure|,
+which does not feature a field $r$. With the type guard, the programmer can ascertain that in this
+case $p$ is also of type \verb|Circle|, in which case the field $r$ is indeed applicable. Whereas
+$p$ is of base type \verb|Figure|, \verb|p(Circle)| is of type \verb|Circle|. Of course, it must be
+assumed that the programmer has made sure that his claim is correct, and the system will have to
+check whether this is indeed so (at run time). The type guard in a sense resembles an array index,
+where a system must check whether the actual index lies within the specified array bounds.
+
+\section{Methods}
+It has already been remarked that objects are characterized not only by their attributes (data),
+but also by their behavior, i.e. procedures. Just as attributes may differ among various subtypes,
+so may their behavior. Therefore, it is sensible to associate the procedures directly with individual
+objects or at least their subtypes. In strongly OO languages this is achieved by letting class
+declarations specify associated procedure declarations. In Oberon, we use what is available and
+refrain from introducing new features. We simply add to a record’s data fields other fields that
+represent procedures, that is, are of procedure types. We redefine our example of the type
+\verb|Figure| accordingly. Let us assume the 2 operations of drawing and marking figures.
+\begin{verbatim}
+  FigureDesc = RECORD
+                 x, y, w, h: INT;
+                 next: Figure;
+                 draw: PROC(f: Figure);
+                 mark: PROC(f: Figure; on: BOOL)
+               END;
+\end{verbatim}
+Whereas in strictly OO languages methods are automatically associated with every object upon its
+creation, in Oberon this must be achieved by explicit assignments. Such initial assignments are
+called installations (of procedures). For example:
+\begin{verbatim}
+  VAR c: Circle; NEW(c); c.x := ...;
+  c.draw := DrawCircle;
+  c.mark := MarkCircle; ...
+\end{verbatim}
+The call of a method, i.e. of an object-bound procedure, is expressed as in the following example:
+\begin{verbatim}
+  c.mark(c, TRUE)
+\end{verbatim}
+The association of type-specific procedures to every object has the substantial advantage that
+subclass-discriminating conditional statements can be avoided. For example, the above call
+automatically activates the appropriate \verb|MarkCircle| procedure without having to execute a
+sequence of \verb|if| statements distinguishing between lines, circles, rectangles etc. This
+contributes to efficiency. The drawing of all objects in a list is now expressed quite simply as
+\begin{verbatim}
+  WHILE p # NIL DO p.draw(p); p := p.next END
+\end{verbatim}
+and in each call automatically the appropriate drawing procedure is activated.
+
+\section{Handlers and Messages}
+In Part III of this text, the importance of proper decomposition (modularization) of systems was
+emphasized. A module restricts the visibility of declarations and incorporates the concept of
+information hiding. In OO languages a type definition, i.e. a class declaration, assumes the role of a
+module, also in the sense of unit of separate compilation. In Oberon, we prefer to keep the constructs
+expressing information hiding, and those for type and procedure definition separated and independent.
+Hence, every module may contain one or several type definitions, and perhaps none at all.
+
+Nevertheless, considering a data type and its operators as a logical unit, and to hide details of
+implementation, are old and proven techniques manifest in the concept of the abstract data type.
+Particularly for complex objects it is highly desirable that the various subtypes can be defined and
+implemented by separate teams of programmers, and this perhaps years after the definition of the basis
+was completed and had been published or distributed. It is desirable to be able to define every derived
+type in its own module. This demand also holds for base types, with operators applying to the set of
+objects (in contrast to individual objects) defined in the base module, as well as for those defining
+the derived type in client modules. Among such operations we mention the so-called broadcast, the
+traversal of the objects’ data structure (list, tree) with application of a method to every element.
+Declarations of such broadcasts are thus inherently confined to the base module.
+
+Now it may happen that a subtype introduces its specific operations, including some that are not
+shared by other subtypes. Obviously, it is desirable that also these operations can be broadcast with
+the respective procedure defined in the base module, even if the new operators were introduced years
+after the base had been established. The base, however, cannot be changed nor accessed, because in the
+meantime it might have been distributed to many customers. How can this dilemma be resolved?
+
+The solution lies in replacing the set of methods by a single procedure, which discriminates between
+the various methods. Such a single procedure we call a handler. It has only 2 parameters: The object
+to which it is applied, and an identification of the operation with its actual parameters. The 2nd
+parameter has the form of a record, and we call it a message. For such a message type to be capable of
+denoting any operation, even those to be introduced in the future, the same feature is used as for
+adding new types derived from old ones: \emph{Type Extension}. Let us explain this solution by our
+example of the graphics editor.
+
+First, the declaration of the base type now becomes
+\begin{verbatim}
+  FigureDesc = RECORD
+                 x, y, w, h: INT;
+                       next: Figure;
+                     handle: Handler
+               END;
+\end{verbatim}
+with the procedure type \verb|Handler| being defined as
+\begin{verbatim}
+  Handler = PROC(f: Figure; VAR msg: Message)
+\end{verbatim}
+and the new type \verb|Message| by the (extensible) null record
+\begin{verbatim}
+  Message = RECORD END
+\end{verbatim}
+
+If certain operations applying to all objects are already known at the time of defining the base type
+(which is usually the case), the respective message (sub)types are directly declared, as for example:
+\begin{verbatim}
+  DrawMsg = RECORD (Message) END;
+  MarkMsg = RECORD (Message) on: BOOL END;
+  MoveMsg = RECORD (Message) dx, dy: INT END
+\end{verbatim}
+As an aside, we note that the record field next need not be exported from the base module, thus
+keeping the structure of the set of objects (list, tree) and its operations, such as traversal, hidden
+and flexible. A broadcast can now be specified as follows:
+\begin{verbatim}
+  PROC Broadcast(VAR msg: Message);
+    VAR f: Figure;
+  BEGIN f := root; (*global variable in base module*)
+    WHILE f # NIL DO
+      f.handle(f, msg); f := f.next
+    END
+  END Broadcast
+\end{verbatim}
+Whenever a concrete figure type is introduced, this will typically be done in a new client module
+importing the base module \verb|Figure|. In addition to the new subtype, for example \verb|Rectangle|,
+its associated handler is declared following the pattern shown below. This handler is installed in the
+field handle of every object of type \verb|Rectangle|.
+\begin{verbatim}
+  PROC Handle(f: Figure; VAR msg: Message);
+    VAR r: Rectangle;
+  BEGIN r := f(Rectangle);
+       IF msg IS DrawMsg THEN (*draw rectangle r*)
+    ELSIF msg IS MarkMsg THEN
+      MarkRectangle(r, msg(MarkMsg).on)
+    ELSIF msg IS MoveMsg THEN
+      INC(r.x, msg(MoveMsg).x);
+      INC(r.y, msg(MoveMsg).y)
+    ELSIF ...
+    END
+  END Handle
+\end{verbatim}
+The statement for moving a single object $f$ by displacements $dX$ and $dY$ is now somewhat complicated:
+\begin{verbatim}
+  VAR msg: MoveMsg; msg.dx := dX;
+  msg.dy := dY;  f.handle(f, msg)
+\end{verbatim}
+However, we must keep in mind that mostly messages are sent to objects indirectly, that is, when the
+recipient is not known by the sender. A good example is the broadcast:
+\begin{verbatim}
+  msg.dx := dX; msg.dy := dY; Broadcast(msg)
+\end{verbatim}
+The particular flexibility of this technique using handlers and messages - sometimes identified as
+polymorphism - as well as its extensibility stems from the fact that “unknown” messages are simply
+ignored. They “fall through” the cascade of if - elsif statements in the handlers of objects to which
+the message does not apply.
+
+Let us, for example, add a new module, say \verb|Blinker|, to our editor system. It contains the declaration
+of the derived type \verb|Blinker| (\verb|BlinkerDesc|). Let it require a new method, causing the object to
+blink in a certain rhythm. We represent it by the (derived) message \verb|BlinkMsg|. Then the call of the
+handler of any other object in the global object list, through which a broadcast will propagate, will have
+no effect, because the case
+\begin{verbatim}
+  ELSIF msg IS BlinkMsg THEN ...
+\end{verbatim}
+does not exist in the handler. The technique using handlers guarantees optimal, unlimited extensibility of
+existing systems by merely adding new modules on top of an existing hierarchy.
+
+We summarise the technique as follows:
+\begin{enumerate}
+  \item An object is represented by a pointer to a record. The record features a single, procedural field
+    called \verb|handle|. The procedure assigned to \verb|handle| is called a \emph{handler}. It features
+    2 parameters:
+    \begin{itemize}
+      \item the 1st designates the object to which the handler is applied;
+      \item the 2nd identifies the operation to be selected. It is a \verb|VAR| parameter with record
+        structure, and is called a \emph{message}.
+    \end{itemize}
+  \item The handler defines the behavior of an object. It is called with a message which is typically of
+    an extension of type \verb|Message| specific to the object type.
+  \item The message parameter specifies the action to be taken by its (sub)type. Its record fields
+    constitute the parameters of the action. Their number and types are specific to the particular message
+    type and action.
+  \item The handler consists of a single if - elsif cascade. Type tests discriminate between the various
+    message subtypes and thereby actions.
+  \item Assigning the handler to an object is called \emph{installation}.
+  \item An action is initiated by first setting up the message and then sending one to the object.
+  \item Messages may be broadcast to all objects of a heterogeneous data structure without knowing its
+    nature. Inapplicable messages will simply be ignored.
+\end{enumerate}
+
+This concludes our brief introduction to the OOP paradigm. We realize that almost no language features had to
+be added to Oberon to support it. Apart from the already present facilities of records and of procedural types,
+only the notion of type extension is both necessary and crucial. It allows to construct hierarchies of types
+and to build inhomogeneous data structures. As a consequence of abandoning the rule of strictly static typing,
+the introduction of dynamic type tests became necessary. The further facility of the type guard is merely one
+of convenience.
+
+The procedural style of programming, which is most appropriate in many applications, and the OO style can
+co-exist in Oberon quite happily. If one chooses to program in the conventional, procedural style, one can
+ignore the OO facilities, and they do not get in one’s way.

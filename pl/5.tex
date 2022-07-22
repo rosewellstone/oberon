@@ -1,0 +1,132 @@
+\chapter{Statements and Expressions}
+The specification of an action is called a statement. Statements can be interpreted (executed), and
+that interpretation (execution) has an effect. The effect is a transformation of the state of the
+computation, the state being represented by the collective values of the program's variables. The most
+elementary action is the assignment of a value to a variable. The assignment statement has the form
+\begin{verbatim}
+  assignment = designator ":=" expression.
+\end{verbatim}
+and its corresponding action consists of 3 parts in this sequence:
+\begin{enumerate}
+  \item Evaluate the designator designating a variable.
+  \item Evaluate the expression yielding a value.
+  \item Replace the value of the variable identified in 1. by the value obtained in 2.
+\end{enumerate}
+Simple examples of assignments are:
+\begin{verbatim}
+  i := 1    x := y+z
+\end{verbatim}
+Here $i$ obtains the value 1, and $x$ the sum of $y$ and $z$, and the previous values are lost.
+Evidently, every variable in an expression must previously have been assigned a value. Observe that
+the following pairs of statements, executed in sequence, do not have the same effect:
+\begin{verbatim}
+  i := i+1; j := 2*i
+  j := 2*i; i := i+1
+\end{verbatim}
+Assuming the initial value $i = 0$, the 1st pair yields $i = 1$, $j = 2$, whereas the 2nd pair yields
+$j = 0$.  If we wish to exchange the values of variables $i$ and $j$, the statement sequence
+\begin{verbatim}
+  i := j; j := i
+\end{verbatim}
+will not have the desired effect. We must introduce a temporary value holder, say $k$, and specify
+the 3 consecutive assignments
+\begin{verbatim}
+  k := i; i := j; j := k
+\end{verbatim}
+An expression is in general composed of several operands and operators. Its evaluation consists of
+applying the operators to the operands in a prescribed sequence, in general taking the operators
+from left to right. The operands may be constants, or variables, or functions. (The latter will be
+explained in a later chapter.) The identification of a variable will, in general, again require the
+evaluation of a designator. Here we shall confine our presentation to simple variables designated
+by an identifier. Arithmetic expressions (there exist other expressions too) involve numbers,
+numeric variables, and arithmetic operators. These include the basic operations of addition (+),
+subtraction (-), multiplication (*), and division. They will be discussed in detail in the chapter on
+basic data types. Here it may suffice to mention that the slash (/) is reserved for dividing real
+numbers, and that for integers we use the operator DIV which truncates the quotient.
+
+An expression consists of consecutive terms. The expression
+\begin{verbatim}
+  T0 + T1 + ... + Tn
+\end{verbatim}
+is equivalent to
+\begin{verbatim}
+  ((T0 + T1) + ...) + Tn
+\end{verbatim}
+and is syntactically defined by the rules
+\begin{verbatim}
+  SimpleExpression =[+|-] term {AddOperator term}.
+  AddOperator = + | - | OR
+\end{verbatim}
+
+\textbf{Note}: for the time being, the reader may consider the syntactic entities expression and
+SimpleExpression as equivalent. Their difference and the operators OR, AND, and NOT will be
+explained in the chapter on the data type BOOL.
+
+Each term similarly consists of factors. The term
+\begin{verbatim}
+  F0 * F1 * ... * Fn
+\end{verbatim}
+is equivalent to
+\begin{verbatim}
+  ((F0 * F1) * ... ) * Fn
+\end{verbatim}
+and is syntactically defined by the rules
+\begin{verbatim}
+  term = factor {MulOperator factor}.
+  MulOperator = * | / | DIV | MOD | &.
+\end{verbatim}
+Each factor is either a constant, a variable, a function, or an expression itself enclosed by
+parentheses.
+
+Examples of (arithmetic) expressions are
+\begin{verbatim}
+  2*3 + 4*5       = (2*3)+(4*5)   = 26
+  15 DIV 4 * 4    = (15 DIV 4)*4  = 12
+  15 DIV (4*4)    = 15 DIV 16     = 0
+  2 + 3*4 - 5     = 2 + (3*4) - 5 = 9
+  6.25/1.25 + 1.5 = 5.0 + 1.5     = 6.5
+\end{verbatim}
+The syntax of factors, implying that a factor may itself be an expression, is evidently recursive. The
+general form of designators will be explained later; here it suffices to know that an identifier
+denoting a variable or a constant is a designator.
+\begin{verbatim}
+  factor = number | string | set | designator
+    [ActualParameters] | (expression) | ~factor.
+\end{verbatim}
+The rules governing expressions are actually quite simple, and complicated expressions are rarely
+used. Nevertheless, we must point out a few basic rules that are well worth remembering.
+\begin{enumerate}
+  \item Every variable in an expression must previously have been assigned a value.
+  \item 2 operators must never be written side by side. For instance \verb|a * -b| is illegal and
+    must be written as \verb|a*(-b)|.
+  \item The multiplication sign must never be omitted when a multiplication is required. For
+    example, \verb|2n| is illegal and must be written as \verb|2*n|.
+  \item MulOperators are binding more strongly than AddOperators.
+  \item When in doubt about evaluation rules (i.e. precedence of operators), use additional
+    parentheses to clarify. For example, \verb|a+b*c| may just as well be written as
+    \verb|a+(b*c)|.
+\end{enumerate}
+The assignment is but one of the possible forms of statements. Other forms will be introduced in the
+following chapters. We enumerate these forms by the following syntactic definition
+\begin{verbatim}
+  statement = [ assignment | ProcedureCall | IfStatement
+    | WhileStatement | RepeatStatement | ForStatement ].
+\end{verbatim}
+Several of these forms are structured statements, i.e. some of their components may be statements
+again. Hence, the definition of statement is, like that of expressions, recursive.
+
+The most basic structure is the sequence. A computation is a sequence of actions, where each
+action is specified by a statement, and is executed after the preceding action is completed. This
+strict sequentiality in time is an essential assumption of sequential programming. If a statement
+$S_1$ follows $S_0$, then we indicate this sequentiality by a semicolon
+\[  S_0; S_1 \]
+This statement separator (not terminator) indicates that the action specified by $S_0$ is to be
+followed immediately by the action corresponding to $S_1$. A sequence of statements is syntactically
+defined as
+\begin{verbatim}
+  StatementSequence = statement {; statement}.
+\end{verbatim}
+The syntax of statements implies that a statement may consist of no symbols at all. In this case, the
+statement is said to be empty and evidently denotes the null action. This curiosity among statements
+has a definite reason: it allows semicolons to be inserted at places where they are actually
+superfluous, such as at the end of a statement sequence.

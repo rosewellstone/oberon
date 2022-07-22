@@ -1,0 +1,286 @@
+\chapter{Control Structures}
+It is a prime characteristic of computers that individual actions can be selected, repeated, or
+performed conditionally depending on some previously computed results. Hence the sequence of
+actions performed is not always identical with the sequence of their corresponding statements. The
+sequence of actions is determined by control structures indicating repetition, selection, or
+conditional execution of given statements.
+
+\section{Repetitive Statements}
+The most common situation is the repetition of a statement or statement sequence under control of
+a condition: the repetition continues as long as the condition is met. This is expressed by the 
+\emph{while statement}. Its syntax is
+\begin{verbatim}
+  WhileStatement = WHILE expr DO StatementSequence END
+\end{verbatim}
+and its corresponding action is:
+\begin{enumerate}
+  \item Evaluate the condition which takes the form of an expression yielding
+    the value \verb|TRUE| or \verb|FALSE|;
+  \item If the value is \verb|TRUE|, execute the statement sequence and then repeat with step 1;
+    if the value is \verb|FALSE|, terminate.
+\end{enumerate}
+The expression is of type \verb|BOOL|. This will be further discussed in the chapter on data types.
+Here it suffices to know that a simple comparison is a Boolean expression. An example was given
+in the introductory example, where repetition terminates when the 2 comparands have become
+equal. Further examples involving while statements are:
+\begin{enumerate}
+  \item Initially, let $q = 0$ and $r = x$; then count the number of times $y$ can be subtracted
+    from $x$, i.e. compute the quotient $q = x$\verb| DIV |$y$, and remainder $r = x$\verb| MOD |$y$,
+    if $x$ and $y$ are natural numbers.
+    \begin{verbatim}
+      WHILE r >= y DO r := r-y; q := q+1 END
+    \end{verbatim}
+  \item Initially, let $z = 1$ and $i = k$; then multiply $z$ $k$ times by $x$, i.e. compute
+    $z = xk$, if z and k are natural numbers:
+    \begin{verbatim}
+      WHILE i > 0 DO z := z*x; i := i-1 END
+    \end{verbatim}
+\end{enumerate}
+When dealing with repetitions, it is important to remember the following points:
+\begin{enumerate}
+  \item During each repetition, progress must be made towards meeting the goal, namely "getting
+    closer" to satisfying the termination condition. An obvious corollary is that the condition
+    must be somehow affected from within the repeated computation. The following statements are
+    either incorrect or dependent on some critical precondition as stated.
+    \begin{verbatim}
+      WHILE i > 0 DO
+        k := 2*k (*i is not changed*)
+      END
+ 
+      WHILE i # 0 DO
+        i := 1-2 (*i must be even and positive*)
+      END
+ 
+      WHILE n # i DO
+        n := n*i; i := i+1
+      END
+    \end{verbatim}
+  \item If the condition is not satisfied initially, the statement is vacuous, i.e. no action
+    is performed.
+
+  \item In order to obtain a grasp of the effect of the repetition, we need to establish a
+    relationship that is stable, called an invariant. In the division example above, this is the
+    equation $q*y + r = x$ holding each time the repetition is started. In the exponentiation
+    example it is $z * x^i = x^k$ which, together with the termination condition $i = 0$ yields
+    the desired result $z = x^k$.
+
+  \item The repetition of identical computations should be avoided (although a computer has
+    infinite patience and will not complain). A simple rule is to avoid expressions within
+    repetitive statements, in which no variable changes its value. For example, the statement
+    \begin{verbatim}
+      WHILE i < 3*N DO tab[i] := x + y*z + z*i;
+                       i := i+1 END
+    \end{verbatim}
+    should be formulated more effectively as
+    \begin{verbatim}
+      n := 3*N; u := x + y*z;
+      WHILE i < n DO tab[i] := u + z*i; i := i+1 END
+    \end{verbatim}
+\end{enumerate}
+
+In addition to the while statement, there is the \emph{repeat statement}, syntactically defined as
+\begin{verbatim}
+  RepeatStatement = REPEAT StatementSequence UNTIL expr
+\end{verbatim}
+The essential difference to the while statement is that the termination condition is checked each
+time after (instead of before) execution of the statement sequence. As a result, the sequence is
+executed at least once. An advantage is that the condition may involve variables that are undefined
+when the repetition is started.
+\begin{verbatim}
+  REPEAT i := i+5; j := j+7; k := i DIV j UNTIL k > 23
+  REPEAT r := r-y; q := q+1 UNTIL r < y
+\end{verbatim}
+
+\section{Conditional Statements}
+The conditional statement, also called if statement, has the form
+\begin{verbatim}
+IfStatement = IF expr THEN StatementSequence
+          {ELSIF expr THEN StatementSequence}
+                     [ELSE StatementSequence]
+              END
+\end{verbatim}
+The following example illustrates its general form.
+\begin{verbatim}
+     IF R1 THEN S1
+  ELSIF R2 THEN S2
+  ELSIF R3 THEN S3
+           ELSE S4 END
+\end{verbatim}
+The meaning is obvious from the wording. However, it must be remembered that the expressions
+\verb|R1 ... R3| are evaluated one after the other, and that as soon as one yields the value
+\verb|TRUE|, its corresponding statement sequence is executed, whereafter the \verb|IF| statement
+is considered as completed. No further conditions are tested. Examples are:
+\begin{verbatim}
+     IF x = 0 THEN s :=  0
+  ELSIF x < 0 THEN s := -1
+              ELSE s :=  1 END
+
+  IF ODD(k) THEN z := z*x END
+  IF k > 10 THEN k := k-10; d := 1
+            ELSE d := 0 END
+\end{verbatim}
+
+The constructs discussed so far enable us to develop a few simple, complete programs as
+subsequently described. The 1st example is an extension of our introductory example computing
+the greatest common divisor $gcd$ of 2 natural numbers $x$ and $y$. The extension consists in
+the addition of 2 variables $u$ and $v$, and statements which lead to the computation of the
+least common multiple $lcm$ of $x$ and $y$. The $lcm$ and $gcd$ are related by the equation
+\begin{verbatim}
+  lcm(x,y) * gcd(x,y) = x*y
+\end{verbatim}
+
+As explained earlier, this and following examples will be formulated as command procedures and
+are assumed to be embedded in module \verb|Pattern| defined in \ref{ch:1ex} which imports
+modules \verb|Texts| and \verb|Oberon|.
+\begin{verbatim}
+  PROC gcdlcm*;
+    VAR x, y, u, v: INT; S: Texts.Scanner;
+  BEGIN Texts.OpenScanner(S, Oberon.Par.text,
+                             Oberon.Par.pos):
+    Texts.Scan(S); x := S.i;
+    Texts.WriteString(W, " x =");
+    Texts.WriteInt(W, x, 6);
+    Texts.Scan(S); y := S.i;
+    Texts.WriteString(W, " y =");
+    Texts.WriteInt(W, y, 6);
+    u := x; v := y;
+    (*gcd(x,y) = gcd(x0,yO), x*v + y*u = 2*x0*y0*)
+    WHILE x # y DO
+      IF x > y THEN x := x-y; u := u+v
+               ELSE y := y-x; v := v+u
+      END
+    END;
+    Texts.WriteInt(W, x, 6);
+    Texts.WriteInt(W, (u+v) DIV 2, 6);
+    Texts.WriteLn(W);
+    Texts.Append(Oberon.Log, W.buf)
+  END gcdlcm.
+\end{verbatim}
+This example again shows the nesting of control structures. The repetition expressed by a while
+statement includes a conditional structure expressed by an if statement, which in turn includes
+2 statement sequences, each consisting of 2 assignments. This hierarchical structure is made
+transparent by appropriate indentation of the "inner" parts.
+
+Another example demonstrating a hierarchical structure computes the real number $x$ raised to
+the power $i$, where $i$ is a non-negative integer.
+\begin{verbatim}
+  PROC Power*;
+    VAR i: INT; x, z: REAL; S: Texts.Scanner;
+  BEGIN Texts.OpenScanner(S, Oberon.Par.text,
+                             Oberon.Par.pos);
+    Texts.Scan(S);
+    WHILE S.class = Texts.Real DO
+      x := S.x; Texts.WriteString(W, " x =");
+      Texts.WriteReal(W, x, 16); Texts.Scan(S);
+      i := S.i; Texts.WriteString(W, " i =");
+      Texts.WriteInt(W, i, 4);
+      z= 1.0:
+      (* z * x^i = x0^i0 *)
+      WHILE i > 0 DO z := z*x; i := i-1 END;
+      Texts.WriteReal(W, z, 16);
+      Texts.WriteLn(W); Texts.Scan(S)
+    END;
+    Texts.Append(Oberon.Log, W.buf)
+  END Power.
+\end{verbatim}
+Here we subject the computation to yet another repetition: Each time a result has been computed,
+another value pair $x, i$ is requested. This outermost repetition is controlled by the relation
+\verb|S.class = Texts.Real|, which indicates whether a real number $x$ had actually been read.
+As an example, activation of the command
+\begin{verbatim}
+  M.Power 5.0 2   2.0 5   3.0 3 ~
+\end{verbatim}
+will generate the results \verb|25.0, 32.0, 27.0|.
+
+The straight-forward computation of a power by repeated multiplication is, although obviously
+correct, not the most economical. We now present a more sophisticated and more efficient solution.
+It is based on the following consideration: The goal of the repetition is to reach the value $i = 0$.
+This is done by successively reducing $i$, while maintaining the invariant $z * x^i = x_0^{i_0}$,
+where $x_0$ and $i_0$ denote the initial values of $x$ and $i$. A faster algorithm therefore must
+rely on decreasing $i$ in larger steps. The solution given here halves $i$. But this is only possible,
+if $i$ is even. Hence, if $i$ is odd, it is 1st decremented by 1. Of course, each change of $i$ must
+be accompanied by a corrective action on $z$ in order to maintain the invariant.
+\begin{itemize}
+  \item A detail: the subtraction of 1 from $i$ is not expressed by an explicit statement, because
+    it is performed implicitly by the subsequent division by 2.
+  \item 2 further details are noteworthy:
+  \begin{enumerate}
+    \item The function \verb|ODD(i)| is \verb|TRUE|, if $i$ is an odd number, \verb|FALSE| otherwise.
+    \item $x$ and $z$ denote real values, as opposed to integer values. Hence, they can represent
+      fractions, too.
+  \end{enumerate}
+\end{itemize}
+\begin{verbatim}
+  PROC Power*;
+    VAR i: INT; x, z: REAL; S: Texts.Scanner;
+  BEGIN Texts.OpenScanner(S, Oberon.Par.text,
+                             Oberon.Par.pos);
+    Texts.Scan(S);
+    WHILE S.class = Texts.Real DO
+      x := S.x; Texts.WriteString(W, " x =");
+      Texts.WriteReal(W, x, 16): Texts.Scan(S);
+      i := S.i; Texts.WriteString(W, " i=");
+      Texts.WriteInt(W, i, 4);
+      z := 1.0;
+      WHILE i > 0 DO
+        (* z* x^i = x0^i0 *)
+        IF ODD(i) THEN z := z*x END;
+        x := x*x; i := i DIV 2
+      END;
+      Texts.WriteReal(W, z, 16);
+      Texts.WriteLn(VW); Texts.Scan(S)
+    END;
+    Texts.Append(Oberon.Log, W.buf)
+  END Power.
+\end{verbatim}
+
+The next sample command has a structure that is almost identical to the preceding program. It
+computes the logarithm of a real number $x$ whose value lies between 1 and 2. The invariant in
+conjunction with the termination condition ($b=0$) implies the desired result $sum=\log_2{x}$.
+\begin{verbatim}
+  PROC Log2*;
+    VAR x, a, b, sum: REAL; S: Texts.Scanner;
+  BEGIN Texts.OpenScanner(S, Oberon.Par.text,
+                             Oberon.Par.pos);
+    Texts.Scan(S);
+    WHILE S.class = Texts.Real DO
+      x := S.x; Texts.WriteReal(W, x, 15); (*1<=x<2*)
+      a :=x; b := 1.0; sum := 0.0;
+      REPEAT (*log_2(x) = sum + b*log_2(a)*)
+        a := a*a; b := 0.5*b;
+        IF a >= 2.0 THEN
+          sum := sum + b; a := 0.5*a
+        END
+      UNTIL b < 1.0E-7;
+      Texts.WriteReal(W, sum, 16);
+      Texts.WriteLn(W); Texts.Scan(S)
+    END;
+    Texts.Append(Oberon.Log, W.buf)
+  END Log2.
+\end{verbatim}
+
+Normally, routines for computing standard mathematical functions need not be programmed in
+detail, because they are available from a collection of modules similar to those for input
+and output. Such a collection is, somewhat inappropriately, called a library. In the following
+example, again exhibiting the use of a repetitive statement, we use routines for computing the
+cosine and the exponential function from a library called Math and generate a table of values
+for a damped oscillation. Typically, the available standard routines include the $sin$, $cos$,
+$exp$, $ln$ (logarithm), $sqrt$ (square root), and the $arctan$ functions.
+\begin{verbatim}
+  PROC Oscillation*;
+    CONST dx = 0.19634953; (*pi/16*)
+    VAR i, n: INT; x, y, REAL; S: Texts.Scanner;
+  BEGIN Texts.OpenScanner(S, Oberon.Par.text,
+                             Oberon.Par.pos):
+    Texts.Scan(S); n := S.i; Texts.WriteInt(W, n, 6);
+    Texts.Scan(S); r := S.x; Texts.WriteReal(W, r, 15);
+    Texts.WriteLn(W); i := 0; x := 0.0;
+    REPEAT x := x + dx; i := i+1;
+           y := Math.exp(-r*x) * Math.cos(x);
+           Texts.WriteReal(W, x, 15);
+	   Texts.WriteReal(W, y, 15);
+	   Texts.WriteLn(W)
+    UNTIL i >= n;
+    Texts.Append(Oberon.Log, W.buf)
+  END Oscillation.
+\end{verbatim}

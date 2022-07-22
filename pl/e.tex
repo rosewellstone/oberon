@@ -1,0 +1,281 @@
+\chapter{Recursion}
+Procedures may not only be called, but can call procedures themselves. Since any procedure
+that is visible can be called, a procedure may call itself. This self-reactivation is
+called \emph{recursion}.  Its use is appropriate when an algorithm is recursively defined
+and in particular when applied to a recursively defined data structure.
+
+Consider as an example the task of listing all possible permutations of $n$ distinct objects
+$a[0] \dots a[n-1]$. Calling this operation \verb|Permute(n)|, we can formulate its
+algorithm as follows:
+\begin{enumerate}
+  \item[] First, keep $a[n-1]$ in its place and generate all permutations of $a[0] \dots
+    a[n-2]$ by calling \verb|Permute(n-1)|;
+  \item[] Then repeat the same process after having exchanged $a[n-1]$ with $a[0]$.
+  \item[] Continue repeating for all values $i = 1\dots n-2$.
+\end{enumerate}
+This recipe is formulated as a program as follows, using characters as permuted objects.
+\begin{verbatim}
+  MODULE Permute;
+    IMPORT Texts, Oberon;
+    CONST M = 20;
+    VAR a: ARRAY M OF CHAR; W: Texts.Writer;
+
+    PROC permute(k: INT);
+      VAR i: INT;
+      PROC swap(i: INT)
+        VAR c: CHAR
+      BEGIN c := a[i]; a[i] := a[k]; a[k] := c
+      END swap;
+    BEGIN
+      IF k = 0 THEN Texts.WriteString(W, a)
+      ELSE permute(k-1);
+        FOR i := 0 TO k-1 DO swap(i);
+          permute(k-1);      swap(i);
+        END
+      END
+    END permute;
+ 
+    PROC Go*; (*command*)
+      VAR S: Texts.Scanner;
+      PROC len(): INT
+        VAR n: INT;
+      BEGIN n := 0;
+        WHILE a[n] > 0X DO INC(n) END;
+        RETURN n
+      END len;
+    BEGIN
+      Texts.OpenScanner(S, Oberon.Par.text,
+                           Oberon.Par.pos);
+      Texts.Scan(S); COPY(S.s, a);
+      permute(len()); Texts.WriteLn(W);
+      Texts.Append(Oberon.Log, W.buf)
+    END Go;
+ 
+  BEGIN Texts.OpenWriter(W)
+  END Permute.
+\end{verbatim}
+The data generated from the command \verb|Permute.Go ABC| are:
+\begin{verbatim}
+  ABC BAC CBA BCA ACB CAB
+\end{verbatim}
+Every chain of recursive calls must terminate at some time, and hence every recursive
+procedure must place the recursive call within a conditional statement. In the example
+given above, the recursion terminates when the number of the objects to be permuted is 1.
+(Concerning input and output conventions, see \ref{sec:texts} and \ref{sec:stdio}).
+
+The number of possible permutations can easily be derived from the algorithm's recursive
+definition. We express this number appropriately as a function $np(n)$. Given $n$ elements,
+there are $n$ choices for the element $a[n-1]$, and with each fixed $a[n-1]$ we obtain
+$np(n-1)$ permutations. Hence the total number $np(n) = n*np(n-1)$. Evidently $np(1) = 1$.
+The computation of $np$ is now expressible as a recursive function procedure.
+\begin{verbatim}
+  PROC np(n: INT): INT;
+  BEGIN
+    IF n <= 1 THEN n := 1
+    ELSE RETURN n := n * np(n-1)
+    END;
+    RETURN n
+  END np
+\end{verbatim}
+We recognize $np$ as the factorial function, defined as $f(n)=1*2*3*\dots *n$. This formula
+suggests to program the algorithm using repetition instead of recursion:
+\begin{verbatim}
+  PROC np(n: INT): INT;
+    VAR p: INT;
+  BEGIN p := 1;
+    WHILE n > 1 DO p := n*p; DEC(n) END;
+    RETURN p
+  END np
+\end{verbatim}
+This formulation will compute the result more efficiently than the recursive version. The
+reason is that every call requires some “administrative” instructions whose execution
+costs time. The instructions representing repetition are less time-consuming. Although
+the difference may not be too relevant, it is recommended to employ a repetitive formulation
+in place of the recursive one, whenever this is easily possible. It is always possible in
+principle; however, the repetitive version may complicate and obscure the algorithm to
+such a degree that the advantages turn into disadvantages. For example, a repetitive form
+of the procedure permute is much less simple and obvious than the one shown above. To
+illustrate the usefulness of recursion, 2 additional examples follow. They typically stem
+from problems whose solution is naturally found and explained using recursion.
+
+The 1st example belongs to the class of algorithms which operate on data whose structure
+is also defined recursively. The specific problem consists of converting simple expressions
+into their corresponding postfix form, i.e. a form in which the operator follows its operands.
+An expression shall here be defined using EBNF as follows:
+\begin{verbatim}
+  expression = term {(+|-) term}
+  term = factor {(*|/) factor}
+  factor = letter | ( expression ) |"[" expression "]"
+\end{verbatim}
+Denoting terms as \verb|TO, T1|, and factors as \verb|FO, F1|, the rules of conversion are
+\begin{verbatim}
+  TO + T1 —> TO T1 +
+  To - T1 —> TO T1 -
+  FO * F1 -> FO F1 *
+  FO / F1 -> FO F1 /
+      (E) -> E
+      [E] -> E
+\end{verbatim}
+The following program truthfully mirrors the structure of the syntax of accepted expressions.
+As the syntax is recursive, so is the program. This close mirroring is the best guarantee
+for the program's correctness. Note also that similarly repetition in the syntax, expressed
+by the curly brackets, yields repetition in the program, expressed by while statements.
+No procedure in this program calls itself directly. Instead, recursion occurs indirectly
+by a call of expression on term, which calls factor, which calls expression. Indirect
+recursion is obviously much less visible than direct recursion.
+
+This example also illustrates a case of local procedures. Notably, factor is declared local
+to term, and term local to expression, following the rule that objects should preferrably
+be declared local to the scope in which they are used. This rule may not only be advisable,
+but even crucial, as demonstrated by the variables \verb|addop| (local to term) and
+\verb|mulop| (local to factor). If these variables were declared globally, the program
+would fail. To find the explanation, we must recall the rule that local variables exist
+(and are given storage) during the time in which their procedure is active. An immediate
+consequence is that in the case of a recursive call, new incarnations of the local variables
+are created. Hence, there exist as many as there are levels of recursion. This also implies
+that a programmer must ensure that the depth of recursion never becomes inordinately large.
+\begin{verbatim}
+  MODULE Postfix;
+    IMPORT Texts, Oberon:
+    VAR c: CHAR; W: Texts.Writer;
+                 R: Texts.Reader;
+
+    PROC expression;
+      VAR addop: CHAR;
+      PROC term;
+        VAR mulop: CHAR;
+
+        PROC factor;
+        BEGIN
+          IF c = "(" THEN
+            Texts.Read(R, c); expression;
+            WHILE c # ")" DO Texts.Read(R, c) END
+          ELSIF c = "[" THEN
+            Texts.Read(R, c); expression;
+            WHILE c # "]" DO Texts.Read(R, c) END
+          ELSE
+            WHILE (c<"a") OR (c>"z") DO
+              Texts.Read(R,c)
+            END;
+            Texts.Write(W, c)
+          END;
+          Texts.Read(R, c)
+        END factor;
+      BEGIN (*term*) factor;
+        WHILE (c = "*") OR (c = "/") DO
+          mulop := c; Texts.Read(R, c);
+          factor;  Texts.Write(W, mulop)
+        END
+      END term;
+    BEGIN (*expression*) term;
+      WHILE (c = "+") OR (c = "-") DO
+        addop := c; Texts.Read(R, c);
+        term;    Texts.Write(W, addop)
+      END
+    END expression;
+  
+    PROC Parse*;
+    BEGIN
+      Texts.OpenReader(R, Oberon.Par.text,
+                          Oberon.Par.pos);
+      Texts.Read(R, c);
+      WHILE c # “~” DO
+        expression; Texts.WriteLn(W);
+        Texts.Append(Oberon.Log, W.buf);
+        Texts.Read(R, c)
+      END
+    END Parse;
+  BEGIN Texts.OpenWriter(W);
+  END Postfix.
+\end{verbatim}
+A sample of data processed and generated by the command \verb|Postfix.Parse| is shown below:
+\begin{verbatim}
+  a + b                a b +
+  a * b + c            a b * c +
+  a + b * c            a b c * +
+  a * (b / [c - d])    a b c d - / *
+\end{verbatim}
+
+The next program example demonstrating recursion belongs to the class of problems search
+for a solution by trying and testing. A partial “solution” which is once "posted" may,
+after testing had shown its invalidity, have to be retracted. This kind of approach is
+therefore also called \emph{backtracking}. Recursion is often very convenient for the
+formulation of such algorithms.
+
+Our specific example is supposed to find all possible placement of 8 queens on a chess
+board in such a fashion that none is checking any other piece, i.e. each row, column, and
+diagonal must contain at most one piece. The approach consists of trying to place a queen
+in column $i$, starting with $i = 0$, and, proceeding to the right, assuming that each
+column to the left contains a correctly placed queen already. If no place is free in column
+$i$, the next column to its left has to be reconsidered. The information necessary to
+deduce whether or not a given square is still free, is represented by the 3 global variables
+called \verb|row, d1, d2| such that:
+\begin{verbatim}
+  row[j] & d1[i+j] & d2[N-1+i-j] =
+  "the square in column i and row j is free"
+\end{verbatim}
+Recursion occurs directly in procedure \verb|TryCol|. The auxiliary procedures \verb|PlaceQueen|
+and \verb|RemoveQueen| could in principle be declared local to \verb|TryCol|. However, there
+exists a single chess board only (represented by \verb|row, d1, d2|), and these procedures
+are appropriately considered as belonging to these global data, and hence not as local to
+(each incarnation of) \verb|TryCol|.
+\begin{verbatim}
+  MODULE Queens;
+    IMPORT Texts, Oberon;
+    CONST N = 8; (*no. of rows and columns*)
+
+    (*x[i]=j: a queen is on field j in column i*)
+    VAR x: ARRAY N OF INT;
+      row: ARRAY N OF BOOL; (*No queen on i-th: row*)
+       d1,           (*diagonals: upleft to lowright*)
+       d2: ARRAY 2*N-1 OF BOOL; (*upright to lowleft*)
+        W: Texts.Writer;
+ 
+    PROC Clear;
+      VAR i: INT;
+    BEGIN
+      FOR i := 0 TO N-1 DO row[i] := TRUE END;
+      FOR i := 0 TO 2*(N-1) DO d1[i] := TRUE;
+                               d2[i] := TRUE END
+    END Clear;
+ 
+    PROC WriteSolution;
+      VAR i: INT;
+    BEGIN
+      FOR i := 0 TO N-1 DO Texts.WriteInt(W, x[i], 4)
+      END; Texts.WriteLn(VW)
+    END WriteSolution;
+ 
+    PROC PlaceQueen(i, j: INT);
+    BEGIN
+      x[i] := j; row[i] := FALSE;
+      d1[i+j] := FALSE; d2[N-1+i-j] := FALSE
+    END PlaceQueen;
+ 
+    PROC RemoveQueen(i, j: INT);
+    BEGIN
+      row[i] := TRUE; d1[i+j] := TRUE;
+      d2[N-1+i-j] := TRUE
+    END RemoveQueen;
+ 
+    PROC TryCol(i: INT);
+      VAR j: INT;
+    BEGIN
+      FOR j := 0 TO N-1 DO
+        IF row[j] & d1[i+j] & d2[N-1+i-j] THEN
+          PlaceQueen(i, j);
+          IF i < N-1 THEN TryCol(i+1)
+          ELSE WriteSolution END;
+          RemoveQueen(i, j)
+        END
+      END
+    END TryCol;
+ 
+    PROC Find*; (*command*)
+    BEGIN Clear; TryCol(0);
+      Texts.Append(Oberon.Log, W.buf)
+    END Find:
+ 
+  BEGIN Texts.OpenWriter(W)
+  END Queens.
+\end{verbatim}

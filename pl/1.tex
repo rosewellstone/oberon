@@ -1,0 +1,77 @@
+\chapter{Introduction}
+
+Although this manual assumes that its reader is already familiar with the basic notions of computer
+and programming, it may be appropriate to start out with the explanation of some concepts and
+their terminology. We recognize that - with rare exceptions - programs are written - more
+appropriately: designed - with the purpose of being interpreted by a computer. The computer then
+performs a process, i.e. a sequence of actions, according to the specifications given by that
+program. The process is also called a computation.
+
+The program itself is a text. Since it specifies a usually fairly complex process, and must do so with
+utmost precision and care for all details, the meaning of this text must be specified very precisely.
+Such precision requires an exact formalism. This formalism has become known as a \emph{language}. We
+adopt this name, although a language is normally spoken and much less precisely defined. Our
+purpose here is to learn the formalism or language Oberon. It has a long tradition among
+programming languages. Its ancestor was Algol 60, followed by Pascal and Modula-2.
+
+A program usually specifies a process that causes its interpreter, i.e. the computer, to read data
+(the so-called input) from some sources and to vary its subsequent actions according to the
+accepted data. This implies that a program does not only specify a (single) process, but an entire -
+usually unbounded - class of computations. We have to ensure that these processes act according
+to the given specifications (or should we say expectations?) in all cases of this class. Whereas we
+could verify that this specification is met in the case of a single computation, this is impossible in the
+general case, because the class of all permitted processes is much too large. The conscientious
+programmer ensures the correctness of his program by careful design and analysis. Careful design
+is the essence of professional programming.
+
+The task of designing a program is further complicated by the fact that the program not only must
+describe an entire class of computations, but often should also be interpreted (executed) by
+different interpreters (computers). At earlier times, this required the manual transcription of the
+program from its source form into different computer codes, taking into account their various
+characteristics and limitations. The difficulties have been drastically reduced, albeit not eliminated,
+by the creation of high level languages with formal definitions and the construction of automatic
+translators converting the program into the codes of the various computers.
+
+In principle, the formal language should be defined in an abstract, perhaps axiomatic fashion
+without reference to an actual computer or interpretation mechanism. If this were achieved, the
+programmer would have to understand the formal language only. However, such generality is costly
+and often restrictive, and in many cases the programmer should still know the principal
+characteristics of his computer(s). Nevertheless, the qualified programmer will make as little
+reference to specific computer characteristics as possible and rely exclusively on the rules of the
+formal language in order to keep his program general and portable. The language Oberon assists in
+this task by confining computer dependencies to specific objects, by allowing to encapsulate them
+in specific, small parts of a program text.
+
+From the foregoing it follows that a translation process lies between the program's formulation and
+its interpretation. This process is called a compilation, because it condenses the program's source
+text into a cryptic computer code. The quality of this compilation may be crucial to the efficiency of
+the program's ultimate interpretation. We stress the fact that there may be many compilers for a
+given language (even for the same computer). Some may be more efficient than others. We
+recognize that efficiency is a characteristic of implementations rather than the language. It therefore
+is important to distinguish between the concepts of language and implementation.
+
+We summarize:
+\begin{itemize}
+  \item Aprogram is a piece of text.
+  \item The program specifies computations or processes.
+  \item A process is performed by an interpreter, usually a computer, interpreting (executing) the program.
+  \item The meaning of the program is specified by a formalism called programming language.
+  \item A program specifies a class of computations, the input data acting as parameter of each individual process.
+  \item Prior to its execution, a program text is translated into computer code by a compiler. This process is called a compilation.
+\end{itemize}
+
+Program design includes ensuring that all members of this class of computations act according to
+specification. This is done by careful analytic verification and by selective empirical testing of
+characteristic cases.
+
+Programs should refrain from making reference to characteristics of specific interpreters
+(computers) whenever possible. Only the lack of such reference ensures that their meaning can be
+derived from rules of the language.
+
+A compiler is a program translating programs from their source form to specific computer codes.
+Programs need to be compiled before they are executed. Programming in the wider sense not only
+includes the formulation of the program, but also the concrete preparation of the text, its
+compilation, correction of errors, so-called debugging, and the planning of tests. The modern
+programmer uses many tools for these tasks, including text editors, compilers, and debuggers. He
+also has to be familiar with the environment of these components. We shall not describe these
+aspects, but concentrate on the language Oberon.

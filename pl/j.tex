@@ -1,0 +1,80 @@
+\chapter{Modules}
+\label{ch:mod}
+Modules are the most important feature distinguishing Oberon from its ancestor Pascal. We have
+already encountered modules, simply because every program is a module. However, most systems
+are not only a single module, but rather a set of several modules, each module containing declared
+objects such as constants, variables, procedures, and types. Objects declared in a module \verb|M0|
+can be referenced in another module \verb|M1|, if they are explicitly made to be known in \verb|M1|,
+i.e. if they are imported by \verb|M1|. In the examples of the preceding chapters, we have typically
+imported procedures for input and output from modules containing collections of frequently used
+procedures. These procedures are actually part of our program, even if we have not programmed them
+and they are textually disjoint.
+
+The key point is that modules can be kept in a program \emph{library} and are automatically
+referenced when a programmer's program is loaded and executed. Hence it is possible to prepare
+collections of frequently used operations (such as for input and output), and to avoid
+reprogramming them each time a program needs such operations. Modern implementations go even
+one step further and offer what is called separate compilation. This signifies that such modules
+are not stored in the program library in source form as Oberon texts, but rather in compiled
+form. Upon program loading, the compiled (main) module is joined (linked) with the precompiled
+modules from which it imports objects. In this case, the compiler must also have access to
+descriptions of the objects of the previously compiled, imported modules, when the importing
+program is compiled. This facility distinguishes separate compilation from independent
+compilation as it exists in typical implementations of Fortran, Pascal, and assemblers.
+
+Every subsidiary module may again import objects from other modules. A program therefore
+constitutes an entire hierarchy of modules. The main program is said to be at the highest level,
+those modules which do not import objects at all being at the lowest level. Usually, a programmer is
+not even aware of this hierarchy, because his modules import objects from modules that he has not
+programmed himself; therefore he is unaware of their imports and of the module hierarchy below
+them. In principle, however, his program is the text written by himself, extended with the texts of the
+imported modules.
+
+These extensions are usually quite large (even if the direct imports consist of a few output
+procedures only). In principle, the indirect imports constitute the entire environment or OS.
+In a single-user computer system, there is virtually no need for any parts that are neither
+directly nor indirectly imported by the main program. However, some modules, such as the
+basic I/O and file system, may be required by all programs and therefore become de facto
+resident and may therefore be regarded as the OS.
+
+The principal motivation behind the partitioning of a program into modules is - beside the use of
+modules provided by other programmers - the establishment of a hierarchy of abstractions. For
+example, in the previously encountered cases of imported I/O procedures, we merely wish
+to have them available, but do not need to know - or rather do not wish to bother to learn - how
+these procedures function in detail. To abstract means to "take away" from the essentials and
+thereby to ignore certain details. Each module constitutes an abstraction, if we regard it from "the
+outside". We even wish to go one step further: we wish not only to ignore the details of its innards,
+but to hide them. The primary reason for this wish is that if the innards are protected from outside
+access, we can guarantee their correct functioning, thereby being able to limit the area of error
+search in the case of a malfunctioning program.
+
+The 2nd, but not less important reason is to make it possible to change (improve) the innards of
+imported modules without having to change (and/or recompile) the importing modules. This effective
+\emph{decoupling} of modules is indispensible for the development of large programs, in particular,
+if modules are developed by different people, and if we regard the OS as the low section of a
+program's module hierarchy. Without decoupling, any change or correction in an OS or in library
+modules would become virtually impossible.
+
+A direct consequence of this need for decoupling is the necessity for a textual separation of the
+essentials from the details. The essentials of a module are the properties of objects that are
+importable into other modules; the details are those parts that are to be hidden and protected.
+In Oberon, objects to be visible in other modules are specially marked with an asterisk
+following their decalaration identifiers.
+
+An importer of a module needs to know the properties of those objects only which are exported by
+the imported module. It is customary and convenient to provide an extract of the module containing
+those relevant declarations only. We call it the definition of a module. The definition forms a
+contract between the client (importer) and the designer of a module. It is therefore also called the
+\emph{interface} of the module. The implementation part remains the property of the module's designer.
+As long as the designer alters details without affecting the definition, he need not report his
+activity to the clients of his module. Modules are compiled separately, and are therefore called
+\emph{compilation units}.
+
+Concluding this introduction to the module concept, we postulate that adequate implementations
+provide full type compatibility checking between objects, independent of whether these objects are
+declared in the same or in different modules, i.e. the checking mechanism of the compiler functions
+also across module boundaries. However, the programmer must realize that this checking provides
+no absolute safeguard against mistakes. After all, it concerns formal, syntactic aspects only; it
+does not cover the \emph{semantics}. It would not detect, for instance, the replacement of the
+algorithm for the sine function by that of the cosine function. However, it must not be regarded
+as the duty of a compiler to protect programmers against malicious "colleagues".

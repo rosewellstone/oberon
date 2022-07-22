@@ -1,0 +1,137 @@
+\chapter{Representation of Oberon Programs}
+The preceding chapter has introduced a formalism, by which the structures of well-formed
+programs will subsequently be defined. It defines, however, merely the way in which programs are
+composed as sequences of symbols, in contrast to sequences of characters. This "shortcoming" is
+quite intentional: the representation of symbols (and thereby programs) in terms of characters is
+considered too much dependent on individual implementations for the general level of abstraction
+appropriate for a language definition. The creation of an intermediate level of representation by
+symbol sequences provides a useful decoupling between language and ultimate program
+representation. The latter depends on the available character set. As a consequence, we need to
+postulate a set of rules governing the representation of symbols as character sequences. The
+symbols of the Oberon vocabulary are divided into the following classes:
+\begin{enumerate}
+  \item identifiers,
+  \item numbers,
+  \item strings,
+  \item operators and delimiters, and
+  \item comments.
+\end{enumerate}
+
+The rules governing their representation in terms of the standard ISO character set are the following:
+\begin{enumerate}
+  \item Identifiers are sequences of letters and digits, the first of which must be a letter.
+  They are case-sensitive.
+  \begin{verbatim}
+    id = letter {letter|digit}.
+  \end{verbatim}
+  Examples of well-formed identifiers are:
+  \begin{verbatim}
+    Alice likely jump BlackBird SR71
+  \end{verbatim}
+  Examples of invalid identifiers (and the reason):
+  \begin{table}[h!]
+    \centering
+    \begin{tabular}{l l}
+      \verb|sound proof| & (blank space is not allowed) \\
+      \verb|sound-proof| & (neither is a hyphen) \\
+      \verb|Miller's|    & (no apostrophe allowed) \\
+      \verb|2N|          & (1st character must be a letter)
+    \end{tabular}
+  \end{table}
+
+  Sometimes an identifier has to be qualified by another identifier; this is expressed by
+  prefixing $i$ with $j$ and a period ($j.i$); the combined identifier is called a \emph{
+  qualified identifier} (abbreviated as \verb|qid|).  Its syntax is
+  \begin{verbatim}
+    qid = {id "."} id
+  \end{verbatim}
+
+  \item Numbers are either integers or real numbers. The former are denoted by sequences of digits.
+  Numbers must not include any spaces. Real numbers contain a decimal point and a fractional part.
+  In addition, a scale factor may be appended. It is specified by the letter \verb|E| and an integer
+  which is possibly preceded by a sign. The \verb|E| is pronounced as "times 10 to the power of".
+
+  Examples of well-formed numbers are:
+  \begin{verbatim}
+    1981 1 3.25 51E3 4.0E-10
+  \end{verbatim}
+  Examples of character sequences that are not recognized as numbers (and the reason):
+  \begin{table}[h!]
+    \centering
+    \begin{tabular}{l l}
+      \verb|1,5|       & (no comma may appear) \\
+      \verb|1'000'000| & (neither may apostrophs) \\
+      \verb|3.5En|     & (no letters allowed, except E)
+    \end{tabular}
+  \end{table}
+
+  The exact rules for forming numbers are given by the following syntax:
+  \begin{verbatim}
+    number = int | real
+    int    = dec | hex H
+    real   = [sign]dec.{digit}[E[sign]dec]
+    sign   = + | -
+    dec    = digit {digit}
+    hex    = digit {hexdig}
+    hexdig = digit | A-F
+  \end{verbatim}
+  \textbf{Note}: Integers are taken as octal numbers, if followed by the letter \verb|E|,
+  or as hexadecimal numbers, if followed by the letter \verb|H|.
+
+  \item Strings are sequences of any characters enclosed in quote marks. In order that the closing
+  quote is recognized unambiguously, the string itself evidently cannot contain a quote mark.
+
+  Examples of strings are:
+  \begin{verbatim}
+    "no comment"    '""'    "Buck's Corner"
+  \end{verbatim}
+
+  \item Operators and delimiters are either special characters or reserved words. Those
+  composed of special characters are:
+  \begin{table}[h!]
+    \begin{tabular}{r l}
+                          + & addition, set union \\
+                          - & subtraction, set difference \\
+      \textasteriskcentered & multiplication, set intersection \\
+                          / & division, symmetric set difference \\
+                         := & assignment \\
+                         \& & logical AND \\
+                       \~{} & logical NOT \\
+                          = & equal \\
+                         \# & unequal \\
+                          < & less than \\
+                          > & greater than \\
+                         <= & less than or equal \\
+                         >= & greater than or equal \\
+                        ( ) & parentheses \\
+                       ~[~] & index brackets \\
+                      \{ \} & set braces \\
+                      (* *) & comment brackets \\
+           \textasciicircum & dereferencing operator \\
+        , . ; : .. \textbar & punctuation symbols
+    \end{tabular}
+  \end{table}
+
+  Reserved words are written in upper-case letters and must not be used as identifiers.
+  Hence it is advantageous to memorize the following enumeration list, whose meaning
+  will be explained throughout subsequent chapters:
+  \begin{verbatim}
+    BY    DIV    CASE    ARRAY    IMPORT
+    DO    END    ELSE    BEGIN    MODULE
+    IF    FOR    PROC    CONST    RECORD
+    IN    MOD    THEN    ELSIF    REPEAT
+    IS    SET    TRUE    FALSE    RETURN
+    OF    VAR    TYPE    UNTIL    POINTER
+    OR    TO             WHILE
+  \end{verbatim}
+
+  It is customary to separate consecutive symbols by a space, i.e. one or several blanks.
+  However, this is mandatory only in those cases where the lack of such a space would merge
+  the two symbols into one. For example, in "\verb|IF x = y THEN|" spaces are necessary
+  in front of $x$ and after $y$, but could be omitted around the equal sign.
+
+  \item Comments may be inserted between any 2 symbols. They are arbitrary sequences of
+  characters enclosed in the comment brackets (* and *). Comments are skipped by compilers
+  and serve as help info to us human beings. They might also serve to signal instructions
+  (options) to the compiler.
+\end{enumerate}

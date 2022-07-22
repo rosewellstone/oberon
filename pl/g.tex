@@ -1,0 +1,67 @@
+\chapter{Record Types}
+In an array all elements are of the same type. In contrast to the array, the record structure offers the
+possibility to declare a collection of elements as a unit even if the elements are of different types.
+The following examples are typical cases where the record is the appropriate choice of structuring
+method. A date consists of three elements, namely day, month, and year. A description of a person
+may consist of the person's names, sex, identification number, and birthdate. This is expressed by
+the following type declarations
+\begin{verbatim}
+  Date = RECORD day,month,year: INT END
+  Person = RECORD
+    firstName,lastName: ARRAY 32 OF CHAR;
+    male: BOOL;
+    idno: INT;
+    birth: Date
+  END
+\end{verbatim}
+The record structure makes it possible to refer either to the entire collection of data or to individual
+elements. Elements of a record are also called record fields, and their names are called field
+identifiers. This stems from the habit of looking at such data as forms or tables drawn on paper with
+individual fields delineated as rectangles and labelled with field names. Similar to arrays, where we
+denote the $i$-th element of an array $a$ by $a[i]$, i.e. by the array identifier followed by an index,
+we denote the field $f$ of a record $r$ by $r.f$, i.e. by the record identifier followed by the field's
+name. For example, given the variables
+\begin{verbatim}
+  d1, d2: Date;
+  p1, p2: Person;
+  students: ARRAY 100 OF Person
+\end{verbatim}
+we can construct, for example, the following variable designators:
+\begin{verbatim}
+  d1.day
+  d2.month
+  p1.firstName
+  p1.birth
+\end{verbatim}
+These examples show that fields may themselves be structured. Similarly, records may be
+elements of array or record structures, i.e. there exists the possibility to construct hierarchies of
+structures. As a consequence, selectors of elements can be sequenced, as shown by the following
+examples of designators. The multi-dimensional array discussed in the chapter on arrays now
+appears as a particular case of these structuring hierarchies.
+\begin{verbatim}
+  p1.lastName[0]
+  p2.birth.year
+  students[23].idno
+  students[k].firstName[0]
+\end{verbatim}
+At first sight the record may appear as a generalized array, because it relaxes the restriction that all
+elements be of the same type. However, in another aspect it is more restrictive than the array: the
+selector of the element must be a fixed field identifier, whereas the index selecting an array element
+may be an expression, i.e. a result of previous computations.
+
+It is important to note that a record may assume arbitrary combinations of its field's values. Hence,
+in the example of the type Date, a value day = 31 may coexist with month = 2, although this is not
+an actual date.
+
+The syntax of a record declaration is defined as follows.
+\begin{verbatim}
+  RecordType = RECORD FieldListSequence END.
+  FieldListSequence = FieldList {; FieldList}.
+  FieldList = [IdentList: type].
+\end{verbatim}
+and that of a designator is
+\begin{verbatim}
+  designator = qualident {selector}.
+  selector = "." identifier | "[" ExpList "]" | "^".
+\end{verbatim}
+\textbf{Note}: Oberon’s concept of record type extension is not discussed in this book.

@@ -1,0 +1,68 @@
+\chapter{Syntax Notation}
+A formal language is an infinite set of sequences of symbols. The members of this set are called
+sentences, and in the case of a programming language these sentences are programs. The
+symbols are taken from a finite set called the vocabulary. Since the set of programs is infinite, it
+cannot be enumerated, but is instead defined by rules for their composition. Sequences of symbols
+that are composed according to these rules are said to be syntactically correct programs; the set of
+rules is the syntax of the language.
+
+Programs in a formal language then correspond to grammatically correct sentences of spoken
+languages. Every sentence has a structure and consists of distinct parts, such as subject, object,
+and predicate. Similarly, a program consists of parts, called syntactic entities, such as statements,
+expressions, or declarations. lf a construct A consists of B followed by C, i.e. the concatenation BC,
+then we call B and C syntactic factors and describe A by the syntactic formula
+\begin{verbatim}
+  A = BC
+\end{verbatim}
+If, on the other hand, an A consists of a B or, alternatively, of a C, we call B and C syntactic terms
+and express A as
+\begin{verbatim}
+  A = B|C
+\end{verbatim}
+Parentheses may be used to group terms and factors. It is noteworthy that here A, B, and C denote
+syntactic entities of the formal language to be described, whereas the symbols =, | , parentheses,
+and the period are symbols of the meta-notation describing syntax. The latter are called meta-
+symbols, and the meta-notation introduced here is called Extended Backus-Naur Formalism (EBNF).
+
+In addition to concatenation and choice, EBNF also allows to express option and repetition. If a
+construct A may be either a B or nothing (empty), this is expressed as
+\begin{verbatim}
+  A = [B]
+\end{verbatim}
+and if an A consists of the concatenation of any number of Bs (including none), this is denoted by
+\begin{verbatim}
+  A = {B}
+\end{verbatim}
+This is all there is to EBNF! A few examples show how sets of sentences are defined by EBNF formulas:
+\begin{verbatim}
+  (A|B)(C|D): AC AD BC BD
+       A[B]C: ABC AC
+       A{BA}: A ABA ABABA ABABABA ...
+      {A|B}C: C AC BC AAC ABC BBC BAC...
+\end{verbatim}
+Evidently, EBNF is itself a formal language. If it suits its purpose, it must at least be able to describe
+itself! In the following definition of EBNF in EBNF, we use the following names for entities:
+\begin{itemize}
+  \item statement: a syntactic equation
+  \item expression: a list of alternative terms
+  \item term: a concatenation of factors
+  \item factor: a single syntactic entity or a parenthesized expression
+\end{itemize}
+
+The formal definition of EBNF is now given as follows:
+\begin{verbatim}
+  syntax = {statement}
+  statement = identifier "=" expression
+  expression = term {"|" term}
+  term = factor {factor}
+  factor = identifier | string | "(" expression ")"
+          | "[" expression "]" | "{" expression "}"
+\end{verbatim}
+Identifiers denote syntactic entities; strings are sequences of symbols taken from the defined
+language's vocabulary. For the denotation of identifiers we adopt the widely used conventions
+for programming languages, namely:
+\begin{itemize}
+  \item An identifier consists of a sequence of letters and digits, the 1st of which must be a letter;
+  \item A string consists of any sequence of characters enclosed by quote marks (or apostrophes).
+\end{itemize}
+A formal statement of these rules in terms of EBNF is given in subsequent chapters.

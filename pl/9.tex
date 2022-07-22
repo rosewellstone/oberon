@@ -1,0 +1,466 @@
+\chapter{The Data Structure Array}
+So far, we have given each variable an individual name. This is impractical, if many
+variables are necessary that are treated in the same way and are of the same type, such as,
+for example, if a table of data is to be constructed. In this case, we wish to give the
+entire set of data a name and to denote individual elements with an identifying number,
+a so-called \emph{index}. The data type is then said to be structured - more precisely:
+\emph{array} structured. In the following example, the variable $a$ consists of $N$
+elements, each being of type \verb|INT|, and the indices range from $0$ to $N-1$.
+\begin{verbatim}
+  VAR a: ARRAY N OF INT
+\end{verbatim}
+An element is then designated by the array's identifier followed by its selecting index,
+e.g. $a[i]$, where $i$ is an expression whose value must lie within the index range
+specified in the array's declaration. Syntactically, $a[i]$ is a \emph{designator}, and
+the expression $i$ is the \emph{selector}. If, for example, all $N$ elements of $a$ are
+to be given the value $0$, this can be expressed conveniently by a repetitive statement,
+where the index is given a new value each time.
+\begin{verbatim}
+  i := 0;
+  REPEAT a[i] := 0; INC(i) UNTIL i = N
+\end{verbatim}
+\verb|INC(i)| is synonymous with \verb|i := i+1|. This example illustrates a situation
+that occurs so frequently that Oberon provides a special control structure which expresses
+it more concisely.  It is called the \emph{for statement}.
+\begin{verbatim}
+  FOR i := 0 TO N-1 DO a[i] := 0 END
+\end{verbatim}
+Its general form is
+\begin{verbatim}
+  ForStatement = FOR id := expr TO expr [BY const] DO
+                   StatementSequence
+                 END
+\end{verbatim}
+The expressions before and after the symbol \verb|TO| define the range through which the
+so-called \emph{control variable} ($i$) progresses. An optional parameter determines the
+incrementing (decrementing) value. If it is omitted, 1 is assumed as default value.
+
+It is recommended that the for statement be used in simple cases only; in particular, no
+components of the expressions determining the range must be affected by the repeated
+statements, and, above all, the control variable itself must not be changed by the repeated
+statements. The value of the control variable must be considered as undefined after the
+for statement is terminated.
+
+Some additional examples should demonstrate the use of array structures and the for statement.
+In the 1st one, the sum of the $N$ elements of array $a[i]$ to be computed:
+\begin{verbatim}
+  sum := 0:
+  FOR i:= 0 TO N-1 DO sum := a[i] + sum END
+\end{verbatim}
+In the 2nd example, the minimum value is to be found, and also its index. The repetition's
+invariant is $min = minimum(a[0], ... , a[i-1])$.
+\begin{verbatim}
+  min := a[0]; k := 0;
+  FOR i: = 1 TO N-1 DO
+    IF a[i] < min THEN k := i; min := a[k] END
+  END
+\end{verbatim}
+In the 3rd example, we make use of the 2nd to sort the array in ascending order:
+\begin{verbatim}
+  FOR i := 0 TO N-2 DO
+    min := a[i]; k := i;
+    FOR j := i TO N-1 DO
+      IF a[j] < min THEN k := j; min := a[k] END
+    END;
+    a[k] := a[i]; a[i] := min
+  END
+\end{verbatim}
+The for statement is evidently appropriate, if all elements within a given index range are
+to be processed. It is inappropriate in most other cases. If, for example, we wish to find
+the index of an element equal to a given value $x$, we have no advance knowledge how many
+elements have to be inspected. Hence, the use of a while (or repeat) statement is recommended.
+This algorithm is known as \emph{linear search}.
+\begin{verbatim}
+  i := 0;
+  WHILE (i < N) & (a[i] # x) DO INC(i) END
+\end{verbatim}
+From the negation of the continuation condition, applying \emph{de Morgan's law}, we infer
+that upon termination of the while statement the condition $(i = N)$\verb| OR |$(a[i] = x)$
+holds. If the latter term is \verb|TRUE|, the desired element is found and $i$ is its index;
+if $i = N$, no $a[i]$ equals $x$.
+
+We draw attention to the fact that the termination condition is a composite one, and that
+it is possible to simplify this condition by a common technique. Remember, that repetition
+must terminate, either if the desired element is found, or if the array's end is reached.
+The "trick" now consists in marking the end by a sentinel, namely the value $x$ itself,
+which will automatically stop the search. All that is required is the addition of a dummy
+element $a[N]$ at the array's end, serving as sentinel:
+\begin{verbatim}
+  a: ARRAY N+1 OF INT;
+
+  a[N] := x; i := 0;
+  WHILE a[i] # x DO INC(i) END
+\end{verbatim}
+If upon termination $i = N$, no original element has the value $x$, otherwise $i$ is the
+desired index.  A more challenging problem is the search for a desired element with value
+$x$ in an array that is ordered, i.e. $a[i-1] \le a[i]$ for all $i = 1\dots N-1$. The best
+technique is the so-called \emph{binary search}.  Inspect the middle element, then apply
+the same method to either the left or right half. This is expressed by the following piece
+of program, assuming $N > 0$. The repetition's invariant is
+\begin{verbatim}
+  a[k] < x for all k = 0 ... i-1 and
+  a[k] > x for all k = j+1 ... N-1
+\end{verbatim}
+\begin{verbatim}
+  i := 0; j := N-1; found := FALSE;
+  REPEAT mid := (i+j) DIV 2;
+       IF x < a[mid] THEN j := mid-1
+    ELSIF x > a[mid] THEN i := mid+1
+    ELSE found := TRUE END
+  UNTIL (i > j) OR found
+\end{verbatim}
+Because each step halves the interval in which $x$ is searched, the number of needed
+comparisons is only $\log_2{N}$. A somewhat more efficient version which avoids the
+composite termination condition is
+\begin{verbatim}
+  i := 0; j := N-1;
+  REPEAT mid := (i+j) DIV 2:
+    IF x <= a[mid] THEN j := mid-1 END:
+    IF x >= a[mid] THEN i := mid+1 END
+  UNTIL i > j:
+  IF i > j+1 THEN (*found*) ELSE (*not found*) END
+\end{verbatim}
+An even more sophisticated version is given below. Its ingenious idea is not to terminate
+immediately when the element is found, which is rare compared to the number of
+unsuccessful comparisons.
+\begin{verbatim}
+  i := 0; j := N;
+  REPEAT mid := (i+j) DIV 2:
+    IF x < a[mid] THEN j := mid ELSE i := mid+1 END
+  UNTIL i >= j:
+  IF (j < N) & (a[j] = x) THEN (*found*) ... END
+\end{verbatim}
+This ends our list of examples of typical uses of simple arrays.
+
+The elements of an array are all of the same type, but this type may again be an array
+(in fact, it may be any structure, as will be seen later). An array of arrays is called a
+\emph{multidimensional array} or \emph{matrix}, because each index may be considered as
+spanning a dimension in a Cartesian space.  Examples of 2-dimensional arrays are:
+\begin{verbatim}
+  a: ARRAY N, N OF REAL
+  T: ARRAY M, N OF CHAR
+\end{verbatim}
+These are actually abbreviations of the full forms
+\begin{verbatim}
+  a: ARRAY N OF ARRAY N OF REAL
+  T: ARRAY M OF ARRAY N OF CHAR
+\end{verbatim}
+The general syntax of an array type is:
+\begin{verbatim}
+  ArrayType = ARRAY const{, const} OF type
+\end{verbatim}
+where the \verb|const| denotes the \emph{lengths} of the array.
+
+The syntax of designators allows for a similar abbreviation as used in declarations,
+namely $a[i, j]$ in place of $a[i][j]$. The latter form expresses more clearly that $j$
+is the selector on the array $a[i]$. The syntax for the array element designator is:
+\begin{verbatim}
+  designator = qualident {"[" ExpList "]"}
+  ExpList = expression {, expression}
+\end{verbatim}
+In uses of matrices, the for statement comes to its full bloom, particularly in numeric
+applications.  The canonical example is the multiplication of 2 matrices, where each element
+of the product $c = a*b$ is defined as:
+\begin{align*}
+  c[i,~j]~=&~~~~~a[i, ~~~~~~0]~*~b[ ~~~~~0,~j]& \\
+              &+~a[i, ~~~~~~1]~*~b[ ~~~~~1,~j]& \\
+              &+~...                          & \\
+              &+~a[i,~K\!-\!1]~*~b[K\!-\!1,~j]&
+\end{align*}
+Given the declarations
+\begin{verbatim}
+  a: ARRAY M, K OF REAL;
+  b: ARRAY K, N OF REAL;
+  c: ARRAY M, N OF REAL
+\end{verbatim}
+the multiplication algorithm consists of 3 nested repetitions as follows:
+\begin{verbatim}
+  FOR i := 0 TO M-1 DO
+    FOR j := 0 TO N-1 DO
+      sum := 0.0:
+      FOR k := 0 TO K-1 DO
+        sum := a[i, k]*b[k, j] + sum
+      END;
+      c[i,j] := sum
+    END
+  END
+\end{verbatim}
+In a 2nd example we demonstrate the search of a word in a table, so-called table search,
+where each word is an array of characters. We assume the table is declared by the \verb|T|
+given in the example above, and that $x$ is given as:
+\begin{verbatim}
+  x: ARRAY N OF CHAR
+\end{verbatim}
+Our solution employs the typical linear search
+\begin{verbatim}
+  i := 0; found := FALSE;
+  WHILE ~found & (i < M) DO
+    found := T[i] = x; INC(i)
+  END
+\end{verbatim}
+If we define equality between 2 words $x$ and $y$ as $x[j] = y[j]$ for all $j = 0\dots N-1$,
+then the "inner" search can be expressed as
+\begin{verbatim}
+  j = 0; equal := TRUE;
+  WHILE equal & (j < N) DO
+    equal := T[i, j] = x[j]; INC(j)
+  END;
+  found := equal
+\end{verbatim}
+This solution appears to be somewhat cumbersome. It is transformable into a simpler form,
+if $M > 0$ and $N > 0$. The complete table search is then expressible as:
+\begin{verbatim}
+  i := 0;
+  REPEAT j := 0;
+    REPEAT b := T[i, j] # x[j]; INC(j)
+    UNTIL b OR (j = N);
+    INC(i)
+  UNTIL ~b OR (i = M)
+\end{verbatim}
+The result $b$ means "the word $x$ has not been found".
+
+We have now laid enough ground work to develop meaningful, entire programs and shall
+present 3 examples, all of them involving arrays.
+
+In the 1st example, the goal is to generate a list of powers of 2, each line showing the
+values $2^i$, and $2^{-i}$. This task is quite simple, if the type \verb|REAL| is used.
+The program then contains the core:
+\begin{verbatim}
+  d := 1: f := 1.0;
+  FOR i := 1 TO N DO
+    d := 2*d: write(d); (*d = 2^i *)
+    write(i);
+    f := f/2.0; write(f) (*f = 2^(-i) *)
+  END
+\end{verbatim}
+However, our task shall be to generate exact results with as many decimal digits as needed.
+For this reason, we present both the whole number $d = 2^i$ and the fraction $f = 2^{-i}$
+by arrays of digits, each in the range $0 \dots 9$. For $f$ we require $N$ , for $d$ only
+$\log_{10}{N}$ digits. Note that the doubling of $d$ proceeds from right to left, the
+halving of $f$ from left to right. The table of results is shown below:
+\begin{verbatim}
+  PROC PowersOf2*;
+    CONST M = 11; N = 32; (*M ~ N*log(2) *)
+    VAR i, j, k, exp, c, r, t: INT;
+        d: ARRAY M OF INT;
+        f: ARRAY N OF INT;
+  BEGIN d[0] := 1; k := 1;
+    FOR exp := 1 TO N-1 DO
+      (* compute d = 2“exp *) c := 0; (*carry*)
+      FOR i:=0 TO k-1 DO
+        t := 2*d[i] + c;
+        IF t >= 10 THEN d[i] := t-10; c := 1
+        ELSE d[i] := t; c := 0 END
+      END;
+      IF c > 0 THEN d[k] := 1; INC(k) END;
+      (“output d[k-1] ... d[0]*) i := M;
+      REPEAT DEC(i); Texts.Write(W, "") UNTIL i = k;
+      REPEAT DEC(i); Texts.Write(W, CHR(d[i]J+ORD("0")))
+      UNTIL i = 0;
+      Texts.Writelnt(W, exp, 4);
+      (*compute and output f = 2^(-exp) *)
+      Texts.WriteString(W, " 0."); r := 0; (*remainder*)
+      FOR j := 1 TO exp-1 DO
+        r := 10*r + f[j]; f[j] := r DIV 2:
+        r := r MOD 2; Texts.Write(W, CHR(f[j]+ORD("0")))
+      END;
+      f[exp] := 5; Texts.Write(W, "5"); Texts.WriteLn(W)
+    END;
+    Texts.Append(Oberon.Log, W.buf)
+  END PowersOf2.
+\end{verbatim}
+Output of program PowersOf2:
+\begin{verbatim}
+           2   1  0.5
+           4   2  0.25
+           8   3  0.125
+          16   4  0.0625
+          32   5  0.03125
+          64   6  0.015625
+         128   7  0.0078125
+         256   8  0.00390625
+         512   9  0.001953125
+        1024  10  0.0009765625
+        2048  11  0.00048828125
+        4096  12  0.000244140625
+        8192  13  0.0001220703125
+       16384  14  0.00006103515625
+       32768  15  0.000030517578125
+       65536  16  0.0000152587890625
+      131072  17  0.00000762939453125
+      262144  18  0.000003814697265625
+      524288  19  0.0000019073486328125
+     1048576  20  0.00000095367431640625
+     2097152  21  0.000000476837158203125
+     4194304  22  0.0000002384185791015625
+     8388608  23  0.00000011920928955078125
+    16777216  24  0.000000059604644775390625
+    33554432  25  0.0000000298023223876953125
+    67108864  26  0.00000001490116119384765625
+   134217728  27  0.000000007450580596923828125
+   268435456  28  0.0000000037252902984619140625
+   536870912  29  0.00000000186264514923095703125
+  1073741824  30  0.000000000931322574615478515625
+  2147483648  31  0.0000000004656612873077392578125
+  4294967296  32  0.00000000023283064365386962890625
+\end{verbatim}
+
+Our 2nd example is similar in nature. Its task is to compute the fractions $d = 1/i$ exactly.
+The difficulty lies, of course, in the representation of those fractions that are infinite
+sequences of digits, e.g. $1/3 = 0.333\dots$ Fortunately, all fractions have a repeating
+period, and a reasonable and useful solution is to mark the beginning of the period and to
+terminate at its end. How do we find the beginning and the end of the period? Let us first
+consider the algorithm for computing the digits of the fraction.
+
+Starting out with $rem = 1$, we repeat multiplying by 10 and dividing the product by $i$.
+The integer quotient is the next digit and the remainder is the new value of $rem$. This
+is precisely the conventional method of division, as illustrated by the following piece
+of program and the example with $i = 7$:
+\begin{verbatim}
+  1.000000 / 7 = 0.142857
+  1 0
+    30
+     20
+      60
+       40
+        50
+         1
+ 
+  rem := 1;
+  REPEAT rem := 10 * rem; nextDigit := rem DIV i;
+         rem := rem MOD i UNTIL ...
+\end{verbatim}
+We know that the period has ended as soon as a remainder occurs which had been encountered
+previously. Hence, our recipe is to remember all remainders and their indices. The latter
+designate the place where the period had started. We denote these indices by $x$ and give
+elements of $x$ initial value 0. In the above explained division by 7, the values of $x$ are
+\begin{verbatim}
+  x[1] = 1, x[2] = 3, x[3] = 2,
+  x[4] = 6, x[5] = 4, x[6] = 5
+ 
+  PROC Fractions*;
+    CONST Base = 10; N = 32;
+    VAR i, j, m, rem: INT;
+        d: ARRAY N OF INT; (*digits*)
+        x: ARRAY N+1 OF INT; (*index”*)
+  BEGIN
+    FOR i := 2 TO N DO
+      FOR j := 0 TO i-1 DO x[j] := 0 END;
+      m := 0; rem := 1;
+      REPEAT m := m+1; x[rem] := m;
+        rem := Base * rem; d[m] := rem DIV i;
+        rem := rem MOD i
+      UNTIL x[rem] # 0;
+      Texts.WriteInt(W, i, 6);
+      Texts.WriteString(W, " 0.");
+      FOR j := 1 TO x[rem]-1 DO
+        Texts. Write(W, CHR(d[j]J+ORD("0")))
+      END;
+      Texts.VWrite(W, "");
+      FOR j := x[rem] TO m DO
+        Texts.Write(W, CHR(d[j]+ORD("0")))
+      END;
+      Texts.WriteLn(W)
+    END;
+    Texts.Append(Oberon.Log, W.buf)
+  END Fractions.
+\end{verbatim}
+Output of program Fractions:
+\begin{verbatim}
+   2 0.5'0
+   3 0.'3
+   4 0.25'0
+   5 0.2'0
+   6 0.1'6
+   7 0.142857
+   8 0.125'0
+   9 0.1
+  10 0.1'0
+  11 0.'09
+  12 0.08'3
+  13 0.'076923
+  14 0.0'714285
+  15 0.0'6
+  16 0.0625'0
+  17 0.'0588235294117647
+  18 0.0'5
+  19 0.'052631578947368421
+  20 0.05'0
+  21 0.'047619
+  22 0.0'45
+  23 0.'0434782608695652173913
+  24 0.041'6
+  25 0.04'0
+  26 0.0'384615
+  27 0.'037
+  28 0.03'571428
+  29 0.'0344827586206896551724137931
+  30 0.0'3
+  31 0.'032258064516129
+  32 0.03125'0
+\end{verbatim}
+
+Our last example of a program computes a list of prime numbers. It is based on the idea of
+inspecting the divisibility of successive integers. The tested integers are obtained by
+incrementing alternatively by 2 and 4, thereby avoiding multiples of 2 and 3 ab initio.
+Divisibility needs to be tested for prime divisors only, which are obtained by storing
+previously computed results.
+\begin{verbatim}
+  PROC Primes*:
+    CONST N = 252; M = 16; (*M ~ sqrt(N)*)
+         LL = 10; (*no. of primes placed on a line*)
+    VAR i, k, x, inc, lim, square, L: INT;
+        prime: BOOL; P, V: ARRAY M+1 OF INT;
+  BEGIN L := 0; x := 1; inc := 4; lim := 1; square := 9;
+    FOR i := 3 TO N DO
+      (* find next prime number P[i] *)
+      REPEAT x := x + inc; inc := 6 - inc;
+        IF square <= x THEN
+          INC(lim); V[lim] := square;
+          square := P[lim+1] * P[lim+1]
+        END;
+        k := 2; prime := TRUE:
+        WHILE prime & (k < lim) DO INC(k);
+          IF V[k] < x THEN V[k] := V[k] + 2*P[k] END;
+          prime := x # V[k]
+        END
+      UNTIL prime;
+      IF i<= M THEN P[i] := x END;
+      Texts.WriteInt(W, x, 6); L := L+1;
+      IF L= LL THEN Texts.WriteLn(W); L := 0 END
+    END;
+    Texts.Append(Oberon.Log, W.buf)
+  END Primes.
+\end{verbatim}
+Output of program Primes:
+\begin{verbatim}
+   5    7   11   13   17   19   23   29   31   37
+  41   43   47   53   59   61   67   71   73   79
+  83   89   97  101  103  107  109  113  127  131
+ 137  139  149  151  157  163  167  173  179  181
+ 191  193  197  199  211  223  227  229  233  239
+ 241  251  257  263  269  271  277  281  283  293
+ 307  311  313  317  331  337  347  349  353  359
+ 367  373  379  383  389  397  401  409  419  421
+ 431  433  439  443  449  457  461  463  467  479
+ 487  491  499  503  509  521  523  541  547  557
+ 563  569  S71  577  587  593  599  601  607  613
+ 617  619  631  641  643  647  653  659  661  673
+ 677  683  691  701  709  719  727  733  739  743
+ 751  757  761  769  773  787  797  809  811  821
+ 823  827  829  839  853  857  859  863  877  881
+ 883  887  907  911  919  929  937  941  947  953
+ 967  971  977  983  991  997 1009 1013 1019 1021
+1031 1033 1039 1049 1051 1061 1063 1069 1087 1091
+1093 1097 1103 1109 1117 1123 1129 1151 1153 1163
+1171 1181 1187 1193 1201 1213 1217 1223 1229 1231
+1237 1249 1259 1277 1279 1283 1289 1291 1297 1301
+1303 1307 1319 1321 1327 1361 1367 1373 1381 1399
+1409 1423 1427 1429 1433 1439 1447 1451 1453 1459
+1471 1481 1483 1487 1489 1493 1499 1511 1523 1531
+1543 1549 1553 1559 1567 1571 1579 1583 1597 1601
+\end{verbatim}
+
+These examples show that arrays are a fundamental feature used in most programs.
+There exist hardly any programs of relevance outside the classroom which do not
+employ repetitions and arrays (or analogous data structures).

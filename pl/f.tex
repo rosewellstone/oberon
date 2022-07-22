@@ -1,0 +1,48 @@
+\chapter{Type Declarations}
+Every variable declaration specifies the variable's type as its constant property. The type can be
+one of the standard, primitive types, or it may be of a type declared in the program itself. Type
+declarations have the form
+\begin{verbatim}
+  TypeDeclaration = identifier "=" type.
+\end{verbatim}
+They are preceded by the symbol TYPE. Types are classified into unstructured and structured
+types. Each type essentially defines the set of values which a variable of this type may assume. A
+value of an unstructured type is an atomic unit, whereas a value of structured type has components
+(elements). For example, the type INT is unstructured; its elements are atomic. It does not
+make sense, e.g. to refer to the third bit of the value 13; the circumstance that a number may "have
+a third bit", or a second digit, is a characteristic of its (internal) representation, which intentionally is
+to remain unknown.
+
+In the following sections we shall show how to declare structured types. We distinguish between
+various structuring methods of which we have so far encountered the array only. In addition, there
+exists the record type. A facility to introduce structures that vary dynamically during program
+execution is based on the concept of pointers and will be discussed in a separate chapter.
+\begin{verbatim}
+  type = qualident | ArrayType | RecordType
+              | PointerType | ProcedureType.
+\end{verbatim}
+Before proceeding to the various kinds of types, we note that in general, if a type T is declared by
+the declaration
+\begin{verbatim}
+  TYPE T = someType
+\end{verbatim}
+and a variable t is declared as
+\begin{verbatim}
+  VAR t: T
+\end{verbatim}
+then these two declarations can always be merged into the single declaration
+\begin{verbatim}
+  VAR t: someType
+\end{verbatim}
+However, in this case fs type has no explicit name and therefore remains anonymous. Typically,
+record types are given explicit names.
+
+The concept of type is important, because it divides a program's set of variables into disjoint
+classes. Inadvertent assignments among members of different classes can therefore be detected
+by a mere inspection of the program text without executing the program. Given, for example, the
+declarations
+\begin{verbatim}
+  VAR b: BOOL; i: INT; x: REAL
+\end{verbatim}
+the assignments \verb|b := i| and \verb|i := x| are illegal, because the types of the variables
+are incompatible.

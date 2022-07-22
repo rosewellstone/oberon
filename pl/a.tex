@@ -1,0 +1,61 @@
+\chapter{Procedures}
+\label{ch:proc}
+Consider the task of processing a set of data consisting of a header and a sequence of $N$ similar
+individual units. It might be generally described as
+\begin{verbatim}
+  ReadHeader;
+  ProcessHeader;
+  WriteHeader;
+  FOR i := 1 TO N DO
+    ReadUnit; ProcessUnit:
+    Write(i); WriteUnit
+  END
+\end{verbatim}
+Clearly, the description of the original task has been made in terms of subtasks, emphasizing the
+dominant structure and supressing details. Of course, the subtasks ReadHeader, ProcessHeader,
+etc. must now be further described with all the necessary details. Instead of replacing these
+descriptive English words with elaborate Oberon programs, we may consider these words as
+identifiers and define the details of the subtasks by textually separate pieces of program, called
+procedures (or subroutines). These definitions are called procedure declarations, because they
+define the actions of the procedure and give it a name. The identifiers in the main program referring
+to these declarations are said to be procedure calls, and their action is to invoke the procedure.
+Syntactically, the procedure call is a statement.
+
+Procedures play a fundamental role in program design. They aid in displaying the algorithm's
+structure and in decomposing a program into logically coherent units. This is particularly important
+in the case of complex algorithms, i.e. of long programs. In the above example, it might be
+considered somewhat extravagant to declare separate procedures instead of merely substituting
+the refined program texts for the identifiers. Nevertheless, the gain in clarity of program structure
+often recommends the use of explicit procedures even in such a simple case. But of course
+procedures become particularly useful, if the same procedure is to be invoked at several points of
+the program.
+
+A procedure declaration consists of the symbol PROC followed by the identifier (together
+they form the procedure heading), followed by the symbol BEGIN and the statements for which the
+procedure identifier stands and which are therefore called the procedure body. The declaration is
+terminated by the symbol END and the repetition of the identifier. The latter enables a compiler to
+detect mismatched endings of statements and declarations. The general syntax of procedure
+declarations will be given later. A simple example is the following, which computes the sum of a[0],
+a[1], ... a[N-1].
+\begin{verbatim}
+  PROC Add;
+  BEGIN sum := 0.0;
+    FOR i := 0 TO N-1 DO sum := a{i] + sum END
+  END Add
+\end{verbatim}
+
+The procedure concept becomes even much more useful due to two additional features that are
+coupled with it, namely the concepts of parameters and of locality of names. Parameters make it
+possible to invoke the same procedures at different points of the program applying the procedure to
+different values and variables as determined at the point of the call. Locality of names and objects
+is a concept considerably enhancing the procedure's role in structuring a program and
+compartmentalizing its parts. We shall first discuss the concept of locality.
+
+Summarizing, we repeat the following essential points:
+\begin{enumerate}
+  \item The procedure aids in exhibiting the inherent structure of a program and in decomposing
+    a programming task.
+  \item If a procedure is called from two or more points, it reduces the length of the program
+    and therefore the programming task and the potential for programming error. A further
+    economic advantage is the reduction in the size of the compiled code.
+\end{enumerate}

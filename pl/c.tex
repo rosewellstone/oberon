@@ -1,0 +1,125 @@
+\chapter{Parameters}
+Procedures may be given parameters. They are the essential feature that make procedures so
+useful. Consider again the previous example of procedure Add. Very likely a program contains
+several arrays to which the procedure should be applicable. Redefining it for each such array would
+be cumbersome, inelegant, and can be avoided by introducing its operand as a parameter as
+follows.
+\begin{verbatim}
+  PROC Add(VAR x: Vector);
+    VAR i: INT;
+  BEGIN sum := 0:
+    FOR i := 0 TO N-1 DO sum := x[i] + sum END
+  END Add
+\end{verbatim}
+The parameter $x$ is introduced in the parameter list in the procedure heading. It thereby
+automatically becomes a local object, in fact is a place-holder for the actual array that is
+specified in the procedure calls
+\begin{verbatim}
+  Add(a); ... ; Add(b)
+\end{verbatim}
+The arrays $a$ and $b$ are called actual parameters which are substituted for $x$, which is called
+formal parameter. The formal parameter's specification must contain its type. This enables a compiler
+to check whether or not an appropriate actual parameter is supplied. We say that $a$ and $b$, the
+actual parameters, must be compatible with the formal parameter $x$. In the example above, its type
+is Vector, presumably declared in the environment of Add as
+\begin{verbatim}
+  TYPE Vector = ARRAY N OF REAL;
+  VAR a, b: Vector
+\end{verbatim}
+A better version of Add would include not only the array, but also the result sum as a parameter.
+We shall later return to this example. But first we need explain that there exist 2 kinds of formal
+parameters, namely variable and value parameters. The former are characterized by the symbol
+VAR, the latter by its absence.
+
+We conclude this chapter by giving the syntax of procedure declarations and procedure calls:
+\begin{verbatim}
+  proc = prop | func
+  prop = PROC id [params]; decls [BEGIN ss] END id
+  func = PROC id [params]: type; decls [BEGIN ss]
+                              [RETURN expr] END id
+  params = ([param{; param}])
+  param  = [VAR] ident{, ident}: {ARRAY OF} type
+\end{verbatim}
+Apart from the declaration of modules, we now have also encountered all forms of declarations.
+\begin{verbatim}
+  decls = [CONST {const;}] [TYPE {typdef;}]
+          [VAR {field;}] {proc;}
+\end{verbatim}
+
+\section{Variable Parameters}
+As its name indicates, the actual parameter corresponding to a formal variable parameter (specified
+by the symbol VAR) must be a variable. The formal identifier then stands for that variable.
+\begin{verbatim}
+  PROC exchange(VAR x, y: INT);
+    VAR z: INT;
+  BEGIN z := x; x := y; y := z
+  END exchange
+\end{verbatim}
+The procedure calls
+\begin{verbatim}
+  exchange(a, b); exchange(A[i], A[i+1])
+\end{verbatim}
+then have the effect of the above 3 assignments, each with appropriate substitutions made
+upon the call. The following points should be remembered:
+\begin{enumerate}
+  \item Variable parameters may serve to transmit a computed result outside the procedure.
+  \item The formal parameter acts as a place-holder for the substituted actual parameter.
+  \item The actual parameter cannot be an expression, and therefore not a constant either,
+    even if no assignment to its formal correspondent is made.
+  \item If the actual parameter involves indices, these are evaluated when the formal-actual
+    substitution is made.
+  \item The types of corresponding formal and actual parameters must be the same.
+\end{enumerate}
+
+\section{Value Parameters}
+Value parameters serve to pass a value from the calling side into the procedure and constitute the
+predominant case of parameters. The corresponding actual parameter is an expression, of which a
+variable or a constant are a particular and simple case. The formal value parameter must be
+considered as a local variable of the indicated type. Upon call, the actual expression is evaluated
+and the result is assigned to that local variable. As a consequence, the formal parameter may later
+be assigned new values without affecting any part of the expression. In a sense, actual expression
+and formal parameter become decoupled as soon as the procedure is entered. As an illustration,
+we formulate the previously shown program to compute the power $z = x^i$ as a procedure. Note:
+Assignments to value parameters are prohibited, if they are structured.
+\begin{verbatim}
+  PROC ComputePower(VAR z: REAL; x: REAL; i: INT);
+  BEGIN z := 1.0:
+    WHILE i > 0 DO
+      IF ODD(i) THEN z := z*x END;
+      x := x*x; i := i DIV 2
+    END
+  END ComputePower
+\end{verbatim}
+Possible calls are, for example
+\begin{table}[h!]
+  \centering
+  \begin{tabular}{c|rll}
+    procedure call & \multicolumn{3}{c}{for} \\\hline
+    \verb|ComputePower(u   ,  2.5, 3)| &   $u$&:=&$2.5^3$ \\
+    \verb|ComputePower(A[i], B[i], 2)| & $A_i$&:=&$B_i^2$ \\
+  \end{tabular}
+\end{table}
+
+\textbf{Note}:
+\begin{enumerate}
+  \item If a formal parameter is an array or a record and not specified as a variable parameter,
+    then assignments to elements are prohibited.
+  \item In the example above $z$ and $x$ must be declared in distinct \verb|param|, because
+    "\verb|VAR z, x: REAL|" would classify $x$ as a variable parameter too, making it impossible
+    to place a general expression in its corresponding actual parameter place.
+\end{enumerate}
+
+\section{Open Array Parameters}
+lf a formal parameter type denotes an array structure, its corresponding actual parameter
+must be an array of the identical type. This implies that it must have elements of identical
+type and the same bounds of the index range. Often this restriction is rather severe, and
+more flexibility is highly desirable. It is provided by the facility of the so-called
+\emph{open array} which requires that the types of the elements of the formal and actual
+arrays be the same, but leaves the index range of the formal array open. In this case,
+arrays of any size may be substituted as actual parameters. An open array is specified by
+the element type preceded by \verb|ARRAY OF|. For example, a procedure declared as
+\begin{verbatim}
+  PROC P(s: ARRAY OF CHAR)
+\end{verbatim}
+allows calls with character arrays of arbitrary length. The actual length (number of
+elements) is obtained by calling the standard function \verb|LEN(s)|.
