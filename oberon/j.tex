@@ -1,0 +1,79 @@
+\chapter{Syntax of Oberon}
+\begin{verbatim}
+  digit  = 0-9
+  hexdig = digit|A-F
+  letter = A-Z|a-z
+ 
+  id     = letter{letter|digit}
+  qid    = [id.]id
+  xid    = id[*]
+ 
+  dec    = digit{digit}
+  hex    = digit{hexdig}
+  int    = dec | hex H
+  sign   = +|-
+  real   = [sign]dec.{digit}[E[sign]dec]
+  number = int|real
+  string = " {char} " | hex X
+ 
+  const  = xid=expr
+ 
+  typdef = xid=type
+  type   = pre | arr | rec | ptr | pro | fun
+  pre    = BOOL|BYTE|CHAR|INT|REAL|SET
+  arr    = ARRAY len{, len} OF type
+  len    = expr
+  rec    = RECORD[ (base)][ fields] END
+  base   = qid
+  fields = field{; field}
+  field  = xids: type
+  xids   = xid{, xid}
+  ptr    = POINTER TO type
+  pro    = PROC[ params]
+  fun    = PROC[ params]: qid
+ 
+  expr   = exp [rel exp]
+  rel    = =|#|<|<=|>|>=|IN|IS
+  exp    = [sign]term {add term}
+  add    = sign|OR
+  term   = factor {mul factor}
+  mul    = *|/|DIV|MOD|&
+  factor = number | string | NIL | TRUE | FALSE
+           | set | pc | (expr) | ~factor
+  des    = qid{sel}
+  sel    = .id|'['exprs']'|^|(qid)
+  set    = '{' [seg{, seg}] '}'
+  seg    = expr[..expr]
+  exprs  = expr{, expr}
+  args   = ([exprs])
+ 
+  s      = [assign|pc|if|cases|while|repeat|for]
+  assign = des:=expr
+  pc     = des[args]
+  ss     = s{; s}
+  if     =     IF expr THEN ss
+           {ELSIF expr THEN ss}
+                      [ELSE ss] END
+  cases  = CASE expr OF case {'|' case} END
+  case   = [ranges: ss]
+  ranges = range{, range}
+  range  = label[..label]
+  label  = int|string|qid
+  while  = WHILE expr DO ss {ELSIF expr DO ss} END
+  repeat = REPEAT ss UNTIL expr
+  for    = FOR id:=expr TO expr[ BY expr] DO ss END
+ 
+  proc   = prop | func
+  prop   = PROC xid [params]; decls
+           [BEGIN ss] END id
+  func   = PROC xid [params]: qid; decls
+           [BEGIN ss] [RETURN expr] END id
+  decls  = [CONST {const;}][TYPE {typdef;}][VAR {field;}]
+           {proc;}
+  params = ([param{; param}])
+  param  = [VAR] id{, id}: {ARRAY OF} qid
+ 
+  module = MODULE id;[ IMPORT import{, import};] decls
+           [BEGIN ss] END id.
+  import = id[:= id]
+\end{verbatim}
