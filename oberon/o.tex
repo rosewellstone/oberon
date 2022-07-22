@@ -1,0 +1,56 @@
+\documentclass[a5paper,footinclude=true,headinclude=true]{scrbook}
+\usepackage[english]{babel}
+\usepackage{classicthesis}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{titlesec}
+\usepackage{amsmath}
+\usepackage[backend=biber,style=alphabetic,sorting=ynt]{biblatex}
+%\bibliography{oberon.bib}
+
+\linespread{1.25}
+\setlength{\parskip}{1em}
+\setlength{\parindent}{0em}
+\titlespacing{\section}{0pc}{1pc}{0pc}
+\titlespacing{\subsection}{0pc}{1pc}{0pc}
+
+\begin{document}
+\title{Project \colorbox{black}{\textcolor{white}{OBERON}}}
+\subtitle{ the \colorbox{gray}{\textcolor{white}{Design}}\\of\\an Operating System
+              (\colorbox{red}{\textcolor{white}{OS}}),\\a
+               \colorbox{blue}{\textcolor{yellow}{Compiler}},\\and\\a
+               \colorbox{gray}{\textcolor{green}{Computer}}}
+\author{Niklaus Wirth\\Jürg Gutknecht}
+\date{2013 revised\\ISBN 0-201-54428-8}
+\maketitle
+%\tableofcontents
+\part*{PO}
+\include{0}
+\include{1}
+\part{OS}
+\include{2}
+\include{3}
+\include{4}
+\include{5}
+\include{6}
+\include{7}
+\include{8}
+\include{9}
+\part{Apps}
+\include{a}
+\include{b}
+\include{c}
+\include{d}
+\include{e}
+\include{f}
+\part{PC}
+\include{g}
+\include{h}
+\appendix
+\part*{Spec}
+\include{i}
+\include{j}
+%\printbibliography
+\end{document}

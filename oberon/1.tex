@@ -1,0 +1,338 @@
+\chapter{Overview}
+\section{History \& Motivation}
+How could anyone diligently concentrate on his work in an afternoon with such warmth, splendid
+sunshine, and blue sky. This rhetorical question was one I asked many times while spending a
+sabbatical leave in California in 1985. Back home everyone would feel compelled to profit from the
+sunny spells to enjoy life at leisure in the country-side, wandering or engaging in one's favourite
+sport. But here, every day was like that, and giving in to such temptations would have meant the
+end of all work. And, had I not chosen this location in the world because of its inviting, enjoyable climate?
+
+Fortunately, my work was also enticing, making it easier to buckle down. I had the privilege of
+sitting in front of the most advanced and powerful workstation anywhere, learning the secrets of
+perhaps the newest fad in our fast developing trade, pushing colored rectangles from one place of
+the screen to another. This all had to happen under strict observance of rules imposed by physical
+laws and by the newest technology. Fortunately, the advanced computer would complain
+immediately if such a rule was violated, it was a rule checker and acted like your big brother,
+preventing you from making steps towards disaster. And it did what would have been impossible for
+oneself, keeping track of thousands of constraints among the thousands of rectangles laid out. This
+was called computer-aided design. "Aided" is rather a euphemism, but the computer did not
+complain about the degradation of its role.
+
+While my eyes were glued to the colorful display, and while I was confronted with the evidence of
+my latest inadequacy, in through the always open door stepped my colleague (JG). He also
+happened to spend a leave from duties at home at the same laboratory, yet his face did not exactly
+express happiness, but rather frustration. The chocolate bar in his hand did for him what the coffee
+cup or the pipe does for others, providing temporary relaxation and distraction. It was not the first
+time he appeared in this mood, and without words I guessed its cause. And the episode would
+reoccur many times.
+
+His days were not filled with the great fun of rectangle-pushing; he had an assignment. He was
+charged with the design of a compiler for the same advanced computer. Therefore, he was forced
+to deal much more closely, if not intimately, with the underlying software system. Its rather frequent
+failures had to be understood in his case, for he was programming, whereas I was only using it
+through an application; in short, I was an end-user! These failures had to be understood not for
+purposes of correction, but in order to find ways to avoid them. How was the necessary insight to
+be obtained? I realized at this moment that I had so far avoided this question; I had limited
+familiarization with this novel system to the bare necessities which sufficed for the task on my mind.
+
+It soon became clear that a study of the system was nearly impossible. Its dimensions were simply
+awesome, and documentation accordingly sparse. Answers to questions that were momentarily
+pressing could best be obtained by interviewing the system's designers, who all were in-house. In
+doing so, we made the shocking discovery that often we could not understand their language.
+Explanations were fraught with jargon and references to other parts of the system which had
+remained equally enigmatic to us.
+
+So, our frustration-triggered breaks from compiler construction and chip design became devoted to
+attempts to identify the essence, the foundations of the system's novel aspects. What made it
+different from conventional OSes? Which of these concepts were essential, which
+ones could be improved, simplified, or even discarded? And where were they rooted? Could the
+system's essence be distilled and extracted, like in a chemical process?
+
+During the ensuing discussions, the idea emerged slowly to undertake our own design. And
+suddenly it had become concrete. "Crazy" was my first reaction, and "impossible". The sheer
+amount of work appeared as overwhelming. After all, we both had to carry our share of teaching
+duties back home. But the thought was implanted and continued to occupy our minds.
+
+Sometime thereafter, events back home suggested that I should take over the important course
+about System Software. As it was the unwritten rule that it should primarily deal with operating
+system principles, I hesitated. My scruples were easily justified: After all I had never designed such
+a system nor a part of it. And how can one teach an engineering subject without first-hand experience?
+
+Impossible? Had we not designed compilers, OSes, and document editors in small
+teams? And had I not repeatedly experienced that an inadequate and frustrating program could be
+programmed from scratch in a fraction of source code used by the original design? Our brainstorming
+continued, with many intermissions, over several weeks, and certain shapes of a system
+structure slowly emerged through the haze. After some time, the preposterous decision was made:
+we would embark on the design of an OS for our workstation (which happened to be
+much less powerful than the one used for my rectangle-pushing) from scratch.
+
+The primary goal, to personally obtain first-hand experience, and to reach full understanding of
+every detail, inherently determined our manpower: two part-time programmers. We tentatively set
+our time-limit for completion to three years. As it later turned out, this had been a good estimate;
+programming was begun in early 1986, and a first version of the system was released in the fall of 1988.
+
+Although the search for an appropriate name for a project is usually a minor problem and often left
+to chance and whim of the designers, this may be the place to recount how Oberon entered the
+picture in our case. It happened that around the time of the beginning of our effort, the space probe
+Voyager made headlines with a series of spectacular pictures taken of the planet Uranus and of its
+moons, the largest of which is named Oberon. Since its launch I had considered the Voyager
+project as a singularly well-planned and successful endeavor, and as a small tribute to it I picked
+the name of its latest object of investigation. There are indeed very few engineering projects whose
+products perform way beyond expectations and beyond their anticipated lifetime; mostly they fail
+much earlier, particularly in the domain of software. And, last but not least, we recall that Oberon is
+famous as the king of elfs.
+
+The consciously planned shortage of manpower enforced a single, but healthy, guideline:
+Concentrate on essential functions and omit embellishments that merely cater to established
+conventions and passing tastes. Of course, the essential core had first to be recognized and
+crystallized. But the basis had been laid. The ground rule became even more crucial when we
+decided that the result should be able to be used as teaching material. I remembered C.A.R. Hoare's
+plea that books should be written presenting actually operational systems rather than half baked,
+ abstract principles. He had complained in the early 1970s that in our field engineers were
+told to constantly create new artifacts without being given the chance to study previous works that
+had proven their worth in the field. How right was he, even to the present day!
+
+The emerging goal to publish the result with all its details let the choice of programming language
+appear in a new light: it became crucial. Modula-2 which we had planned to use, appeared as not
+quite satisfactory. Firstly, it lacked a facility to express extensibility in an adequate way. And we had
+put extensibility among the principal properties of the new system. By "adequate" we include
+machine-independence. Our programs should be expressed in a manner that makes no reference
+to machine peculiarities and low-level programming facilities, perhaps with the exception of device
+interfaces, where dependence is inherent.
+
+Hence, Modula-2 was extended with a feature that is now known as type extension. We also
+recognized that Modula-2 contained several facilities that we would not need, that do not genuinely
+contribute to its power of expression, but at the same time increase the complexity of the compiler.
+But the compiler would not only have to be implemented, but also to be described, studied, and
+understood. This led to the decision to start from a clean slate also in the domain of language
+design, and to apply the same principle to it: concentrate on the essential, purge the rest. The new
+language, which still bears much resemblance to Modula-2, was given the same name as the
+system: Oberon [1, 2]. In contrast to its ancestor it is terser and, above all, a significant step
+towards expressing programs on a high level of abstraction without reference to machine-specific
+features.
+
+We started designing the system in late fall 1985, and programming in early 1986. As a vehicle we
+used our workstation Lilith and its language Modula-2. First, a cross-compiler was developed, then
+followed the modules of the inner core together with the necessary testing and down-loading
+facilities. The development of the display and the text system proceeded simultaneously, without
+the possibility of testing, of course. We learned how the absence of a debugger, and even more so
+the absence of a compiler, can contribute to careful programming.
+
+Thereafter followed the translation of the compiler into Oberon. This was swiftly done, because the
+original had been written with anticipation of the later translation. After its availability on the target
+computer Ceres, together with the operability of the text editing facility, the umbilical cord to Lilith
+could be cut off. The Oberon had become real, at least its draft version. This happened
+around the middle of 1987; its description was published thereafter [3], and a manual and guide
+followed in 1991 [5].
+
+The system's completion took another year and concentrated on connecting the workstations in a
+network for file transfer [4], on a central printing facility, and on maintenance tools. The goal of
+completing the system within three years had been met. The system was introduced in the middle
+of 1988 to a wider user community, and work on applications could start. A service for electronic
+mail was developed, a graphics system was added, and various efforts for general document
+preparation systems proceeded. The display facility was extended to accommodate two screens,
+including color. At the same time, feedback from experience in its use was incorporated by
+improving existing parts. Since 1989, Oberon has replaced Modula-2 in our introductory programming courses.
+
+\section{Overview}
+This book consists of 3 main parts, excluding this preface and overview(PO) part:
+\begin{enumerate}
+	\item OS
+	\item apps
+	\item hardware computer
+\end{enumerate}
+
+First, OS. Implementation of a system proceeds bottom-up naturally, because higher level modules are
+clients of those lower level and cannot function without their imports. Description, on the contrary,
+should better be arranged in the reverse top-down way. This is because a system is designed with its
+expected applications and functions in mind. Decomposition into a hierarchy of modules is justified by
+the use of auxiliary functions and abstractions, or by postponing more detailed explanation later, when the need has been fully motivated. Thus, we will describe the OS part top-down essentially.
+
+\ref{ch:struct} first explains the most important basic concepts like Viewers, Commands, Tasks and Texts, etc. which will be further elaborated in the following chapters. It ends with the system structure, to share readers a high-level overview understanding to the whole system.
+
+Chapters 3 - 5 describe the outer core system:
+%\newcounter{chnum}% chapter number
+%\newenvironment{chintro}{% chapter intro
+%	\begin{list}{% labeling
+%		Chapter \arabic{chnum}
+%	}{% spacing
+%		\usecounter{chnum}
+%		\setlength{\labelsep}{0em}
+%		\setlength{\labelwidth}{4em}
+%		\setlength{\itemindent}{4em}
+%		\setlength{\leftmargin}{0em}
+%	}
+%}{
+%	\end{list}
+%}
+
+\ref{ch:task} focuses on the dynamic aspects. In particular, it introduces the fundamental operational 
+units of task and command.
+Oberon's tasking model distinguishes the categories of interactive tasks and background tasks.
+The former are represented on the display screen by rectangular areas, so-called viewers.
+Yet the latter need not be connected with any displayed object. They are scheduled with low
+priority when interactions are absent. A good example of a background task is the memory garbage
+collecting. Both of them are mapped to a single process by the task
+scheduler. Commands in Oberon are explicit, atomic units of interactive operations. They are
+realized in the form of exported parameterless procedures and replace the heavier-weight notion of
+program known from more conventional OSes. This chapter continues with a definition
+of a software toolbox as a logically connected collection of commands. It terminates with an outline
+of the system control toolbox.
+
+\ref{ch:display} explains Oberon's display system. It starts with a discussion of our choice of a
+hierarchical tiling strategy for the allocation of viewers. A detailed study of the exact role of Oberon
+viewers follows. Type Viewer is presented as an object class with an open message interface
+providing a conceptual basis for far-reaching extensibility. Viewers are then recognized as just a
+special case of so-called frames that may be nested. A category of standard viewers containing a
+menu frame and a frame of contents is investigated. The next topic is cursor handling. A cursor in
+Oberon is a marked path. Both viewer manager and cursor handler operate on an abstract logical
+display area rather than on individual physical monitors. This allows a unified handling of display
+requests, independent of number and types of monitors assigned. For example, smooth transitions
+of the cursor across screen boundaries are conceptually guaranteed. The chapter continues with
+the presentation of a concise and complete set of raster operations that is used to place textual and
+graphical elements in the display area. An overview of the system display toolbox concludes the chapter.
+
+\ref{ch:text} introduces Text. Oberon distinguishes itself by treating Text as an abstract data type that
+is integrated in the central system. Numerous fundamental consequences are discussed. For
+example, a text can be produced by one command, edited by a user, and then consumed by a next
+command. Commands themselves can be represented textually in the form M.P, followed by a
+textual parameter list. Consequently, any command can be called directly from within a text (so called tool)
+simply by pointing at it with the mouse. However, the core of this chapter is a
+presentation of Oberon's text system as a case study in program modularization. The concerns of
+managing a text and displaying it are nicely separated. Both the text manager and the text display
+feature an abstract public interface as well as an internally hidden data structure. Finally in this
+chapter, Oberon's type-font management and the toolbox for editing are discussed.
+
+Chapters 6 - 9 describe the inner core system:
+
+\ref{ch:ML} explains the loader of modules and motivates the intro of data type $Module$.
+The chapter includes the management of the memory part holding program code and defines the format
+in which compiled modules are stored as object files. Furthermore, it discusses the problems of
+binding separately compiled modules together and of referencing objects defined in other modules.
+
+\ref{ch:FS} is devoted to the file system(FS), a part of crucial importance, because files are involved in
+almost every program and computation. The chapter consist of two distinct parts, the first
+introducing the type File and describing the structure of files, i.e. their representation on disk
+storage with its sequential characteristics, the second describing the directory of file names and
+its organisation as a B-tree for obtaining fast searches.
+
+\ref{ch:MM} the memory management. A single, central storage management
+was one of the key design decisions, guaranteeing an efficient and economical use of storage. The
+chapter explains the store's partitioning into specific areas. Its central concern, however, is the
+discussion of dynamic storage management in the partition called the heap. The algorithm for
+allocation (corresponding to the intrinsic procedure NEW) and for retrieval (called garbage
+collection) are explained in detail.
+
+\ref{ch:DD} describes the lowest level of the module hierarchy: device drivers,
+which contains drivers for some widely accepted interface standards. The first is PS-2, a serial
+transmission with synchronous clock. This is used for the keyboard and for the Mouse. The second
+is SPI, a standard for bi-directional, serial transmission with synchronous clock. This is used for
+the "disk", represented by an SDI-card (flash memory), and for the network. And the third standard
+is RS-232 typically used for simple and slow data links. It is bidirectional and asynchronous.
+
+The second part, consisting of Chapters 10 - 15, is devoted to what may be called first
+applications of the basic Oberon. These chapters are therefore independent to each other,
+only making reference to the upper Chapters 3 - 9.
+
+Although the Oberon is well-suited for operating stand-alone workstations, a facility for
+connecting a set of computers should be considered as fundamental. Module $Net$, which makes
+transmission of files among workstations connected by a bus-like network possible, is the subject of
+\ref{ch:net}. It presents not only the problems of network access, of transmission failures and
+collisions, but also those of naming partners. The solutions are implemented in a surprisingly
+compact module which uses a network driver presented in \ref{ch:DD}.
+
+When a set of workstations is connected in a network, the desire for a central server appears. A
+central facility serving as a file distribution service, as a printing station, and as a storage for
+electronic mail is presented in \ref{ch:mail}. It emerges by extending the Net module of \ref{ch:net},
+and is a convincing application of the tasking facilities explained in Section 2.2. In passing we note
+that the server operates on a machine that is not under observation by a user. This circumstance
+requires an increased degree of robustness, not only against transmission failures, but also against
+data that do not conform to defined formats.
+
+The presented system of servers demonstrates that Oberon's single-thread scheme need not be
+restricted to single-user systems. The fact that every command or request, once accepted, is
+processed until completion, is acceptable if the request does not occupy the processor for too long,
+which is mostly the case in the presented server applications. Requests arriving when the
+processor is engaged are queued. Hence, the processor handles requests one at a time instead of
+interleaving them which, in general, results in faster overall performance due to the absence of
+frequent task switching.
+
+\ref{ch:compiler} describes the Oberon compiler. It translates source text in Oberon into target code, i.e.
+instruction sequences of some target computer. Its principles and techniques are explained in [6].
+Both, source language and target architecture must be understood before studying a compiler. Both
+source language and the target computer's RISC architecture are presented in the Appendix.
+
+Although here the compiler appears as an application module, it naturally plays a distinguished role,
+because the system (and the compiler itself) is formulated in the language which the compiler
+translates into code. Together with the text editor it was the principal tool in the system's
+development. The use of straight-forward algorithms for parsing and symbol table organization led
+to a reasonably compact piece of software. A main contributor to this result is the language's
+definition: the language is devoid of complicated structures and rarely used embellishments.
+
+The compiler and thereby the chapter is partitioned into two main parts. The first is language specific,
+but does not refer to any particular target computer. It consist of the scanner and the
+parser. This part is therefore of most general interest to the readership. The second part is,
+essentially, language-independent, but is specifically tailored to the instruction set of the target
+computer. It is called the code generator.
+
+Texts play a predominant role in the Oberon. Their preparation is supported by the
+system's major tool, the editor. In \ref{ch:editor} we describe another one, which handles graphic
+objects. At first, only horizontal or vertical lines and short captions are introduced as objects. The
+major difference to texts lies in the fact that their coordinates in the drawing plane do not follow from
+those of their predecessor automatically, because they form a set rather than a sequence. Each
+object carries its own, independent coordinates. The influence of this seemingly small difference
+upon an editor are far-reaching and permeate the entire design. There exist hardly any similarities
+between a text and a graphics editor. Perhaps one should be mentioned: the partitioning into three
+parts. The bottom module defines the respective abstract data structure for texts or graphics,
+together with, of course, the procedures handling the structure, such as searches, insertions, and
+deletions. The middle module in the hierarchy defines a respective frame and contains all
+procedures concerned with displaying the respective objects including the frame handler defining
+interpretation of mouse and keyboard events. The top modules are the respective tool modules
+(Edit, Draw). The presented graphics editor is particularly interesting in so far as it constitutes a
+convincing example of Oberon's extensibility. The graphics editor is integrated into the entire
+system; it embeds its graphic frames into menu-viewers and uses the facilities of the text system for
+its caption elements. And lastly, new kinds of elements can be incorporated by the mere addition of
+new modules, i.e. without expanding, even without recompiling the existing ones. Two examples
+are shown in \ref{ch:editor} itself: rectangles and circles.
+
+The Draw System has been extensively used for the preparation of diagrams of electronic circuits.
+This application suggests a concept that is useful elsewhere too, namely a recursive definition of
+the notion of object. A set of objects may be regarded as an object itself and be given a name.
+Such an object is called a macro. It is a challenge to the designer to implement a macro facility
+such that it is also extensible, i.e. in no way refers to the type of its elements, not even in its 
+input operations of files on which macros are stored.
+
+\ref{ch:tools} presents two other tools, namely one used for installing an Oberon on a bare
+machine, and one used to recover from failures of the file store. Although rarely employed, the first
+was indispensable for the development of the system. The maintenance or recovery tools are
+invaluable assets when failures occur. And they do! \ref{ch:tools} covers material that is rarely
+presented in the literature.
+
+\ref{ch:daemon} is devoted to tools that are not used by the Oberon presented so far, but may
+be essential in some applications. The first is a data link with a protocol based on the RS-232
+standard shown in \ref{ch:DD}. Another is a standard set of basic mathematical functions. And the
+third is a tool for creating new macros for the Draw System.
+
+The last part is a detailed description of the hardware:
+
+\ref{ch:cpu} defines
+the processor, for which the compiler generates code. The target computer is a truly simple and
+regular processor called RISC with only 14 instructions, represented not by a commercial
+processor, but implemented with an FPGA, a Field Programmable Gate Array. It allows its
+structure to be described in full detail. It is a straight-forward, von Neumann type device consisting
+of a register bank, an arithmetic-logic unit, including a floating-point unit. Typical optimization
+facilities, like pipelining and cache memory, have been omitted for the sake of transparency and
+simplicity. The processor circuit is described in the language Verilog.
+
+\ref{ch:env} describes the environment in which the processor is embedded. This environment
+consists of the interfaces to main memory and to all external devices.
+
+\section*{References}
+\begin{enumerate}
+	\item N. Wirth. The programming language Oberon. Software - Practice and Experience 18, 7, (July 1988) 671-690.
+	\item M. Reiser and N. Wirth. Programming in Oberon - Steps beyond Pascal and Modula. AddisonWesley, 1992.
+	\item N. Wirth and J. Gutknecht. The Oberon. Software - Practice and Experience, 19, 9 (Sept. 1989), 857-893.
+	\item N. Wirth. Ceres-Net: A low-cost computer network. Software - Practice and Experience, 20, 1 (Jan. 1990), 13-24.
+	\item M. Reiser. The Oberon - User Guide and Programmer's Manual. Addison-Wesley, 1991.
+	\item N. Wirth. Compiler Construction. Addison-Wesley, Reading, 1996. ISBN 0-201-40353-6
+\end{enumerate}
