@@ -1,0 +1,78 @@
+\section{Oberon: Result of Simplification}
+This brings us into the 1990 years. I felt that continued complexification had
+reached an alarming state. To curtail this cancerous growth had become more and
+more urgent, as systems had reached a size and weight under which they might
+soon collapse, as nobody would fully understand these monsters, but rather
+equate complex with powerful.
+
+Reduction of complexity was the guiding principle behind the design of the
+language Oberon . Quite obviously, Modula-2 was too complicated, and therefore
+laborious to implement. Also, it had not quite reached the goal of being truly
+computer-independent, a prerequisite for any language that claimed to be
+"higher-level". Oberon marked a significant step towards this difficult, but crucial
+and unique goal. The key to achieving it was the rigorous restriction to essential
+features, and the discarding of all "bells and whistles", a genuine exercise towards
+simplicity. But despite frugality, Oberon was to be a powerful, general-purpose
+language in the tradition of Pascal and Modula. The result was a surprisingly small
+language (which, in 2007) was revised again to become even more frugal.
+
+This guideline, however, was not just an esoteric idea. It was a necessity. It was
+decided to implement not only a compiler, but also an entire, self-contained
+operating system along the lines of Cedar, existing at the Xerox PARC facility in
+Palo Alto, a system that marked a radical departure from conventional,
+batch-processing systems.Oberon was to be catering for full interactivity with a
+high-resolution, bit-mapped display and a mouse. Compiler and operating system were
+implemented by 2 people only (J. Gutknecht and me) in their spare-time over almost
+2 years. Naturally, we were forced to concentrate on what was considered essential.
+The successful implementation of the entire system in its own language proved that
+the remaining features were sufficient, and that actually a simple language is more
+suitable for a complex system than one which is part of the problem rather than of
+the solution.
+
+However, a single feature not present in Modula was added to Oberon: Type Extension.
+The Algol - Modula line represents static typing. The type of a constant, variable,
+or function is visible from the program text alone, without executing the program.
+Type inconsistencies can therefore always be checked by the compiler. This rigid
+scheme was to be slightly relaxed. Through type extension it becomes possible to
+declare hierarchies of types, and to construct at run-time data structures with
+elements of different, although related types. This is the key to object-oriented
+programs; Oberon contains all the ingredients for object-oriented programming, but
+no more. Type checking at run-time could be realized very efficiently.
+
+Object-orientation had become the one popular innovation in the realm of software.
+It had taken a long time since its origin was laid by the language Simula (Dahl \&
+Nygaard) in 1967. It became better known (in the US) by the languages Smalltalk
+(Kay) in 1976 (implemented on the Alto), and Object-Pascal (Tesler, 1980).
+Smalltalk went all the way: everything was to be an object. You cannot add two
+numbers $x$ and $y$. The proper way of looking at this problem is to consider $x$
+as an object which contains a method to add $y$ to itself. Genius or perversion?
+
+In 1995 Sun Microsystems presented its language Java, fully 6 years after Oberon.
+It incorporated much of the "philosophy" of Oberon, but, alas, chose the style and
+syntax of C. Around 2000 Microsoft released its language C\# as a strong competitor
+of Java, and Google followed in 2007 with its language Go, even more strongly
+following (the 18 years old) Oberon. The crux with these languages, which all became
+wide-spread due to strong industrial support, is their size and complexity. The
+ambition to provide everything to everybody prevailed and let them grow into complex
+bodies difficult to master.
+
+On the hardware front, the development was similar. The multitude of processor
+architectures of earlier decades has vanished. Only a few architectures prevail,
+mainly those of Intel and ARM. Engineers are pushed to make use of the abundance of
+available transistors. One way is to provide several, even many, processors on the
+same chip, another to include large cache memories, and yet another to provide
+interfaces to external devices, such as to networks, or digital to analog and analog
+to digital converters. Also here complexity grows without bounds. It becomes harder
+and harder to recognize the original core and to identify the basic principles among
+the myriad of gadgets and gismos.
+
+The unbelievable success of computers is mostly due to the incredible advances in
+semiconductor fabrication. Processors are now available with immense power, and
+memories with vast capacity. As in every other field of endeavor, abundance at low
+cost invariably leads to wasteful design. This entails not only waste, but poor
+products of declining quality. In particular software engineering now seems to be
+the El Dorado of splashing and wastefulness.
+
+Dijkstra once claimed that it is the foremost duty of the software engineer to fight
+(home-grown) complexity like the devil every minute. The same is now true also for
+the hardware engineer.

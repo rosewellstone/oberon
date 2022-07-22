@@ -1,0 +1,66 @@
+\setcounter{section}{-1}
+\section{Introduction}
+\label{ch:intro}
+The idea for this project has two roots. The 1st was a project to design and implement a small
+processor for use in embedded systems with several interconnected cores. It was called the Tiny
+Register Machine (TRM). The 2nd root is a book written by me some 30 years ago, and revised
+several times since. Its subject is Compiler Construction. The target for the developed
+compiler is a hypothetical computer. In the early years this computer was a stack architecture,
+later replaced by a RISC (Reduced Instruction Set Computer) architecture. Now the intent is to
+replace the hypothetical, emulated computer by a real one. This idea was made realistic by the
+advent of programmable hardware components called Field Programmable Gate Arrays (FPGA).
+
+The development of this architecture is described in detail in this report. It is intentionally held in a
+tutorial style and should provide the reader with an insight into the basic concepts of processor
+design. In particular, it should connect the subjects of architectural and compiler design, which are
+so closely interconnected.
+
+We are aware of the fact that “real” processors are far more complex than the one presented here.
+We concentrate on the fundamental concepts rather than on their elaboration. We strive for a fair
+degree of completeness of facilities, but refrain from their “optimization”. In fact, the dominant part of
+the vast size and complexity of modern processors and software is due to speed-up called
+optimization (improvement would be a more honest word). It is the main culprit in obfuscating the
+basic principles, making them hard, if not impossible to study. In this light, the choice of a RISC
+ is obvious.
+
+The use of an FPGA provides a substantial amount of freedom for design. Yet, the hardware
+designer must be much more aware of availability of resources and of limitations than the software
+developer. Also, timing is a concern that usually does not occur in software, but pops up
+unavoidably in circuit design. Nowadays circuits are no longer described in terms of elaborate
+diagrams, but rather as a formal text. This lets circuit and program design appear quite similar. The
+circuit description language — we here use Verilog — appears almost the same as a programming
+language. But one must be aware that differences still exist, the main one being that in software we
+create mostly sequential processes, whereas in hardware everything “runs” concurrently. However,
+the presence of a language — a textual definition — is an enormous advantage over graphical
+schemata. Even more so are systems (tools) that compile such texts into circuits, taking over the
+arduous task of placing components and connecting them (routing). This holds in particular for
+FPGAs, where components and wires connecting them are limited, and routing is a very difficult and
+time-consuming matter.
+
+The development of our RISC progresses through several stages. The 1st is the design of the
+architecture itself, (more or less) independent of subsequent implementation considerations. Then
+follows a 1st implementation called RISC-0. For this we chose a Harvard Architecture, implying that
+2 distinct memories are used for program and for data. For both we use chip-internal memory, so-called
+Block RAMs (BRAM). The Harvard architecture allows for a neat separation of the arithmetic from the
+control unit.
+
+But these BRAMs are relatively small (1 - 4K words). The development board used in this project,
+however, provides an FPGA-external Static RAM (SRAM) with a capacity of 1 MByte. In the 2nd stage
+(RISC-1) the BRAM for data is replaced by this SRAM.
+
+In the 3rd stage (RISC-2) we switch to a von Neumann architecture. It uses a single memory for
+both instructions and data. Of course we use the SRAM of stage 1.
+
+In the 4th stage (RISC-3) 2 features are added to round up the development, byte accessing and
+interrupts. (They might be omitted in a course without consequences).
+
+RISC-4 adds non-volatile storage (disk) in the form of an SD-card (flash memory). This device is
+accessed through a serial line according to the SPI (Serial Peripheral Interface) standard.
+
+RISC-5 finally adds further peripheral devices. They are a keyboard and a mouse (both accessed
+via standard PS-2 interface), a memory-mapped display (accessed via VGA standard), and a network
+(accessed via SPI standard).
+
+It follows that RISC-0 and RISC-5 are the corner stones of this project. But we keep in mind that
+from a programmers’ standpoint all implementations appear identical (with the exception of the
+features added in RISC-3). All 4 have the same architecture and the same instruction set.

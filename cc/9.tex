@@ -1,0 +1,137 @@
+\section{1965-70: 2nd Generation PLs and Pascal}
+The first of what I call second generation languages was PL/1 created by IBM, or
+rather a consortium of user organizations. What IBM had done to hardware, was to
+be done also to software: The unification of the scientific and the commercial
+computing communities by merging Cobol and Fortran. This would have to be an
+enormous undertaking with very many actors inserting their concepts and ideas.
+The result was published in 1965 soon after the announcement of the 360
+computer family, when implementation of PL/1 was already under way.
+
+While the Fortran, Cobol, and now PL/1 bandwagons were picking up speed, the
+academic community with its idea of a clean language resting on solid principles
+formed a group of scientists under the auspices of IFIP, forming the Working
+Group 2.1 in 1963. Its goal was to promote the discipline of programming in
+general and of designing a successor of Algol 60 in particular. This group of about
+40 people met about every half year at various places spread over Europe and the
+USA.
+
+Obviously, such a large group was ill-suited to produce a coherent design. There
+were long and irksome debates about various language features and constructs to
+be deleted from or added to Algol 60. There were obviously questionable,
+ill-defined items in Algol 60, but although agreement on their deletion was
+unanimous, their replacement would cause long arguments. The principal
+"speakers of the house" were Aad van Wijngaarden from the Mathematisch
+Centrum in Amsterdam and Fritz Bauer from the Technical University in Munich. In
+heated discussions the emotions flew high and the antagonists even tore their
+collars.
+
+A particular source of lengthy arguments were procedure parameters. Algol 60
+featured two, the value and the name-parameter. Some argued that the
+name-parameter was a distinctive feature, even a hallmark of Algol 60, others that
+it inherently degraded the efficiency of any implementation and was of little use
+(see \S\ref{sec:B5K}).
+
+There were other peculiarities of Algol 60 that caused puzzlement and heated
+discussion. Only one of them is exhibited by the following pathological but legal
+piece of program:
+\begin{verbatim}[language=Algol]
+  PROCEDURE P (q, b);
+    BOOLEAN b; PROCEDURE q;
+  BEGIN INTEGER n;
+    PROCEDURE Q; n := n+1;
+    n := 0;
+    IF b THEN q(~b, Q);
+    Write(n)
+  END;
+\end{verbatim}
+
+Which sequence of numbers would the statement \verb|P(P, TRUE)| generate?
+0, 1 or 1, 0?
+
+After several meetings it became evident that on one side there were "theorists"
+intent on proposing a design satisfying everybody, based on powerful, generalized
+foundations, and on the other side "practitioners" with experience in implementing
+languages, fearing that if a sensible agreement could not be found soon, grounds
+would be lost forever. After several years, the Group split. The "theorists" pursued
+what became called Algol Y, while the "practitioners" headed for a more modest
+Algol X. The latter was implemented on a IBM 360/50 under the guidance of this
+writer at Stanford University. It became known under the name Algol W in 1966,
+and used at many universities in Europe and the US. It was less than a monster,
+but still too heavy.
+
+The Algol Y faction continued its work (mainly in Amsterdam and Vancouver),
+hoping for a release in a few months. But the difficulties remained, and what was
+cautiously called Algol 68 was finally implemented in 1972. As far as the computing
+world at large was concerned, it proved to be a still birth. What was supposed to
+become another milestone (after Algol 60), had become a millstone.
+
+Liberated from the burden of reaching compromises within the Group. this writer
+went along on his own. He designed the language Pascal, published in 1970. It
+gained world-wide acceptance due to its relative completeness and simplicity. Still
+being a language without the facility of separate compilation of parts of systems
+and of linking them when needed, it nevertheless satisfied the basic needs of
+structured programming and was ideally suited for teaching this discipline. Efforts
+to facilitate the porting the compiler to many other (non-IBM) computers helped the
+spreading of Pascal.
+
+Already around 1966 E.W. Dijkstra (also a member of WG 2.1) published a
+document entitled \emph{Structured Programming}. He had been the designer of the first
+Algol compiler that implemented Algol fully, including recursion, a hot topic at the
+time, as recursion was believed to inherently lead to inefficient implementations.
+Pascal was to implement structured programming, to be the exponent and natural
+tool to express this metaphor. It extended the concept of structure from statements
+to data.
+
+Algol 60 featured the conditional statement (if-then-else) and (for repetitions) the
+for statement with a large variety of options. Still, it was the only way to express
+iteration, except by explicit jumps, by \emph{goto} statements. These were the major
+facility for concocting unintelligible programs. They had been the target of an
+arduous indictment by E.W. Dijkstra in his famous letter titled Goto statements
+considered harmful. As a reaction, Pascal featured a while and a repeat statement
+(and a case statement) catering to this critique. But the \emph{goto} remained;
+it would have been a shock to programmers at large to have to cope without jumps.
+Or so it was believed.
+
+In the realm of data structures, Algol offered only the array, a structure with all
+elements of the same type. Pascal added the record, a unit with elements of
+possibly different types called fields, the set, and the file (Sequence). The key
+property was that such structures could freely be nested. Not only arrays of arrays
+(matrices) were possible, but also array of records, and records with array
+structured fields. These structures were declared as types in harmony with
+integers, real numbers, and Boolean values.
+
+Yet, the wide-spread acceptance of Pascal occurred only six years after its
+publication. Then Pascal was riding on the back of the new wave of micro-
+computers, whose cost had come down to be affordable by schools and homes. In
+order to facilitate porting the compiler to other computers, a hypothetical computer
+was postulated, and our compiler generated code, so-called P-code, for it. An
+emulator was simple to program in assembler code for any other architecture. This
+method contributed significantly to the spread of Pascal.
+
+Our compiler had been sent to (among many others) the University of San Diego
+(UCSD), and to W. Kahn, who had founded the Borland company. Both embedded
+the compiler in a system for PCs with a simple "operating system", text editor, and
+a debugger. Together these components allowed for a very fast "turn-around"
+cycle of writing, compiling, testing, and debugging. Apart from this, the system was
+sold on a floppy disk for some \$50. This was the key to its success.
+
+Thus Pascal reached masses of people who had not been "corrupted" by complex
+industrial products; who did not first have to "un-learn" old ideas. Only later the
+impact became apparent that Pascal had exerted in countries outside Europe and
+USA, particularly in Russia and China.
+
+At the same time as Pascal (1970), the language C was designed by D. Ritchie at
+Bell Labs. When he once confided to me that Pascal and C had come out
+surprisingly similar, in many ways identical. I could hardly agree, and I still consider
+C to be an assembler code embellished by a certain, less than elegant syntax. It
+claimed to attach data types to variables. But what is their usefulness, if compilers
+do not check for consistency, if type information is treated like comments that may
+simply be disregarded? I did and still do consider the language C as a (Turing
+Award-sanctified) curse of computing. C may have been necessary at the time of
+Fortran dominance; the curse was its world-wide, indiscriminate adoption.
+
+In fact, we had implemented the (2nd) Pascal compiler in Zurich using a similar
+language as C (Scallop by Max Engeli). After completion of a workable part, the
+compiler was translated by hand (by R. Schild) to Pascal itself for boot-strapping,
+The auxiliary initial version was thereafter happily discarded for ever. C, however,
+gained world-wide attention.

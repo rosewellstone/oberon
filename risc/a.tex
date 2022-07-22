@@ -1,0 +1,108 @@
+\section{Revised RISC0\&5}
+v5.12.10
+
+\subsection{Resources and registers}
+From the viewpoints of the programmer and the compiler designer the computer consists of an Arithmetic Unit (AU),
+a Control Unit (CU) and a store (memory).
+\begin{itemize}
+  \item The AU contains 16 registers R0-R15, with 32 bits each.
+  \item The CU consists of the Instruction Register (IR), holding the instruction currently being executed, and
+    the Program Counter (PC), holding the word-address of the instruction to be fetched nextly. All Branch
+    Instructions (BI) are conditional.
+  \item The memory consists of 32-bit words, and it is byte-addressed. Furthermore, there are 4 flag registers N,
+    Z, C and V, called the Condition Codes (CC).
+\end{itemize}
+
+There are 3 types of instructions and 4 instruction formats (F0-F3):
+\begin{itemize}
+  \item Register Instructions (RI) operate on registers only and feed data through a shifter or the
+    Arithmetic Logic Unit (ALU) (formats F0 and F1).
+  \item Memory instructions (MI) fetch and store data in memory (format F2).
+  \item BIs affect the PC (format F3).
+\end{itemize}
+
+\subsection{RI}
+RIs assign the result of an operation to the destination register $R.a$. The 1st operand is the register $R.b$
+and the 2nd operand $n$ is either register $R.c$ (format F0) or a constant $im$ (format F1).
+
+Immediate values are extended to 32 bits with 16 v-bits to the left. Apart from $R.a$, these instructions also
+affect the flag registers N(egative) and Z(ero). The ADD and SUB instructions also set the flags C(arry, borrow)
+and V (oVerflow).
+
+\subsection{MI}
+If $v = 0$, access is for a word (4 bytes). If $v = 1$, a single byte is accessed.
+
+\subsection{BI}
+If $u = 0$, the destination address is taken from register $R.c$. If $u = 1$, it is $PC + 1 + offset$. If $v = 1$,
+the link address $PC + 1$ is deposited in the register $R15$.
+
+\subsection{Special features}
+Modifier bit $u = 1$ changes the effect of certain instructions as follows:
+\begin{verbatim}
+  ADD', SUB' add, subtract also carry C
+  MUL' unsigned multiplication
+  MOV' form 0, v = 0: R.a := H
+  MOV' form 0, v = 1: R.a := [N, Z, C, V]
+  MOV' form 1 R.a := [im 16'b0] (im left shifted 16 bits)
+\end{verbatim}
+
+The MUL instruction deposits the high 32 bits of the product in the auxiliary register H. The DIV instruction
+deposits the remainder in H.
+
+\subsection{Interrupts}
+The addition of an interrupt facility required the addition of 2 new instructions, as well as the status register
+$intenb$ (interrupt enable). The instructions are
+\begin{verbatim}
+  RTI     1100 0111 xxxx xxxx xxxx xxxx 0001  Rn
+                         // return from interrupt
+  STI/CLI 1100 1111 xxxx xxxx xxxx xxxx 0010 000e
+              // set/clear interrupt, intenb := e
+\end{verbatim}
+
+These instructions are encoded as BIs with bits 4 or 5 set.
+
+\subsection{RISC0}
+The RISC architecture has been implemented on a Xilinx FPGA contained on the development board Spartan. RISC0
+stands at the origin of an evolving series of extensions. It represents a Harvard architecture, and it uses
+FPGA-internal RAM for its memory, which is restricted to 8K words of program and 8K words for data. It does not
+feature byte access, and the floating-point instructions are not available.
+
+RISC0's external devices are the following:
+\begin{table}[h!]
+  \centering
+  \begin{tabular}{r c l l}
+    adr &   hex   & input               & output \\\hline
+    -64 & 0FFFC0H & millisecond counter & \\
+    -60 & 0FFFC4H & switches            & LEDs \\
+    -56 & 0FFFC8H & RS-232 data         & RS-232 data \\
+    -52 & 0FFFCCH & RS-232 status\footnote{}
+                                        & RS-232 control
+  \end{tabular}
+\end{table}
+
+{\footnotesize 1 bit $0$: receiver ready,
+                 bit $1$: transmitter ready.}
+
+\subsection{RISC5}
+RISC5 is an extension of RISC0 based on a von Neumann architecture and uses the same instruction set. The memory
+consists of the board-internal SRAM with a capacity of 1 MB. Byte access is available, and so are floating-point
+instructions.
+
+RISC5's external devices are the following:
+\begin{table}[h!]
+  \centering
+  \begin{tabular}{r c l l}
+    adr &   hex   & input                & output \\\hline
+    -64 & 0FFFC0H & millisecond counter  \\
+    -60 & 0FFFC4H & switches             & LEDs \\
+    -56 & 0FFFC8H & RS-232 data          & RS-232 data \\
+    -52 & 0FFFCCH & RS-232 status        & RS-232 control \\
+    -48 & 0FFFD0H & disk, net SPI data   & SPI data \\
+    -44 & 0FFFD4H & disk, net SPI status & SPI control \\
+    -40 & 0FFFD8H & keyboard data (PS2) \\
+    -36 & 0FFFDCH & mouse (and kbd status)
+  \end{tabular}
+\end{table}
+
+A further added device is the video controller. It maps memory at 0E7F00H - 0FFEFFH onto the display (1024 x 768
+pixels).

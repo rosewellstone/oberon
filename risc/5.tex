@@ -1,0 +1,40 @@
+\documentclass[a5paper]{scrarticle}
+\usepackage{classicthesis}
+\usepackage[T1]{fontenc}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{amsmath}
+\usepackage{xcolor}
+
+\definecolor{cl1}{rgb}{0,0,1}
+\definecolor{cl2}{rgb}{0,1,0}
+\definecolor{cl3}{rgb}{0,1,1}
+\definecolor{cl4}{rgb}{1,0,0}
+\definecolor{cl5}{rgb}{1,0,1}
+\definecolor{cl6}{rgb}{1,1,0}
+
+\linespread{1.25}
+\setlength{\parskip}{1em}
+\setlength{\parindent}{0em}
+\titlespacing{\subsection}{0pc}{1pc}{0pc}
+\titlespacing{\subsection}{0pc}{1pc}{0pc}
+
+\begin{document}
+\title{The \colorbox{cl4}{\textcolor{white}{Design}}\\of\\a
+           \colorbox{cl1}{\textcolor{cl6}{RISC}} Architecture\\and\\its
+           \colorbox{cl3}{\textcolor{cl5}{Implementation}}\\with\\an
+           \colorbox{gray}{\textcolor{cl2}{FPGA}}}
+\author{Niklaus Wirth}
+\date{11.11.11\\\colorbox{black}{\textcolor{white}{Released}}\\Sept. $1^{st}$, 2015
+              \\\colorbox{black}{\textcolor{white}{Revised}}\\Aug. $9^{th}$, 2018}
+\maketitle
+%\tableofcontents
+\include{0}
+\include{1}
+\include{2}
+\include{3}
+\include{4}
+\appendix
+\include{a}
+\include{b}
+\end{document}

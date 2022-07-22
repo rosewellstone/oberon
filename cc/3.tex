@@ -1,0 +1,157 @@
+\section{1957-62: 1st Generation PLs}
+Constructing long sequences of instructions had been a tedious and error-prone
+activity. A remedy was 1st presented by IBM with the language \textbf{Fortran},
+standing for Formula Translator. The translator, a program later to be called
+compiler, was developed by a group under the guidance of John Backus in 1957.
+The goal was to replace assembler code by mathematical formulas, by variables
+and expressions. Whereas in assembler code every single instruction had to be
+listed, now this could be expressed more appealingly in a single line (punched
+card). For example, the instructions to add two variables and store the result
+\begin{verbatim}
+  LOD X
+  ADD Y
+  STO Z
+\end{verbatim}
+this would be expressed in Fortran as
+\begin{verbatim}[language=Fortran]
+  Z = X + Y
+\end{verbatim}
+Fortran was oriented to input from punched cards. They postulated a line of 80
+characters (capital letters only), with columns 73-80 reserved for card numbering
+(useful if you dropped the card deck!). A C in column 7 meant that the card
+contained a comment. There were no declarations and no data types, except that a
+variable’s name beginning with I, J, ..., N denoted an integer, all others
+floating-point (real) numbers. Fortran featured subroutines. They were to be compiled
+independently, and no checking of parameter consistency was performed. Fortran
+introduced the notion of program libraries (mostly for mathematical functions).
+
+Fortran proved to be a remarkable feat. The techniques of translation had to be
+invented from scratch. Fortran remained the Standard tool for decades to come.
+Particularly research laboratories and universities, where numeric calculations
+were dominant, stuck to Fortran for decades to come, although more powerful
+languages had emerged. As time went on, they had amassed huge amounts of
+programs, now called software, and invested so much effort, that it seemed
+impossible to depart from Fortran. This led to the phenomenon legacy software.
+
+The first alternative to Fortran was presented in 1958 by a group of European
+scientists. Their language was called Algol, standing for Algorithmic Language. It
+was revised by a group of 13 European and American scientists and was
+announced at the IFIP (International Federation of Information Processing
+Societies) Congress in Paris in 1960. This language became known as Algol 60
+and was supposed to become the international standard. It was felt that such an
+important concept was not to be left to a single commercial company. The
+following highlights were the hallmark of Algol 60:
+\begin{enumerate}
+  \item The language was defined by a concise report, edited by Peter Naur. The
+  basis was a formal notation to specify the structure (syntax) of the language.
+
+  \item The notation for program texts was in a free format, merely as sequences
+  of characters, or rather basic symbol of the language. These symbols constituted
+  its vocabulary. There was no reference to 80-column punched cards.
+
+  \item Programs were given a structure by the grammar (or syntax) of the language.
+  This syntax was defined by a set of productions (or derivation rules), based on
+  a strictly defined meta-notation called Backus-Naur Form (BNF).
+
+  \item The vocabulary consisted of (capital and lower-case) letters, digits, and
+  special symbols (such as \texttt{+ - \textless \textgreater ;} etc.), and
+  reserved words (such as \texttt{begin} and \texttt{end}).
+
+  \item Every variable was to be declared in a declaration.
+
+  \item Every variable, constant, or expression was given a type. The standard data
+  types were \texttt{Integer}, \texttt{Real}, and \texttt{Boolean}.
+
+  \item The type \texttt{Boolean} specified the two logical values \texttt{True}
+  and \texttt{False}, and logical operators.
+
+  \item Expressions could contain sub expressions. They could be recursive.
+
+  \item Procedures (subroutines in Fortran) could be recursive.
+
+  \item A sequence of statements could be expressed as a begin-end block with
+  declarations. Variables declared within a block were considered as local to this
+  block. The concept of \emph{locality} proved to be of utmost importance in
+  programming methodology.
+
+  \item The language definition was machine-independent.
+\end{enumerate}
+
+It was the structured description of the language, the syntax, that promoted the
+term language, although it is actually a misnomer. A language is spoken, a
+programming language is not. The term formalism would have been more appropriate,
+but the term language persists to the present day.
+
+Algol, just as Fortran, was oriented to the needs of numerical computation. This in
+contrast to commercial applications such as accounting and book-keeping. But
+while the continuing growth of the user community was assured for Fortran due to
+the support of a mighty industrial player, that of Algol never became large. Algol
+remained confined to the academic communities, mainly in Europe, and remained
+largely unknown in the US, although it was far superior.
+
+To cater for the needs of the commercial world, the language Cobol was invented
+in 1962 (Common Business Oriented Language, Jean Sammet of IBM) and
+promoted by the US Department of Defense (DoD). By academics it was
+considered as far too verbose, trying to accommodate users disinclined to
+mathematical conciseness. Cobol obtained a very large user community. Just as
+computers with binary vs. decimal arithmetic had separated the academic from the
+commercial world, so did now the languages.
+
+Another notable development, was the language Lisp (List Processing, McCarthy,
+1962). In contrast to all others, this language was very terse. Not repetition but
+recursion was its distinctive property. All elements of data were nodes of a
+dynamic data structure. These nodes were either numbers or (short) names, or
+pairs referencing two descendant nodes. Thereby (recursive) structures, such as
+lists or trees of arbitrary complexity could be generated during program execution
+(i.e. dynamically).
+
+The amazing property of Lisp was its utmost simplicity. There existed only a single
+data type, appearing in 2 variants. The 1st was a pair of pointers to 2 other
+elements. The 2nd was a value, typically a number or a few letters. There existed
+only a few basic functions allowing to construct arbitrary lists and trees. A Lisp
+program was a single function application, which in turn called other (programmer
+defined) functions. Lisp was therefore said to be a functional language:
+\begin{table}[h!]
+  \begin{tabular}{c l}\\
+    \texttt{CONS}$(x, y)$ & construct a new list with $x$ and $y$ \\
+    \texttt{ CAR}$(t)$    & get the 1st element from list $t$ \\
+    \texttt{ CDR}$(t)$    & get the rest(other than the 1st) one(s) of $t$ \\
+    \texttt{ATOM}$(x)$    & whether $x$ is NOT a list but an atom element
+  \end{tabular}
+\end{table}
+
+This property brought attention to the problem of storage allocation and, mainly,
+storage reclamation to the foreground. The solution lay in automating storage
+recovery (reuse of storage of no longer accessible data). It was soon to become
+known as \emph{garbage collection}.
+
+Oddly enough, Lisp became known as the language of Artificial Intelligence (AI),
+a subject that came up during this time, encompassing many applications that were
+of a non-numerical nature. But there was no “AI" in the language itself.
+Nevertheless, the AI community staunchly adhered to Lisp. One distinctive feature
+may be accountable for this fact: Lisp code itself was represented by Lisp data
+structures, and therefore a generated structure could be regarded as an
+interpretable program. Hence, Lisp programs could extend and alter themselves,
+a rather dangerous facility.
+
+Although Algol never became a widely used language, its influence was profound
+in the fields of language design and implementation. This was due to its precise,
+formal definition. A flurry of activities started in academia, and languages
+proliferated in all directions. They were mostly local developments that soon
+vanished from the scene again. The new subject of Computer Science (CS) emerged
+mostly due to language design and programming. Languages hardly fitted into
+mathematics nor electrical engineering departments. Of particular relevance was
+the subject of parsing formal texts, the substance of compilers. Parsers could
+now be derived directly from the syntax specifications of a language, and were
+no longer ad-hoc, empiric algorithms. The 2 principles of top-down and bottom-up
+parsing became heavy competitors. Unfortunately, it was believed that a syntax
+could well be defined without giving consideration to parsing, and as a result
+rather sophisticated parsing schemes emerged. This was unfortunate, because with
+few exceptions a language could be given a syntax that could be treated by a
+simple and efficient parser.
+
+Some efforts attempted to formalize not only the syntax, but also the semantics
+(meaning). The formal definition of semantics, however, is an elusive subject,
+and therefore these efforts were condemned to fail. Still, all these activities
+gave CS a touch of academic respectability and maturity, counteracting the view
+that CS was primarily an arena of practitioners.

@@ -1,0 +1,123 @@
+\section{1963: B-5000}
+\label{sec:B5K}
+It was to be hoped that the innovative design of Algol would extend its influence on
+computer development. And it did. Algol turned out to be difficult, if not impossible,
+to implement efficiently and to make it competitive with Fortran concerning
+execution speed. Already in the early 1960s some computers appeared that
+catered to Algol's specific features, emphasis given to the implementation of
+general expressions and of recursive procedures.
+
+In order to translate expressions of Algol's generality into sequences of simple
+instructions, they are typically converted from infix to postfix form:
+\begin{table}[h!]
+  \centering
+  \begin{tabular}{l l}\\
+    infix         & postfix \\\hline
+    x + y         & x y + \\
+    x + y + z     & x y + z + \\
+    (x+y) * (z-w) & x y + z w - *
+  \end{tabular}
+\end{table}
+
+This allows a straight-forward evaluation, if operands can be stacked (pushed onto
+a first-in-last-out stack). Then operators simply replace operands by the result.
+Computer designers therefore accommodated compiler designers by providing a
+push-down stack in place of a register array. Effectively, the stack is an array with
+implied up-down counter used as index, and the net effect is that register numbers
+can be omitted in the code. This leads to denser code.
+The idea of a (hardware) stack appeared as very attractive, and both the British
+and the Dutch Electronica X8 implemented it. The Burroughs B5000 also
+adopted the concept, implementing the top two elements as registers. Transfer of
+lower elements of the stack to and from memory was automated by a fairly
+complex scheme.
+
+It is noteworthy that the B5000 used the same encoding for integers and real
+numbers with a 39-bit mantissa, a 6-bit exponent, and a base B = 8, integers with
+exponent = 0. The program code consists of 12-bit syllables, 4 to a word.
+
+In the long run, the idea of the expression stack did not catch on and disappeared
+form the scenery. Direct register numbers in the code seemed preferable, and
+sophisticated optimization algorithms make the best of it.
+
+The most challenging feature of Algol, however, were recursive calls of
+procedures. Consider
+\begin{verbatim}[language=Algol]
+  PROCEDURE P(x: INTEGER);
+  BEGIN
+    IF x > 0 THEN P(x-1) END
+  END P
+\end{verbatim}
+
+For every (recursive) call of P a new incarnation of $x$ is created and must be
+allocated. The same would hold for local variables. The evident solution is a stack
+of frames, each holding parameters, local variables, and the return address. As a
+consequence, every variable cannot be accessed by a simple, static address, but
+by an address, to which the base address, the address of the containing frame, is
+added. This base must be available from an index register, to be initialized upon
+call of the procedure (and restored on exit).
+
+A nasty problem with existing main frame computers was the acquisition of the
+return address (also to be deposited in the frame). The worst solution was that of
+the CDC 6000 super computer. Its call instruction deposited the return address in
+the memory location preceding the call address (i.e. in front of the procedure's first
+instruction. This scheme writes into the program, and thereby makes the code
+non-reentrant. Clearly an unacceptable solution.
+
+The efficient and elegant implementation of recursion requires a suitable
+addressing mode with specific address registers (stack pointer, frame pointer). The
+B5000 offers these ingredients. As a result, however, a call instruction constitutes
+a fairly complicated scheme with several accesses to memory, requiring complex
+circuitry and time.
+
+But Algol had some further hard nuts in store. A major stumbling block was its
+so-called name-parameter. It postulated the literal replacement of the formal
+parameter by the actual parameter. The best example for its use is the following
+procedure (here translated into the syntax of Pascal):
+\begin{verbatim}[language=Pascal]
+  PROCEDURE Sum(i,n: INTEGER; x: REAL): REAL;
+    VAR s: REAL:
+  BEGIN s := 0;
+    FOR i := 0 TO n-1 DO s := x+s END;
+    RETURN s
+  END Sum;
+\end{verbatim}
+Given further variables
+\begin{verbatim}[language=Pascal]
+  k: INTEGER;
+  a: ARRAY 100 OF REAL;
+\end{verbatim}
+the sum of the elements of $a$ can be expressed by the function call
+\begin{verbatim}[language=Pascal]
+  Sum(k, 100, a[k])
+\end{verbatim}
+rendering the FOR statement into
+\begin{verbatim}[language=Pascal]
+  FOR k := 0 TO 100-1 DO s := a[k] + s END
+\end{verbatim}
+
+This implies that for every addition the actual parameter $a[k]$ must be evaluated,
+and that therefore it must be called like a (parameter-less) function. The feature
+complicates compilation of procedure calls enormously. The B-5000 pushed this
+complication from the compiler (software) into hardware: Instructions for fetching a
+value must first inspect (at run-time) whether an operand is a variable or a function
+call. Discrimination was based on a bit in every operand, indicating whether it is a
+simple variable or a descriptor (of the function).
+
+The B5000 introduced the concept of descriptors and is said to have a Descriptor
+architecture. In particular, every array is represented by an array descriptor, just as
+procedures are represented by procedure descriptors. The array descriptor also
+contains the array index bounds, and an array access tests the index to be within
+these bounds. The net effect of the descriptor scheme was that almost every
+variable access required an indirection, and therefore more time.
+
+In most cases, computer engineers had little notion about languages and
+compilers, and language designers had little knowledge about hardware design
+and even less about compiling. They were even proud of this and believed that
+true innovation could occur only by ignoring technical constraints. The result was a
+gap between software and hardware. The B5000 designers tried to bridge this gap
+courageously. But in hindsight they went too far. They implemented language
+features that proved to be not quite realistic, nor truly needed. As a consequence,
+the B5000 computer, delivered in 1964, one of the first to Stanford University,
+became a very complex, costly device. It could efficiently handle sophisticated
+Algol features, but it could hardly compete with conventional machines for
+everyday applications.

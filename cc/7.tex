@@ -1,0 +1,31 @@
+\section{1964: Family Notion and 8-bit Byte}
+IBM's System 360 was announced in 1964. It brought 2 other innovations. The
+1st was the notion of a computer family. Up to this time, every computer had its
+own structure and performance; it was sort of unique. Now System 360 consisted
+of many incarnations of one and the same instruction set. Each incarnation, called
+model, had its distinct performance figures, size and price. But all of them looked
+the same to the programmer. In this sense they formed a family; they featured the
+same architecture. This is where the word architecture in connection with
+computers appeared.
+
+It goes without saying that the different models had very different implementations
+of the hardware, although they were handling the same software. For the first time,
+the technique of emulation was used extensively. The smaller models used the
+novel technique of micro-programs. The genuine hardware always interpreted the
+same program, namely an interpreter of the 360 instruction set. The interpreter
+was defined in so-called microcode. This micro-code rested in a small but very fast
+microcode memory, typically a read-only memory implemented in a proprietary
+technology. The consequence was that some of the 360's instructions were fast,
+others slow in comparison. It was possible to include some very complex and hard
+to understand instructions. Some of them even included loops in the micro-code.
+
+The 2nd novelty was that the smallest individually addressable unit in memory
+was not the word, but the byte, and that this byte consisted of 8 bits. So far, that
+unit was considered as consisting of 6 bits, and the word length of all computers
+were multiples of 6. An immediate negative consequence had been the limitation of
+character sets (ASCII and IBM's EBCDIC) to 64 characters. The extension to 256
+characters was a welcome benefit.
+
+This revolutionary step also dispensed with "variable length data computers", such
+as the ubiquitous IBM 1401, which featured string instructions, which operated on
+sequences of 9-bit bytes, the 9th bit acting as a string termination indicator.

@@ -1,0 +1,112 @@
+\section{Correctness Concerns}
+The tremendous increase of computing power clearly resulted in rapidly growing
+demands on software which became larger and more intricate, but still being
+produced by old methods and teams. Gradually it became admitted that programming
+was a difficult intellectual activity, and that sometime had to be done to
+curtail difficulties, that a discipline was required.
+
+The leading voice in this new insight was E. W. Dijkstra, well-known for his
+slashing of the \emph{goto} statement, leading to undisciplined program structures.
+His 1st contribution was to establish a style of \emph{structured programming},
+implying less \emph{goto} programs. But he also tackled and categorized problems
+arising with the new discipline of \emph{concurrent programming}, where several
+programs run at the same time, communicating via shared variables. He showed that
+these problems could not be handled using assignments present in established
+languages. He presented his famous scenario of 2 (or more) sequential processes,
+each with a critical section, and with the rule that never more than one process
+was to execute its critical section. At 1st sight an obvious solution is the
+following, using 2 state variables:
+\begin{verbatim}[language=Algol]
+  // qi means Pi enters its critical section
+  VAR q0, q1: BOOLEAN;
+
+  PROCESS P0;
+  REPEAT ...
+    IF ~q1 THEN q0:=TRUE; CS; q0:=FALSE END;
+    ...
+  END P0
+
+  PROCESS P1; REPEAT ...
+    IF ~q0 THEN q1:=TRUE; CS; q1:=FALSE END;
+    ...
+  END P1
+\end{verbatim}
+
+A long controversy ensued, alternating with new proposals how to solve the
+problem and proves that the proposals were wrong. It became clear that a new
+instruction was needed that offered a test and an assignment in an atomic fashion.
+i.e. without letting another process interfere. Dijkstra postulated his
+semaphores with primitives
+\begin{verbatim}[language=Algol]
+  P(s)  wait until s > 0, then decrement s
+  V(s)  increment s
+\end{verbatim}
+
+After it became fully recognized that programming was a difficult activity, it
+also became clear that programming languages, being the basic, mathematical
+formalism, had to be specified with rigor and accuracy. Algol had been the 1st
+language defined with a rigorous syntax specification. But its semantics were
+less clear, and sometimes even diffuse, certainly not appropriate for the
+application of formal, logical proofs.
+
+The 1st step towards formally defined semantics was made by R. Floyd at
+Stanford in 1968. He created the notion of \emph{assertion}. These are
+predicates involving the program's variables, conditions that were to hold
+whenever program execution reached the place where the assertion stood. Every
+statement $S$ was to be preceded by an assertion $P$ (precondition) and followed
+by an assertion $Q$ (post condition) satisfied after $S$ was executed. It was
+thought that $Q$ could then be computed from $P$ and $S$ by a program analyzer
+or theorem prover. The semantics (meaning) of a statement $S$ was defined by
+the triple $\{P\}\ S\ \{Q\}$. Assignment can now be formally specified by
+\begin{verbatim}[language=Algol]
+  {P(y)} x := y {P(x)}
+\end{verbatim}
+
+Soon afterwards, C.A.R. Hoare published his seminal paper entitled "Axiomatic
+definition of programming languages". Here the key idea was that the semantics of
+composite statements could be derived from the semantics of their components.
+As an example, the semantics of the while statement for repetitions were specified
+as follows:
+
+Given $\{P\}\ S\ \{Q\}$, where $P$ is a predicate, then for the while statement
+\begin{verbatim}[language=Algol]
+  {P} WHILE b DO S END {P & ~b}
+\end{verbatim}
+holds. $P$ is called its \emph{loop invariant}. The 2nd part of a proof about repetitive
+statements must show that progress is guaranteed, that is, that the repetition will
+ultimately terminate by invalidating $b$.
+
+E. W. Dijkstra then refined the theory and introduced the notion of predicate
+transformer. Given a statement $S$ and a predicate $P$, $S$ would transform $P$ into
+$Q$, i.e. $Q = F(P, S)$, where $F$ is a Boolean function. It turned out that it was
+more useful to define the transformer as $P = F'(S, Q)$, i.e. to work backwards from
+the result to the precondition when proving program correctness: Postulating a desired
+result, and then working backwards to find out which states would be acceptable as
+starting points of the computation.
+
+Dijkstra was a leading member of the WG 2.1. and an ardent advocate of a scientific,
+mathematical, rigorous approach to programming. He was a strong critic of empirical
+approaches, of designing by trial and error, and an emphatic advocate of programming
+as mathematical engineering. Well-known remains his skepticism about program testing.
+He noted that testing can show the presence of errors, but never prove their absence.
+Another harsh dictum of his was "Do not give industry what it wants, but what it needs".
+He also chided that many people mix up conventional with convenient.
+
+Although it was soon realized that correctness proving was an arduous task, the
+influence of this development was strong on the discipline of programming. It was an
+incentive to keep languages simple and to proceed in programming always with
+correctness concerns in mind. But all his statements did not win Dijkstra admirerers
+only.
+
+The problems with correctness proofs are three-fold. 1st, the proofs become equally
+long, tedious, and perhaps error-prone as the programs themselves. 2nd, specifications
+of a program's pre-condition and post-condition are usually very complex, almost as
+complex as the programs themselves, or even worse. 3rd, most programmers lack the
+facilities to reason about formal logic to a degree required here. Nevertheless, this
+work on correctness proving exerted a distinct influence on how programs are now
+developed: With their proof in mind.
+
+Meanwhile, programming, or rather software engineering as it became called, had
+become a business of its own, independent of hardware on which programs rested. The
+term unbundling, created in legal disputes in the 1970s, had become the way of life.
+Companies like Microsoft were the visible result.

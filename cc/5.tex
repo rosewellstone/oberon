@@ -1,0 +1,55 @@
+\section{1960-: Compiler Construction}
+Around 1962 language design and compiler implementation had become important
+topics in CS. The publication of Algol in 1960 with its rigorous definition of
+its syntax gave rise to strong efforts in the development of parsing methods. It
+was recognized that compilers must be driven by their parser, decomposing the
+text into its structural entities, and that then code was to be generated for
+the individual entities. Given a complex syntax, parsing was to be efficient.
+
+Soon two basically different methods emerged, the top-down and the bottom-up
+methods. The direction is that of the traversal of the syntax tree of the text
+to be parsed. Hence, the top-down method always starts with "program" as the
+parsing goal, and then subdividing this goal into sub goals.
+
+This intuitively obvious method is somewhat limited and unsuitable for certain
+kinds of grammars. A more powerful method is the bottoms-up parsing, which
+simply reads text and recognizes structural units, and then composes higher units
+out of subunits, until the goal "program" is reached. This method is table-driven.
+The tables can be generated automatically from the given syntax.
+
+Whereas early compilers were essentially, but not systematically top-down parsers,
+subsequent developments favored the bottom-up method, because it admitted more
+complex grammars, which seemed to be advantageous for the ever growing complexity
+of new languages such as PL/1 (IBM) and Pascal.
+
+But the argument is a fallacy. As the language designer has many freedoms, he
+must not ignore the problems of parsing, but choose the syntax so that parsing is
+as simple as possible. Evidently, this recommendation was gallantly ignored,
+particularly after parser generators had become available. A syntax seemed to be
+God-given, and it was up to the implementers to cope with possible difficulties.
+
+However, the real crux of compiler construction lies in code generation which
+resists systematization until the present days. What made the task so difficult
+was the evident mismatch of given computer architectures and language features.
+Computers had been designed with Fortran in mind, and their instruction sets were
+oriented towards the language elements that Fortran carried. But Algol 60 and
+PL/1 changed the scene drastically. A few example must suffice.
+
+The 1st, and perhaps minor challenge was the handling of complicated expressions
+with only 1 or 2 registers available. This topic became easier with the later
+advent of computers with banks of registers, and much effort went into optimizing
+the code. A much greater challenge was the handling of procedures with local
+variable. These allowed the reuse of storage without the programmer's having to
+be aware of it. The admission of recursion in Algol made it possible that several
+incarnations of local variables had to be allocated (dynamically, at run-time).
+Therefore variables had to be addressed via a register designating the relevant
+set. All this gave rise to the use of a stack (of local variable frames)
+supported by dedicated registers holding base addresses. But such were not
+available of the prevalent computers.
+
+Therefore, these facilities had to be implemented by software, sharing the few
+registers for different purposes, and thereby reducing execution speed. As a
+result, Algol with its generality and with recursion was said to be intrinsically
+inefficient and inferior to Fortran. And then, numeric computations did not
+require recursion. Hence, Fortran was for "the real world", whereas Algol
+appeared as a luxury for tinkers.

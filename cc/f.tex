@@ -1,0 +1,44 @@
+\section{1979: Modula-2 and C++}
+Towards 1975 a distinct need for an update of Pascal lay in the air. I felt so in
+particular upon encountering Mesa. Hence, just as Mesa was the language for the
+Alto, I designed Modula-2 for the Lilith. The main inspiration came from Mesa. But
+Mesa was already far too complex. I felt that Modula should be closer to the spirit
+of Pascal, and in particular should be suitable for teaching and use in courses on
+system design.
+
+For this purpose, it had to offer facilities for low-level programming, i.e. for dealing
+with hardware entities and machine-dependent features. This notion was greatly
+facilitated by the new concept of modules, already present in Mesa. Modules allow
+to hide local variables and procedures, prohibiting access from other modules, i.e.
+to encapsulate them. Systems would now consist of a hierarchy of modules, client
+modules at a higher level importing service modules at lower levels. It was no
+longer tolerable that programs would be described in one piece of monolithic text.
+Development by teams of programmers had become mandatory, and languages
+had to cater for this. The heading of modules constituted an interface specification,
+revealing which objects would be accessible form client modules. Of crucial
+importance was that these objects would be checked for type consistency, just as it
+was done for local entities.
+
+To implement these new requirements proved to be a significant challenge. A
+simple solution was to "include" the source of a module B by the source of module
+A, if A was to be compiled. But this was not only considered inefficient, but also
+insecure, because B could have undergone alterations since A had been designed.
+Nevertheless, commercial systems adopted this deficient solution. Our solution
+was to let the compiler not only generate a code file, but also a symbol file,
+containing the compiled specifications of the exported entities.
+
+However, Modula had grown into a language of considerable size and complexity.
+This appeared to be the inevitable alley that languages and systems would have to
+pass in order to meet the growing number of demands and expectations. The
+world was doomed to become more complicated.
+
+Another language emerging from C underwent the same fate: C++. Its ominous
+name already hints at an over-sized monster. It passed through various versions
+as time went on, each time including new feature, and each time becoming bigger
+and heavier and more difficult to master. However, like C it gained wide-spread
+acceptance and became the favorite for industrial software managers. Instead of
+being leaders, educational institutions followed blindly. Along with this went the
+emergence of huge software "libraries", mutating programming into the art of
+selecting (more or less) appropriate packages to be fitted together into a (more or
+less) coherent whole. The excuse for big libraries was that programmers must no
+longer stand on the others' feet, but on their shoulders.
