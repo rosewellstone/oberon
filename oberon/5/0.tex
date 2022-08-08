@@ -1,0 +1,71 @@
+\chapter{Text}
+\label{ch:text}
+At the beginning of the computing era, text was the only medium mediating information
+between users and computers.  Not only was a textual notation used to denote
+all kinds of data and objects via names and numbers
+(represented by sequences of characters and digits respectively),
+but also for the specification of programs
+(based on the notions of formal language and syntax) and tasks.
+Actually, not even the most modern and most sophisticated computing environments
+have been able to make falter the dominating role of text substantially.
+At most, they have introduced alternative models like graphical user interfaces (GUI)
+as a graphical replacement for \emph{command lines}.
+
+There are many reasons for the popularity of text in general
+and in connection with computers in particular.  To name but a few:
+\begin{itemize}
+  \item Text containing any arbitrary amount of information can be built
+    from a small alphabet of widely standardized elements (characters),
+  \item their building pattern is extremely simple (lining up elements), and
+  \item the resulting structure is most elementary (a sequence).
+\end{itemize}
+And perhaps most importantly, \emph{syntactically structured text
+can be parsed and interpreted by a machine}.
+
+In computing terminology, sequences of elements are called \emph{files} and,
+in particular, sequences of characters are known as \emph{text files}.
+Looking at their binary representation, we find text files excellently suited
+to be stored in computer memories and on external media.
+Remember that individual characters are usually encoded in 1 byte each (ASCII).
+We can therefore identify the binary structure of text files with sequences of bytes,
+matching perfectly the structure of any underlying computer storage.
+We should recall at this point that, with the possible exception of line-break control characters,
+rendering information is not part of ordinary text files.
+For example, the choices of character style and of paragraph formatting parameters
+are entirely left to the rendering interpreter.
+
+Unfortunately, in conventional computing environments, text is merely used for input/output,
+and its potential is not nearly exploited optimally.
+Input texts are typically read from the keyboard under control of some text editor,
+interpreted and then discarded.  Output text is volatile.
+Once displayed on the screen it is no longer available to any other parts of the program.
+The root of the problem is easily located:
+Conventional OSes neither feature an integrated management
+nor an abstract programming interface (PI) for texts.
+
+Of course,
+such poor support of text on the level of programming must reflect itself on the user surface.
+More often than not, users are forced to retype a certain piece of text
+instead of simply copy/pasting it from elsewhere on the screen.
+Investigations have shown that, in average,
+up to 80\% of required input text is already displayed somewhere.
+
+Motivated by our positive experience with integrated text in the Cedar system \cite{Teitelman}
+we decided to provide a central text management in Oberon at a sufficiently low system level.
+However, this is not enough.  We actually need an abstract PI for text, that is,
+an abstract data type \verb|Text|, together with a complete set of operations.
+We shall devote \ref{sec:textyp} to the explanation of this data type.
+In \ref{sec:textmanagement}, we take a closer look at the basic text management,
+including data structures and algorithms used for the implementation of type \verb|Text|.
+
+Text frames are a special class of display frames.  They appear typically (but not necessarily)
+as frames within a menu viewer (see \ref{sub:menuviewers}).  Their role is double-faced:
+a) Rendering text on the display screen, and
+b) interpreting interactive editing commands.
+The details will be discussed in \ref{sec:textframes}.
+
+With the aim of exploiting the power of modern bitmap-displays
+and also of reusing the results of earlier projects in the field of digital font design,
+we decided in favor of supporting “rich texts” in Oberon, including graphical attributes
+and in particular font specification.  In \ref{sec:fontmachinery} we shall explain the font machinery,
+starting from an abstract level and proceeding down to the level of raster data.
