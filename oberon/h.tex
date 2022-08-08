@@ -63,6 +63,7 @@ easily be exchanged. Modules are connected with the processor by the input and t
 and by enable signals wr and rd.
 
 \subsection{The PS/2 interface for the keyboard}
+\label{sub:ps2}
 PS/2 is mostly used for input devices. It uses 2 wires (apart from ground)., one for data, one for the
 clock. It uses a synchronous transmission, and the clock is driven by the device. Here it is used for
 the keyboard and the mouse (see Sect. 17.2.5). Transmission occurs in packets of 8 bits. An
@@ -218,6 +219,7 @@ endmodule
 \end{verbatim}
 
 \subsection{The SPI interface for the SD-card (disk) and the Net}
+\label{sub:spi}
 SPI (Standard Peripheral Interface) is similar to PS/2, and also synchronous. However, there may
 be many participants. They are configured in a loop as shown in Figure \ref{fig:ring}, and the clock is
 provided by a master, namely the RISC. SPI requires 3 wires (apart from ground).
@@ -267,6 +269,7 @@ a somewhat twisted scheme for shifting bits (see Figure \ref{fig:msb}).
 \end{figure}
 
 \subsection{The display controller}
+\label{sub:dispctrl}
 A controller for a raster scan display feeds data from memory to the display. The data area in
 memory is called frame buffer. It contains a fixed number of bits for each pixel on the screen. In this
 case, there is exactly one bit per pixel, signalling black or white. For a 1024 x 768 pixel display
@@ -360,6 +363,7 @@ assign SRadr = dspreq ? vidadr : adr[19:2];
 \end{verbatim}
 
 \subsection{The RS-232 interface}
+\label{sub:rs232}
 RS-232 is an old standard for serial data transmission (see also Sect. 9.4). We chose to describe it
 here in detail because of its frequent use and inherent simplicity. RS-232 uses 2 wires (apart from
 ground), one for input (RxD) and one for output (TxD) as shown in Figure \ref{fig:rs232cfg}. Data are

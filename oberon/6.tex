@@ -54,10 +54,10 @@ comes to mind is a list of module blocks containing sections for the global data
 and perhaps meta data for the linking process. The list is rooted in a variable global to the loader
 module, here called Modules.
 \begin{figure}
-	\label{fig:4modules}
-	\centering
-	\includegraphics[width=\textwidth]{i/j}
-	\caption{System of 4 modules}
+  \label{fig:4modules}
+  \centering
+  \includegraphics[width=\textwidth]{i/j}
+  \caption{System of 4 modules}
 \end{figure}
 
 The first part, containing the link to the next module, is called the module descriptor. On the Oberon
@@ -86,10 +86,10 @@ for all $mod$ in the module list. $size$ is the entire module block's size exclu
 is the number of other modules importing this module. This number is used to check whether a
 module can be released by procedure $Modules.Free$.
 \begin{figure}
-	\label{fig:module-block}
-	\centering
-	\includegraphics[width=.6\textwidth]{i/k}
-	\caption{Module block headed by descriptor}
+  \label{fig:module-block}
+  \centering
+  \includegraphics[width=.6\textwidth]{i/k}
+  \caption{Module block headed by descriptor}
 \end{figure}
 
 The section with meta data follows the data and code areas and consists of several parts. Imports is

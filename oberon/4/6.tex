@@ -1,0 +1,89 @@
+\section{Standard display configs and toolbox}
+\label{sec:stdispconf}
+Let us now take up again our earlier topic of configuring the display area. We have seen that
+no specific layout of the display area is distinguished by the general viewer management itself.
+However, some support of the familiar standard Oberon display look is provided by \verb|Oberon|.
+
+In the terminology of this module, a standard configuration
+consists of one or several horizontally adjacent displays,
+where a display is a pair consisting of 2 equal height tracks,
+\begin{table}[h!]
+  \centering
+  \begin{tabular}{l}
+    a \emph{user track} on the left, and \\
+    a \emph{system track} on the right.
+  \end{tabular}
+\end{table}
+\\Note that even though no reference to any physical monitor is made,
+a display is typically associated with a monitor in reality.
+This is the relevant excerpt of the definition:
+\begin{verbatim}
+ DEFINITION Oberon;
+   PROC OpenDisplay(UW, SW, H: INT);
+   PROC OpenTrack(X, W: INT);
+   PROC DisplayWidth (X: INT): INT;
+   PROC DisplayHeight(X: INT): INT;
+   PROC UserTrack    (X: INT): INT;
+   PROC SystemTrack  (X: INT): INT;
+   PROC AllocateUserViewer  (DX: INT; VAR X,Y: INT);
+   PROC AllocateSystemViewer(DX: INT; VAR X,Y: INT);
+ END Oberon.
+\end{verbatim}
+\begin{itemize}
+  \item \verb|OpenDisplay| initializes and opens a new display of
+    \begin{table}[h!]
+      \centering
+      \begin{tabular}{r r}
+	parameter & dimension \\\hline
+        \verb|UW| &   User track Width, \\
+        \verb|SW| & System track Width, \\
+        \verb|H|  & Height.
+      \end{tabular}
+    \end{table}
+  \item \verb|OpenTrack| overlays the sequence of existing tracks spanned by the segment
+    \verb|[X, X + W)| by a new track.
+  \item Both \verb|OpenDisplay| and \verb|OpenTrack| take from the client
+    the burden of creating a filler viewer.
+  \item \verb|DisplayWidth|, \verb|DisplayHeight|, \verb|UserTrack| and \verb|SystemTrack|
+    return width or height of the respective structural entity located at position \verb|X|
+    in the display area.
+  \item \verb|AllocateUserViewer| and \verb|AllocateSystemViewer|
+    make proposals for the allocation of a new viewer
+    in the desired track of the display located at \verb|DX|.
+\end{itemize}
+In 1st priority, the location is determined by the system pointer that can be set manually.
+If the pointer is not set, a location is calculated on the basis of some heuristics
+whose strategies rely on different splitting fractions
+that are applied in the user track and in the system track respectively,
+with the aim of generating aesthetically satisfactory layouts.
+
+In addition to the programming interface provided by \verb|Oberon|
+for the case of standard display layouts,
+the display management section in the \verb|System| toolbox provides a user interface:
+\begin{verbatim}
+  DEFINITION System; (*Display management*)
+    PROC Open;   (*viewer*)
+    PROC Close;  (*viewer*)
+    PROC CloseTrack;
+    PROC Recall; (*most recently closed viewer*)
+    PROC Copy;   (*viewer*)
+    PROC Grow;   (*viewer*)
+    PROC Clear;  (*system log*)
+  END System.
+\end{verbatim}
+In turn, these commands are called to
+\begin{table}[h!]
+  \centering
+  \begin{tabular}{l}
+    open a text viewer in the system track, \\
+    close a viewer, \\
+    close a track, \\
+    recall (and reopen) the most recently closed viewer, \\
+    copy a viewer, \\
+    grow a viewer, and \\
+    clear the system log.
+  \end{tabular}
+\end{table}
+\\\verb|Close|, \verb|Copy|, \verb|Grow|, \verb|CloseTrack|, and \verb|Recall| are generic commands.
+The 1st 3 are typically included in the title bar of a menu viewer.
+Their detailed implementations follow subsequently.

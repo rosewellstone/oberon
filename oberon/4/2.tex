@@ -1,0 +1,78 @@
+\section{Viewers as Objects}
+\label{sec:viewers}
+Although everybody seems to agree on the meaning of the term \emph{viewer},
+no 2 different system designers actually do.  The original role of a viewer
+as merely a separate display area has meanwhile become heavily overloaded
+with additional functionality.  Depending on the underlying system are viewers' individual views
+on a certain configuration of objects, carriers of tasks, processes, applications, etc.
+Therefore, we first need to define our own precise understanding of the concept of viewer.
+
+The best guide to this aim is the abstract data type \verb|Viewer| we introduced in \ref{ch:task}.
+We recapitulate: \verb|Viewer| serves as a template describing viewers abstractly as “black boxes”
+in terms of a state of visibility, a rectangle on the display screen, and a message handler.
+The exact functional interface provided by a given variant of viewer
+is determined by the set of messages accepted.
+This set is structured as a customized hierarchy of type extensions.
+
+We can now obtain a more concrete specification of the role of viewer
+by identifying some basic categories of universal messages
+that are expected to be accepted by all variants of viewer.
+For example, we know that messages reporting about user interactions
+as well as messages defining a generic operation are universal.
+These 2 categories of universal messages document the roles of viewers as interactive tasks
+and as parts of an integrated system respectively.
+In total, there are 4 such categories.
+They are here listed together with the corresponding topic and message dispatchers:
+\begin{table}[h!]
+  \setlength{\tabcolsep}{3pt}
+  \begin{tabular}{r|l|l}
+    Dispatcher               &Topic
+                             &Message \\\hline
+    {\small  task scheduler} &{\small dispatching tasks}
+                             &{\small report user interaction }\\
+    {\small cmd interpreter} &{\small processing command}
+                             &{\small define generic operation}\\
+    {\small    view manager} &{\small organizing display area}
+                             &{\small location/size change}\\
+    {\small     doc manager} &{\small operating on document}
+                             &{\small content/format change}
+  \end{tabular}
+\end{table}
+\\These topics essentially define the role of viewers.
+In short, we may look at an viewer as a non-overlapped rectangular box on the screen both
+\begin{itemize}
+  \item[-] acting as an \emph{integrated display area} for some objects of a document, and
+  \item[-] \emph{representing an interactive task} in the form of a sensitive editing area.
+\end{itemize}
+
+Shifting emphasis a little and regarding the various message dispatchers as subsystems,
+we recognize immediately the role of viewers as \emph{integrator of the different subsystems
+via message-based interfaces}.  In this light,
+\verb|Viewer| appears as a common object-oriented basis of Oberon's subsystems.
+
+The topics listed above constitute some kind of contents backbone of the \ref{ch:task},
+\ref{ch:display} and \ref{ch:text}.  Task scheduling and command interpreting
+are already familiar to us from \textsection \ref{sec:scheduler} and \ref{sec:command}.
+Viewer and text management will be the topics of \textsection \ref{sec:dispmanagement}
+and \ref{sec:textmanagement}, respectively.  Thereby, the built-in type \verb|Text|
+will serve as a prime example of a document type.  The activities that a viewer performs
+are basically controlled by events or, more precisely, by messages representing event notices.
+We shall explain this in \textsection \ref{sec:dispmanagement} and \ref{sec:textframes}
+in detail cases of an abstract class of standard viewers and
+a class of viewers displaying standard text, respectively.
+
+Here is a preliminary overview of some archetypal kinds of message:
+\begin{itemize}
+  \item After each stroke a keyboard message with the typed character is sent to the focus viewer
+    and after each click a mouse message of the new state is sent to the viewer containing the mouse.
+  \item The message often representing some generic operation is to be interpreted individually
+    by recipients. Obvious examples are "return current textual selection", "copy-over stretch
+    of text", and "produce a copy (clone)". Notice that generic operation is the key to extensibility.
+  \item In a tiling viewer environment, every opening of a new viewer and every change of size
+    or location of an existing viewer has an obvious effect on adjacent viewers. The viewer manager
+    therefore issues a message to every affected viewer requesting to adjust its size appropriately.
+  \item Whenever the contents or the format of a document has changed, a message notifying
+    all visible viewers of the change is broadcast. Notice that broadcasting messages by a model (document)
+    to the entirety of its potential views (viewers) is an interesting implementation of the famous
+    model-view-controller (MVC) pattern that dispenses models from “knowing” (registering) their views.
+\end{itemize}
