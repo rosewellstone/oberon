@@ -1,5 +1,5 @@
 \section{The Font Machinery}
-\label{fontmachinery}
+\label{sec:fontmachinery}
 We saw in the previous Sections that Oberon texts support attribute specifications (“looks”) for
 characters. Three different attributes are supported: font, color, and vertical offset. Let us first focus
 on the font attribute. A font can be regarded as a style the standard character set is designed in.
@@ -110,5 +110,3 @@ In summary, fonts in Oberon are indexed libraries of objects. The objects are de
 character images in two levels of abstraction: As metric data of black boxes and as binary patterns
 (glyphs). Type Font is an abstract data type with intrinsic operations to internalize and to get
 character object data. Internalized fonts are cached in a private list.
-
-

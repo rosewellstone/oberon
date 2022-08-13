@@ -1,242 +1,285 @@
 \section{Text as an abstract data type}
 \label{sec:textyp}
 The concept of abstraction is arguably the most important achievement of PL development.
-It provides a powerful tool to create simplified views of complicated things and
-connections. Two prominent examples of program abstractions are definitions (interfaces) and
-abstract data types, embodying simplified views on a certain piece of program and on a certain kind
-of data respectively.
+It provides a powerful tool to create simplified views of complicated things and connections.
+2 prominent examples of program abstractions
+\begin{table}[h!]
+  \centering
+  \begin{tabular}{r l}
+                                     & \small{embodying simplified views on} \\\hline
+    \small{abstract data types}      & \small{a certain kind of data, and} \\
+    \small{definitions (interfaces)} & \small{a certain piece of program.}
+  \end{tabular}
+\end{table}
 
-We shall now give a precise definition of the notion of text in Oberon by presenting it as an abstract
-data type. It is important not to confuse this type with the far less powerful type String as it is often
-supported by advanced PLs. In this Section we carefully avoid revealing any
-implementation aspects of the abstract type Text. Our viewpoint is that of an application program
-operating on text abstractly or using it as a medium of communication.
+We shall now give a precise definition of the notion of text in Oberon
+by presenting it as an abstract data type.
+It is important not to confuse this type with the far less powerful one \verb|String|
+as it is often supported by advanced PLs.
+Here we carefully avoid revealing any implementation aspects of the abstract type \verb|Text|.
+Our viewpoint is that of an application program operating on text abstractly
+or using it as a medium of communication.
 
-Nevertheless, let us first use a symbolic looking glass to get a refined understanding of the concept
-of character in the context of rich texts. We know that each character represents a textual element
-of information. If displayed, it also refers to some specific graphical pattern, often called glyph. In
-Oberon, we do justice to both aspects by thinking of the ASCII-code as an index into a font that is
-into a set of glyphs of the same style. Representing characters as pairs (font, ref), where font
-designates a font and ref the character's ASCII-code and adding two more attributes color and
-vertical offset, we get to a quadruple representation (font, ref, col, voff) of characters. The
-components font, color, and vertical offset together are often referred to as looks. With that, we can
-now define a (rich) text as a sequence of characters with looks. We shall treat the topic of fonts and
-glyphs thoroughly in Section 5.4.
+Nevertheless, let us first use a symbolic looking glass to get a refined understanding
+of the concept of character in the context of rich texts.
+We know that each character represents a textual element of information.
+If displayed, it also refers to some specific graphical pattern, often called \emph{glyph}.
+In Oberon, we do justice to both aspects by thinking of the ASCII as an index into a font
+that is into a set of glyphs of the same style.
+Representing characters as pairs \verb|(font, ref)|,
+where \verb|font| designates a font and \verb|ref| the character's ASCII code
+and adding 2 more attributes \emph{color} and \emph{vertical offset},
+we get to a quadruple representation \verb|(font, ref, col, voff)| of characters.
+The components font, color, and vertical offset together are often referred to as \emph{looks}.
+With that, we can now define a (rich) text as a \emph{sequence of characters with looks}.
+We shall treat the topic of fonts and glyphs thoroughly in \ref{sec:fontmachinery}.
 
-For the moment, however, let us continue our discussion of the abstract data type Text. Formally,
-we define it as
+For the moment, however, let us continue our discussion of the abstract data type \verb|Text|.
+Formally, we define it as
 \begin{verbatim}
   Text = POINTER TO TextDesc;
-  TextDesc = RECORD
-    len: INT;
-    notify: Notifier
-  END;
+  TextDesc = RECORD len: INT; notify: Notifier END;
 \end{verbatim}
-There is only one state variable and one method. The variable len represents the current length of
-the described text (i.e. the number of characters in the sequence). The procedure variable notify is
-included as a method (occasionally called after-method) to notify interested clients of state
-changes.
+There is only 1
+\begin{itemize}
+  \item state variable \verb|len|, and
 
-By definition, each abstract data type comes with a complete set of operations. In the case of Text,
-three different groups corresponding to three different topics need to be considered, loading (from
-file), storing (to file), editing, and accessing (reading and writing) respectively.
+    Represents the current length of the described text
+    (i.e. the number of characters in the sequence).
+  \item method \verb|notify|.
+
+    Occasionally called \emph{after-method},
+    Notify interested clients of state changes.
+\end{itemize}
+
+By definition, each abstract data type comes with a complete set of operations.
+In the case of \verb|Text|, 3 different groups corresponding to 3 different topics
+need to be considered,
+\begin{itemize}
+  \item loading (from file),
+        storing (to file),
+  \item editing, and
+  \item accessing (reading and writing) respectively.
+\end{itemize}
 
 \subsection{Loading and Storing Text}
-Let us start with the file group. We first introduce a pair of mutually inverse operations called
-internalize and externalize. Their meaning is "load from file and build up an internal data structure"
-and "serialize the internal data structure and store it on file" respectively. There are three
-corresponding procedures:
+Let us start with the file group. We 1st introduce a pair of mutually inverse operations
+called \emph{internalize} and \emph{externalize},
+meaning "load from file and build up an internal data structure"
+and "serialize the internal data structure and store it on file" respectively.
+There are 3 corresponding procedures:
 \begin{verbatim}
   PROC Open (T: Text; name: ARRAY OF CHAR);
-  PROC Load (T: Text; f: Files.File;
-                  pos: INT; VAR len: INT);
-  PROC Store (T: Text; f: Files.File;
-                  pos: INT; VAR len: INT);
+  PROC Load (T: Text; f: Files.File; pos: INT;
+                                 VAR len: INT);
+  PROC Store(T: Text; f: Files.File; pos: INT;
+                                 VAR len: INT);
 \end{verbatim}
-Logical entities like texts are stored in Oberon on external media in the form of sections. A section
-is addressed by a pair (file, pos) consisting of a file descriptor and a starting position. In general, the
-structure of sections obeys the following syntax:
+Logical entities like texts are stored in Oberon on external media in the form of \emph{sections}.
+A section is addressed by a pair \verb|(file, pos)| consisting of
+\begin{itemize}
+  \item a file descriptor, and
+  \item a starting position.
+\end{itemize}
+In general, the structure of sections obeys:
 \begin{verbatim}
   section = identification type length contents.
 \end{verbatim}
 
-Procedure Open internalizes a named text file (consisting of a single text section), procedure Load
-internalizes an arbitrary text section starting at (f, pos), and procedure Store externalizes a text
-section to (f, pos). The parameter T designates the internalized text. len returns the length of the
-section. Note that in case of Load the identification of the section must have been read and
-consumed before the loader is called.
+\begin{table}[h!]
+  \begin{tabular}{r l}
+    \verb|Open|  & internalizes a named text file \\
+                 & (consisting of a single text section) \\
+    \verb|Load|  & internalizes an arbitrary text section \\
+                 & starting at \verb|(f, pos)| \\
+    \verb|Store| & externalizes a text section to \verb|(f, pos)| \\
+    \verb|T|     & designates the internalized text \\
+    \verb|len|   & returns the length of the section
+  \end{tabular}
+\end{table}
+Note that in case of \verb|Load| the identification of section
+must have been read and consumed before the loader is called.
 
 \subsection{Editing Text}
-Our next group of operations supports text editing. It comprises four procedures:
+Our next group of operations supports text editing. It comprises 4 procedures:
 \begin{verbatim}
-  PROC Delete (T: Text; beg, end: INT);
-  PROC Insert (T: Text; pos:INT; B:Buffer);
-  PROC Append (T: Text; B: Buffer);
-  PROC ChangeLooks (T: Text; beg, end: INT;
-     sel: SET; fnt: Fonts.Font; col, voff: INT);
+  PROC Append     (T: Text;           B: Buffer);
+  PROC Insert     (T: Text; pos: INT; B: Buffer);
+  PROC Delete     (T: Text; beg, end: INT);
+  PROC ChangeLooks(T: Text; beg, end: INT; sel: SET;
+                   fnt: Fonts.Font; col, voff: INT);
 \end{verbatim}
-Again, we should first explain the types of parameters. Procedures Delete and ChangeLooks each
-take a stretch of text as an argument which, by definition, is an interval [beg, end) within the given
-text. In the parameter lists of Insert and Append we recognize a new data type Buffer.
-Buffers are a facility to hold anonymous sequences of characters. Type Buffer presents itself again
-as an abstract data type:
+Again, we should 1st explain the types of parameters.
+\verb|Delete| and \verb|ChangeLooks| each take a stretch of text as an argument which,
+by definition, is an interval \verb|[beg, end)| within the given text.
+In the parameter lists of \verb|Insert| and \verb|Append|
+we recognize a new data type \verb|Buffer|.
+Buffers are a facility to hold anonymous sequences of characters.
+\verb|Buffer| presents itself again as an abstract data type:
 \begin{verbatim}
-  Buffer = POINTER TO BufDesc;
+  Buffer  = POINTER TO BufDesc;
   BufDesc = RECORD len: INT END;
 \end{verbatim}
-\verb|len| specifies the current length of the buffered sequence. The following procedures represent the intrinsic operations on buffers:
+\verb|len| specifies the current length of the buffered sequence.
+The following procedures represent the intrinsic operations on buffers:
 \begin{verbatim}
-  PROC OpenBuf (B: Buffer);
-  PROC Copy (SB, DB: Buffer);
-  PROC Save (T:Text; beg,end:INT; B:Buffer);
+  PROC OpenBuf(B: Buffer);
+  PROC Copy(SB, DB: Buffer);
+  PROC Save(T: Text; beg,end: INT; B: Buffer);
 \end{verbatim}
+Their function is in turn opening a given buffer \verb|B|,
+copying a buffer \verb|SB| to \verb|DB|, saving a stretch \verb|[beg, end)|
+of text in a given buffer, and recalling the most recently deleted stretch of text
+and putting it into buffer \verb|B|.
 
-Their function is in turn opening a given buffer B, copying a buffer SB to DB, saving a stretch [beg,
-end) of text in a given buffer, and recalling the most recently deleted stretch of text and putting it
-into buffer B.
+Buffer is used as an auxiliary data type in editing procedures.
+\verb|Delete| deletes the given stretch \verb|[beg, end)| within text \verb|T|,
+\verb|Insert| inserts the buffer's contents at position \verb|pos| within text \verb|T|, and
+\verb|Append(T, B)| is a shorthand form for \verb|Insert(T, T.len, B)|.
+Note that, as a side-effect of \verb|Insert| and \verb|Append|, the buffer involved is emptied.
+Finally, \verb|ChangeLooks| allows to change selected looks
+within the given stretch \verb|[beg, end)| of text \verb|T|.
+\verb|sel| is a mask selecting a subset of the looks set \verb|{font, color, vertical offset}|.
 
-Buffer is used as an auxiliary data type in editing procedures. Procedure Delete deletes the given
-stretch [beg, end) within text T, Insert inserts the buffer's contents at position pos within text T, and
-Append(T, B) is a shorthand form for Insert(T, T.len, B). Note that, as a side-effect of Insert and
-Append, the buffer involved is emptied. Finally, procedure ChangeLooks allows to change selected
-looks within the given stretch [beg, end) of text T. sel is a mask selecting a subset of the set of
-looks { font, color, vertical offset }.
-
-It is time now to come back to the notifier concept. Recapitulate that notify is an “after-method”. It
-must be installed by the client when opening the text and is called at the end of every editing
-operation. Its signature is
+It is time now to come back to the notifier concept.
+Recapitulate that notify is an “after-method”.
+It must be installed by the client when opening the text
+and is called at the end of every editing operation.  Its signature is
 \begin{verbatim}
-  Notifier = PROC(T:Text; op,beg,end:INT);
+  Notifier = PROC(T: Text; op,beg,end: INT);
 \end{verbatim}
-The parameters \verb|op|, \verb|beg|, and \verb|end| report about the operation (\verb|op|) that calls the notifier and on the
-affected stretch \verb|[beg, end)| of the text. There are three different possible variants of \verb|op|
-corresponding to the three different editing operations: \verb|op =| delete, insert, replace correspond to
-procedures \verb|Delete|, \verb|Insert|(, \verb|Append|), and \verb|ChangeLooks| respectively.
+\verb|op|, \verb|beg|, and \verb|end| report about the operation (\verb|op|) that calls the notifier
+and on the affected stretch \verb|[beg, end)| of the text.
+There are 3 possible \verb|op| variants corresponding to the 3 different editing operations:
+\begin{table}[h!]
+  \centering
+  \begin{tabular}{r|l|l|l}
+    \verb|op =| & \verb|delete| & \verb|insert| & \verb|replace| \\\hline
+    \verb|PROC| & \verb|Delete| & \verb|Insert|(, \verb|Append|) & \verb|ChangeLooks|
+  \end{tabular}
+\end{table}
 
-By far the most important application of the notifier is updating the display, i.e. adjusting all affected
-views of the text that are currently displayed to the new state of the text (the model). We shall come
-back to this important matter when discussing text frames in Section 5.3.
+By far the most important application of the notifier is updating the display,
+i.e. adjusting all affected views of the text
+that are currently displayed to the new state of the text (the model).
+We shall come back to this important matter when discussing text frames in \label{sec:textframes}.
 
-In concluding this Section it is worth noting that the groups of operations just discussed have been
-designed to be equally useful for interactive text editors as for programmed text generators/manipulators.
+In concluding this Section it is worth noting that
+the groups of operations just discussed have been designed to be equally useful
+for interactive text editors as for programmed text generators/manipulators.
 
 \subsection{Accessing Text}
-Let us now turn to the third and last group of operations on texts: Accessing that is reading and
-writing. According to the principle of separation of concerns, one of our guiding principles, the
-access mechanism operates on extra aggregates called readers and writers rather than on texts
-themselves.
+Let us now turn to the 3rd and last group of operations on texts:
+Accessing that is \emph{reading} and \emph{writing}.
+According to the principle of separation of concerns, one of our guiding principles,
+the access mechanism operates on extra aggregates called \emph{readers} and \emph{writers}
+rather than on texts themselves.
 
 Readers are used to read texts sequentially. Their type is declared as
 \begin{verbatim}
-  Reader = RECORD
-    eot: BOOL; (*end of text*)
-    fnt: Fonts.Font;
-    col, voff: INT
-  END;
+  Reader = RECORD eot: BOOL; (*end of text*)
+             fnt: Fonts.Font; col, voff: INT
+           END;
 \end{verbatim}
 
-A reader must first be opened at the desired position in the text before it can then be moved
-forward incrementally by reading character-by-character. Its state variables indicate end-of-text and
-expose the looks of the character last read.
+A reader must 1st be opened at the desired position in the text
+before it can then be moved forward incrementally by reading character-by-character.
+Its state variables indicate end-of-text and expose the looks of the character last read.
 The corresponding operators are
 \begin{verbatim}
-  PROC OpenReader (VAR R: Reader; T: Text;
-                                     pos: INT);
-  PROC Read (VAR R: Reader;  VAR ch: CHAR);
+  PROC OpenReader(VAR R: Reader; T: Text; pos: INT);
+  PROC Read      (VAR R: Reader; VAR ch: CHAR);
 \end{verbatim}
 
-Procedure \verb|OpenReader| sets up a reader \verb|R| at position \verb|pos| in text \verb|T|. Procedure \verb|Read| returns the
-character at the current position of \verb|R| and makes \verb|R| move to the next position.
-The current position of reader \verb|R| is returned by a call to the function \verb|Pos|:
+\verb|OpenReader| sets up a reader \verb|R| at position \verb|pos| in text \verb|T|.
+\verb|Read| returns the character at the current position of \verb|R|
+and makes \verb|R| move to the next position.
+The current position of \verb|R| is returned by a call to the function \verb|Pos|:
 \begin{verbatim}
-  PROC Pos (VAR R: Reader): INT;
+  PROC Pos(VAR R: Reader): INT;
 \end{verbatim}
 
-In Chapter 3 we learned that commands plus parameter lists are often embedded in ordinary texts.
+In \ref{ch:task} we learned that commands plus parameter lists are often embedded in ordinary texts.
 When interpreting such commands, the underlying text appears as a sequence of tokens like name,
-number, special symbol etc. much rather than as a sequence of characters. Therefore, we have
-adopted the well-known concepts of syntax and scanning from the discipline of compiler
-construction, including functional support. The Oberon scanner recognizes tokens of some
-universal classes. They are name, string, integer, real, longreal, and special character.
+number, special symbol etc. much rather than as a sequence of characters.  Therefore,
+we have adopted the well-known concepts of syntax and scanning from the discipline
+of compiler construction, including functional support.
+The Oberon scanner recognizes tokens of some universal classes.
+They are name, string, integer, real, longreal, and special character.
 The exact syntax of universal Oberon tokens is:
 \begin{verbatim}
-token = name | string | integer | real | spexchar.
-name = ident { "." ident }.ident
-     = letter { letter | digit }.
-string = """ { char } """.
-integer = ["+"|"-"] number.
-real = ["+"|"-"] number "." number ["E" ["+"|"-"] number].
-number = digit { digit }.
-spexchar = any character except letters, digits,
-                space, tab, and carriage-return.
+  token = name | string | integer | real | spexchar
+  name  = ident {.ident}
+  ident = letter { letter | digit }
+  string = '"' { char } '"'
+  integer = [+|-] number
+  real = [+|-] number . number [E [+|-] number]
+  number = digit { digit }
+  spexchar = any character except letters, digits,
+                   space, tab, or carriage-return
 \end{verbatim}
-Type Scanner is defined correspondingly as
+\verb|Scanner| is defined correspondingly as
 \begin{verbatim}
-  Scanner = RECORD (Reader)
-    nextCh: CHAR;
-    line: INT;
-    class: INT;
-    i: INT;
-    x: REAL;
-    c: CHAR;
-    len: INT;
-    s: ARRAY 32 OF CHAR
-  END;
+  Scanner = RECORD (Reader) nextCh: CHAR;
+              line, class, i, len: INT;
+              x: REAL; c: CHAR;
+              s: ARRAY 32 OF CHAR
+            END;
 \end{verbatim}
 
-This type is actually a variant record type with class as discriminating tag. Depending on its class
-the value of the current token is stored in one of the fields i, x, c, or s. len gives the length of s,
-nextCh typically exposes the character terminating the current token, and line counts the number of
-lines scanned.
+This type is actually a variant record type with class as discriminating tag.
+Depending on its class the value of the current token is stored in one of the fields
+\verb|i|, \verb|x|, \verb|c|, or \verb|s|.  \verb|len| gives the length of \verb|s|,
+\verb|nextCh| typically exposes the character terminating the current token, and
+\verb|line| counts the number of lines scanned.
 
 The operations on scanners are
 \begin{verbatim}
-  PROC OpenScanner (VAR S: Scanner; T: Text;
-                                     pos: INT);
-  PROC Scan (VAR S: Scanner);
+  PROC OpenScanner(VAR S: Scanner; T: Text; pos: INT);
+  PROC Scan       (VAR S: Scanner);
 \end{verbatim}
 
-They correspond exactly to their counterparts OpenReader and Read respectively.
-Writers are dual to readers. They serve the purpose of creating and extending texts. However,
-again, they do not operate on texts directly. Rather, they act as self-contained aggregates,
-continuously consuming and buffering textual data.
+They correspond exactly to their counterparts \verb|OpenReader| and \verb|Read| respectively.
+Writers are dual to readers.  They serve the purpose of creating and extending texts.
+However, again, they do not operate on texts directly.  Rather,
+they act as self-contained aggregates, continuously consuming and buffering textual data.
 
-The formal declaration of type Writer resembles that of type Reader:
+The formal declaration of \verb|Writer| resembles that of type \verb|Reader|:
 \begin{verbatim}
-  Writer = RECORD
-    buf: Buffer;
-    fnt: Fonts.Font;
-    col, voff: INT
-  END;
+  Writer = RECORD buf: Buffer;
+             fnt: Fonts.Font; col, voff: INT
+           END;
 \end{verbatim}
 
-\verb|buf| is an internal buffer containing the consumed data. \verb|fnt|, \verb|col|, and \verb|voff| specify the current looks for
-the next character consumed by this writer.
+\verb|buf| is an internal buffer containing the consumed data.
+\verb|fnt|, \verb|col|, and \verb|voff| specify the current looks
+for the next character consumed by this writer.
 
-The following procedures constitute the Writer API:
+The following procedures constitute the \verb|Writer| API:
 \begin{verbatim}
-  PROC OpenWriter (VAR W: Writer);
-  PROC SetFont (VAR W: Writer; fnt:Fonts.Font);
-  PROC SetColor (VAR W: Writer; col: INT);
-  PROC SetOffset (VAR W: Writer; voff:INT);
+  PROC OpenWriter(VAR W: Writer);
+  PROC SetFont   (VAR W: Writer; fnt: Fonts.Font);
+  PROC SetColor  (VAR W: Writer;  col: INT);
+  PROC SetOffset (VAR W: Writer; voff: INT);
 \end{verbatim}
 
-Procedure OpenWriter opens a new writer with an empty buffer. Procedures SetFont, SetColor, and
-SetOffset set the respective current look. For example, SetFont(W, fnt) is equivalent with W.fnt :=
-fnt. These procedures are included because fnt, col, and voff are read-only for clients.
+\verb|OpenWriter| opens a new writer with an empty buffer.
+\verb|SetFont|, \verb|SetColor|, and \verb|SetOffset| set the respective current look.
+For example, \verb|SetFont(W, fnt)| is equivalent with \verb|W.fnt := fnt|.
+These procedures are included because
+\verb|fnt|, \verb|col|, and \verb|voff| are read-only for clients.
 
-The question may arise how data is produced and transferred to writers. The answer is a set of
-writer procedures, each of them handling an individual data type:
+The question may arise how data is produced and transferred to writers.
+The answer is a set of writer procedures, each of them handling an individual data type:
 \begin{verbatim}
-PROC Write (VAR W: Writer; ch: CHAR);
-PROC WriteLn (VAR W: Writer);
-PROC WriteString (VAR W:Writer; s:ARRAY OF CHAR);
-PROC WriteInt (VAR W: Writer; x, n: INT);
-PROC WriteHex (VAR W: Writer; x: INT);
-PROC WriteReal (VAR W:Writer; x:REAL; n:INT);
-PROC WriteRealFix (VAR W: Writer; x: REAL;
-                                    n, k: INT);
-PROC WriteClock(VAR W: Writer; d: INT);
+PROC Write       (VAR W: Writer; ch: CHAR);
+PROC WriteLn     (VAR W: Writer);
+PROC WriteString (VAR W: Writer; s: ARRAY OF CHAR);
+PROC WriteInt    (VAR W: Writer; x, n: INT);
+PROC WriteHex    (VAR W: Writer; x: INT);
+PROC WriteReal   (VAR W: Writer; x: REAL; n: INT);
+PROC WriteRealFix(VAR W: Writer; x: REAL; n, k: INT);
+PROC WriteClock  (VAR W: Writer; d: INT);
 \end{verbatim}
 
 The following is schematic fragment of a client program that creates textual output:
@@ -248,20 +291,30 @@ The following is schematic fragment of a client program that creates textual out
     append writer buffer to output text
   UNTIL ended
 \end{verbatim}
-Of course, writers can be reused. For example, a single global writer is typically shared by all of the
-procedures within a module. In this case, the writer needs to be opened just once at module loading
-time.
+Of course, writers can be reused.
+For example, a single global writer is typically shared by all of the procedures within a module.
+In this case, the writer needs to be opened just once at module loading time.
 
-Typically, however, accessing aggregates are of a transient nature and are bound to a certain
-activity, which manifests itself in their allocation on the stack without any possibility of referencing
-them from the outside of the activity, in contrast to the underlying texts that are allocated on the
-system heap and have a much longer life time.
+Typically, however, accessing aggregates are of a transient nature and are bound to a certain activity,
+which manifests itself in their allocation on the stack
+without any possibility of referencing them from the outside of the activity,
+in contrast to the underlying texts that are allocated on the system heap and have a much longer life time.
 
-Let us summarize: Text in Oberon is a powerful abstract data type with intrinsic operations from
-three areas: Loading/storing, editing, and accessing (reading/writing). The latter two areas on their
-part introduce further abstract types called Buffer, Reader, Scanner, and Writer. In combination
-they guarantee a clean separation of very different concerns. The benefits of such a rigorous
-decoupling are numerous. For example, it makes it possible to freely choose (and vary) the
-granularity at which a text and its views are updated. Finally, an after-method is used to allow
-context-dependent post-processing of editing operations. It is used primarily for preserving
-consistency between text models and their views.
+Let us summarize:
+\begin{itemize}
+  \item \verb|Text| in Oberon is a powerful abstract data type with intrinsic operations from 3 areas:
+    \begin{enumerate}
+      \item Loading/storing,
+      \item editing, and
+      \item accessing (reading/writing).
+    \end{enumerate}
+  \item The latter 2 areas on their part introduce further abstract types
+    \verb|Buffer|, \verb|Reader|, \verb|Scanner|, and \verb|Writer|.
+
+    In combination they guarantee a clean separation of very different concerns.
+    The benefits of such a rigorous decoupling are numerous.
+    For example, it makes it possible to freely choose (and vary) the granularity
+    at which a text and its views are updated.
+  \item Finally, an after-method is used to allow context-dependent post-processing of editing operations.
+    It is used primarily for preserving consistency between text models and their views.
+\end{itemize}
