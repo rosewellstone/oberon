@@ -48,25 +48,26 @@ There is only 1
     (i.e. the number of characters in the sequence).
   \item method \verb|notify|.
 
-    Occasionally called \emph{after-method},
+    Occasionally called \emph{after-method}.
     Notify interested clients of state changes.
 \end{itemize}
 
 By definition, each abstract data type comes with a complete set of operations.
-In the case of \verb|Text|, 3 different groups corresponding to 3 different topics
-need to be considered,
-\begin{itemize}
+In the case of \verb|Text|, 3 groups corresponding to 3 different topics need to be considered,
+\begin{enumerate}
   \item loading (from file),
         storing (to file),
   \item editing, and
   \item accessing (reading and writing) respectively.
-\end{itemize}
+\end{enumerate}
 
 \subsection{Loading and Storing Text}
-Let us start with the file group. We 1st introduce a pair of mutually inverse operations
-called \emph{internalize} and \emph{externalize},
-meaning "load from file and build up an internal data structure"
-and "serialize the internal data structure and store it on file" respectively.
+The $1^{st}$ file group introduces a pair of mutually inverse operations,
+\emph{internalize} and \emph{externalize}, respectively meaning
+\begin{itemize}
+  \item load from file and build up an internal data structure, and
+  \item serialize the internal data structure and store it in file.
+\end{itemize}
 There are 3 corresponding procedures:
 \begin{verbatim}
   PROC Open (T: Text; name: ARRAY OF CHAR);
@@ -75,19 +76,22 @@ There are 3 corresponding procedures:
   PROC Store(T: Text; f: Files.File; pos: INT;
                                  VAR len: INT);
 \end{verbatim}
-Logical entities like texts are stored in Oberon on external media in the form of \emph{sections}.
-A section is addressed by a pair \verb|(file, pos)| consisting of
-\begin{itemize}
-  \item a file descriptor, and
-  \item a starting position.
-\end{itemize}
-In general, the structure of sections obeys:
+Logical entities like texts are stored on external media in form of \emph{section},
+addressed by pair \verb|(file, pos)| consisting of
+\begin{table}[h!]
+  \centering
+  \begin{tabular}{l}
+    \verb|file| \textcolor{gray}{descriptor, and
+    starting} \verb|pos|\textcolor{gray}{ition}.
+  \end{tabular}
+\end{table}
+\\In general, the structure of section obeys:
 \begin{verbatim}
   section = identification type length contents.
 \end{verbatim}
 
 \begin{table}[h!]
-  \begin{tabular}{r l}
+  \begin{tabular}{l l}
     \verb|Open|  & internalizes a named text file \\
                  & (consisting of a single text section) \\
     \verb|Load|  & internalizes an arbitrary text section \\
@@ -101,7 +105,7 @@ Note that in case of \verb|Load| the identification of section
 must have been read and consumed before the loader is called.
 
 \subsection{Editing Text}
-Our next group of operations supports text editing. It comprises 4 procedures:
+Next group operations support text editing, comprising:
 \begin{verbatim}
   PROC Append     (T: Text;           B: Buffer);
   PROC Insert     (T: Text; pos: INT; B: Buffer);
@@ -109,11 +113,13 @@ Our next group of operations supports text editing. It comprises 4 procedures:
   PROC ChangeLooks(T: Text; beg, end: INT; sel: SET;
                    fnt: Fonts.Font; col, voff: INT);
 \end{verbatim}
-Again, we should 1st explain the types of parameters.
-\verb|Delete| and \verb|ChangeLooks| each take a stretch of text as an argument which,
-by definition, is an interval \verb|[beg, end)| within the given text.
-In the parameter lists of \verb|Insert| and \verb|Append|
-we recognize a new data type \verb|Buffer|.
+Again, we should 1st explain the types of parameters:
+\begin{itemize}
+  \item \verb|Delete| and \verb|ChangeLooks| each take a stretch of text as an argument which,
+    by definition, is an interval \verb|[beg, end)| within the given text.
+  \item In the parameter lists of \verb|Insert| and \verb|Append|
+    we recognize a new data type \verb|Buffer|.
+\end{itemize}
 Buffers are a facility to hold anonymous sequences of characters.
 \verb|Buffer| presents itself again as an abstract data type:
 \begin{verbatim}
@@ -121,61 +127,81 @@ Buffers are a facility to hold anonymous sequences of characters.
   BufDesc = RECORD len: INT END;
 \end{verbatim}
 \verb|len| specifies the current length of the buffered sequence.
-The following procedures represent the intrinsic operations on buffers:
+
+The following represent the intrinsic operations on buffers:
 \begin{verbatim}
   PROC OpenBuf(B: Buffer);
   PROC Copy(SB, DB: Buffer);
-  PROC Save(T: Text; beg,end: INT; B: Buffer);
+  PROC Save(T: Text; beg, end: INT; B: Buffer);
 \end{verbatim}
-Their function is in turn opening a given buffer \verb|B|,
-copying a buffer \verb|SB| to \verb|DB|, saving a stretch \verb|[beg, end)|
-of text in a given buffer, and recalling the most recently deleted stretch of text
-and putting it into buffer \verb|B|.
+Their function, in turn:
+\begin{itemize}
+  \item opening a given buffer \verb|B|,
+  \item copying buffer \verb|SB| to \verb|DB|, and
+  \item saving a stretch \verb|[beg, end)| of text in a given buffer,
+    recalling the most recently deleted stretch of text and putting it into \verb|B|.
+\end{itemize}
 
-Buffer is used as an auxiliary data type in editing procedures.
-\verb|Delete| deletes the given stretch \verb|[beg, end)| within text \verb|T|,
-\verb|Insert| inserts the buffer's contents at position \verb|pos| within text \verb|T|, and
-\verb|Append(T, B)| is a shorthand form for \verb|Insert(T, T.len, B)|.
+Buffer is used as an auxiliary data type in editing.
+\begin{itemize}
+  \item \verb|Delete| d\verb|~|s the given stretch \verb|[beg, end)| within text \verb|T|,
+  \item \verb|Insert| i\verb|~|s the buffer's contents at \verb|pos|\textcolor{gray}{ition}
+    within \verb|T|, and
+  \item \verb|Append(T, B)| is a shorthand of \verb|Insert(T, T.len, B)|.
+\end{itemize}
 Note that, as a side-effect of \verb|Insert| and \verb|Append|, the buffer involved is emptied.
+
 Finally, \verb|ChangeLooks| allows to change selected looks
-within the given stretch \verb|[beg, end)| of text \verb|T|.
-\verb|sel| is a mask selecting a subset of the looks set \verb|{font, color, vertical offset}|.
+within the given stretch \verb|[beg, end)| of \verb|T|.
+\verb| sel| is a mask selecting a subset of the looks set
+\verb|{f|\textcolor{gray}{o}\verb|nt|, \verb|col|\textcolor{gray}{or},
+\verb|v|\textcolor{gray}{ertical} \verb|off|\textcolor{gray}{set}\verb|}|.
 
 It is time now to come back to the notifier concept.
-Recapitulate that notify is an “after-method”.
+Recapitulate that notify is an \emph{after-method}.
 It must be installed by the client when opening the text
-and is called at the end of every editing operation.  Its signature is
+and is called at the end of every editing operation.
+Its signature
 \begin{verbatim}
-  Notifier = PROC(T: Text; op,beg,end: INT);
+  Notifier = PROC(T: Text; op, beg, end: INT);
 \end{verbatim}
-\verb|op|, \verb|beg|, and \verb|end| report about the operation (\verb|op|) that calls the notifier
-and on the affected stretch \verb|[beg, end)| of the text.
-There are 3 possible \verb|op| variants corresponding to the 3 different editing operations:
+\verb|op|, \verb|beg|, and \verb|end| report
+\begin{itemize}
+  \item about the \verb|op|\textcolor{gray}{eration} that calls the notifier, and
+  \item on the affected stretch \verb|[beg, end)| of the text.
+\end{itemize}
+There're 3 possible \verb|op|s corresponding to different editing operations:
 \begin{table}[h!]
   \centering
-  \begin{tabular}{r|l|l|l}
-    \verb|op =| & \verb|delete| & \verb|insert| & \verb|replace| \\\hline
-    \verb|PROC| & \verb|Delete| & \verb|Insert|(, \verb|Append|) & \verb|ChangeLooks|
+  \begin{tabular}{c l}
+    \verb|op|     & operation \\\hline
+    \verb|delete| & \verb|Delete| \\
+    \verb|insert| & \verb|Insert|(, \verb|Append|) \\
+    \verb|replace|& \verb|ChangeLooks|
   \end{tabular}
 \end{table}
 
 By far the most important application of the notifier is updating the display,
 i.e. adjusting all affected views of the text
 that are currently displayed to the new state of the text (the model).
-We shall come back to this important matter when discussing text frames in \label{sec:textframes}.
+We shall come back to this important matter when discussing text frames in \ref{sec:textframes}.
 
-In concluding this Section it is worth noting that
-the groups of operations just discussed have been designed to be equally useful
-for interactive text editors as for programmed text generators/manipulators.
+In concluding this part it is worth noting that
+the operations just discussed have been designed to be equally useful for
+\begin{itemize}
+  \item interactive text editors, as well as
+  \item programmed text generators/manipulators.
+\end{itemize}
 
 \subsection{Accessing Text}
-Let us now turn to the 3rd and last group of operations on texts:
-Accessing that is \emph{reading} and \emph{writing}.
-According to the principle of separation of concerns, one of our guiding principles,
-the access mechanism operates on extra aggregates called \emph{readers} and \emph{writers}
-rather than on texts themselves.
+The 3rd and last group of operations on texts:
+Accessing, i.e. \emph{reading} and \emph{writing}.
 
-Readers are used to read texts sequentially. Their type is declared as
+According to the principle of separation of concerns, one of our guiding principles,
+the access mechanism operates on extra aggregates
+(called \emph{readers} and \emph{writers}) rather than on texts themselves.
+
+Readers are used to read texts sequentially. Their type:
 \begin{verbatim}
   Reader = RECORD eot: BOOL; (*end of text*)
              fnt: Fonts.Font; col, voff: INT
@@ -190,11 +216,12 @@ The corresponding operators are
   PROC OpenReader(VAR R: Reader; T: Text; pos: INT);
   PROC Read      (VAR R: Reader; VAR ch: CHAR);
 \end{verbatim}
-
-\verb|OpenReader| sets up a reader \verb|R| at position \verb|pos| in text \verb|T|.
-\verb|Read| returns the character at the current position of \verb|R|
-and makes \verb|R| move to the next position.
-The current position of \verb|R| is returned by a call to the function \verb|Pos|:
+\begin{itemize}
+  \item \verb|OpenReader| sets up a reader \verb|R| at position \verb|pos| in text \verb|T|.
+  \item \verb|Read| returns the character at the current position of \verb|R|
+    and makes \verb|R| move to the next position.
+\end{itemize}
+The current position of \verb|R| is returned by a call to the function:
 \begin{verbatim}
   PROC Pos(VAR R: Reader): INT;
 \end{verbatim}
@@ -226,17 +253,19 @@ The exact syntax of universal Oberon tokens is:
               s: ARRAY 32 OF CHAR
             END;
 \end{verbatim}
-
 This type is actually a variant record type with class as discriminating tag.
 Depending on its class the value of the current token is stored in one of the fields
-\verb|i|, \verb|x|, \verb|c|, or \verb|s|.  \verb|len| gives the length of \verb|s|,
-\verb|nextCh| typically exposes the character terminating the current token, and
-\verb|line| counts the number of lines scanned.
+\verb|i|, \verb|x|, \verb|c|, or \verb|s|.
+\begin{itemize}
+  \item \verb|len| gives the length of \verb|s|,
+  \item \verb|nextCh| typically exposes the character terminating the current token, and
+  \item \verb|line| counts the number of lines scanned.
+\end{itemize}
 
-The operations on scanners are
+The operations on scanners:
 \begin{verbatim}
-  PROC OpenScanner(VAR S: Scanner; T: Text; pos: INT);
-  PROC Scan       (VAR S: Scanner);
+PROC OpenScanner(VAR S: Scanner; T: Text; pos: INT);
+PROC Scan       (VAR S: Scanner);
 \end{verbatim}
 
 They correspond exactly to their counterparts \verb|OpenReader| and \verb|Read| respectively.
@@ -244,26 +273,25 @@ Writers are dual to readers.  They serve the purpose of creating and extending t
 However, again, they do not operate on texts directly.  Rather,
 they act as self-contained aggregates, continuously consuming and buffering textual data.
 
-The formal declaration of \verb|Writer| resembles that of type \verb|Reader|:
+The formal declaration of \verb|Writer| resembles \verb|Reader|:
 \begin{verbatim}
   Writer = RECORD buf: Buffer;
              fnt: Fonts.Font; col, voff: INT
            END;
 \end{verbatim}
 
-\verb|buf| is an internal buffer containing the consumed data.
+\verb|buf| is an internal buffer containing the consumed data. \\
 \verb|fnt|, \verb|col|, and \verb|voff| specify the current looks
 for the next character consumed by this writer.
 
 The following procedures constitute the \verb|Writer| API:
 \begin{verbatim}
   PROC OpenWriter(VAR W: Writer);
-  PROC SetFont   (VAR W: Writer; fnt: Fonts.Font);
+  PROC SetFont   (VAR W: Writer;  fnt: Fonts.Font);
   PROC SetColor  (VAR W: Writer;  col: INT);
   PROC SetOffset (VAR W: Writer; voff: INT);
 \end{verbatim}
-
-\verb|OpenWriter| opens a new writer with an empty buffer.
+\verb|OpenWriter| opens a new writer with an empty buffer. \\
 \verb|SetFont|, \verb|SetColor|, and \verb|SetOffset| set the respective current look.
 For example, \verb|SetFont(W, fnt)| is equivalent with \verb|W.fnt := fnt|.
 These procedures are included because
