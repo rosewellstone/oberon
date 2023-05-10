@@ -40,281 +40,252 @@ desired properties. The wish list looks like this:
   \item super efficient internalizing
   \item preserving file representations
 \end{enumerate}
-With the exception of 5., we found these requirements met perfectly by an adequately generalized
+With the exception of 5, we found these requirements met perfectly by an adequately generalized
 variant of the piece list technique that was originally used for Xerox PARC's Bravo text editor and
 also for ETH's former document editors Dyna and Lara [Gutknecht]. The original piece list is able to
-describe a vanilla text without looks. It is based on two principles:
-\begin{enumerate}
-  \item A text is regarded as a sequence of pieces, where a piece is a section of a text file consisting of
-a sequence of contiguous characters.
-  \item Every piece is represented by a descriptor (f, pos, len), where the components designate a file,
-a starting position, and a length respectively. The whole text is represented as a list of piece
-descriptors (in short: piece list). The editing operations operate on the piece list rather than on the
-pieces themselves.
-\end{enumerate}
+describe a vanilla text without looks. It is based on:
+\begin{itemize}
+  \item A text is regarded as a sequence of pieces, where a piece is a section of a text file
+    consisting of a sequence of contiguous characters.
+  \item Each piece is represented by a descriptor \verb|(f, pos, len)|,
+    designating $file$, starting $position$, and $length$ respectively.
+    The whole text is represented as a list of piece descriptors (in short: \emph{piece list}).
+    The editing operations operate on the list rather than on pieces themselves.
+\end{itemize}
 
-If the entire life of our planet were represented by one twenty-four-hour day,
-intelligent life appeared within the last few seconds
-\begin{figure}
-  \label{fig:chain}
+\begin{figure}[h!]
   \centering
-  \includegraphics[width=\textwidth]{i/d}
+  \includegraphics[width=.8\textwidth]{i/d}
   \caption{Piece chain representing a text}
+  \label{fig:chain}
 \end{figure}
-
-Fig \ref{fig:chain} shows a typical piece list representing (the current state of) a text. Investigating the
-effects of the basic editing operations delete and insert on the piece list, we end up with these
-algorithms:
+Fig \ref{fig:chain} shows a typical piece list representing (the current state of) a text.
+Investigating the effects of the basic editing operations \emph{delete} and \emph{insert}
+on this piece list, we end up with these algorithms:
 \begin{verbatim}
 delete stretch [beg, end) of text = BEGIN
-  split pieces at beg and at end;
+  split pieces at both beg and end;
   remove p-descriptors from beg to end from the chain
 END
 
 insert stretch of text at pos = BEGIN
   split piece at pos;
-  insert p-descriptors representing the stretch at pos
+  insert p-descriptors representing the stretch there
 END
 \end{verbatim}
-Of course, splitting is superfluous if the desired splitting point happens to coincide with the
-beginning of a piece. Fig \ref{fig:chain-after-insert} and \ref{fig:chain-generalized} show the resulting piece list after a delete and an insert operation respectively.
-If the entire life of our planet were represented by one day, intelligent life
-appeared within the last few seconds
-\begin{figure}
+Splitting is superfluous if the desired splitting point happens to coincide with
+the piece beginning.  Fig \ref{fig:chain-after-insert} and \ref{fig:chain-generalized}
+show the resulting list after a delete, and an insert respectively:
+\begin{figure}[h!]
   \label{fig:chain-after-delete}
   \centering
-  \includegraphics[width=\textwidth]{i/e}
+  \includegraphics[width=.8\textwidth]{i/e}
   \caption{Piece chain after delete operation}
 \end{figure}
-
-If the entire life of our plane, from its origin to the present moment, were
-represented by one day, intelligent life appeared within the last few seconds
-\begin{figure}
+\begin{figure}[h!]
   \label{fig:chain-after-insert}
   \centering
-  \includegraphics[width=\textwidth]{i/f}
+  \includegraphics[width=.8\textwidth]{i/f}
   \caption{Piece chain after insert operation}
 \end{figure}
 
-Checking our wish list of above we immediately recognize the requirements 1.), 2.), and 3.) as met.
-Requirement 4.) is also met under the assumption of an efficient mechanism for direct positioning in
-files. Requirement 6.) can be checked off because the piece list initially consists of a single piece
-spanning the entire text file. Finally, requirement 7.) is met simply because the operations do not
-affect file representations at all.
+Checking our above wish list we immediately recognize the requirements 1, 2, and 3 as met.
+Requirement 4 is also met assuming an efficient mechanism for direct positioning in files.
+Requirement 6 can be checked off because the piece list initially consists of a single piece
+spanning the entire text file.  Finally, requirement 7 is met simply because the operations
+do not affect file representations at all.
 
-In Oberon we adapted the piece list technique to texts with looks ("rich texts"). Formally, we first
-define a run as a stretch of text whose characters show identical looks. Now, we require the piece
-list to subordinate itself to the run structure. This obviously means that every piece needs to be
-contained within a single run. Figure 5.4 visualizes such a compliant piece list representing a text
-with varying looks. There are only two new aspects compared to the original version of the piece list
-discussed above: An additional operation to change looks and the initial state of the piece chain.
+In Oberon we adapted the piece list technique to texts with looks (\emph{rich texts}).
+Formally, we 1st define a run as a stretch of text whose characters show identical looks.
+Now, we require the piece list to subordinate itself to the run structure.
+This obviously means that every piece needs to be contained within a single run.
+Fig \ref{fig:chain-generalized} visualizes such a compliant piece list representing a text
+with varying looks.  There are only 2 new aspects compared to the original version
+of the piece list discussed above:
+An additional operation to change looks and the initial state of the piece chain.
 \begin{verbatim}
 change looks in a stretch [beg, end) of text = BEGIN
-split pieces at beg and at end;
-change looks in piece descriptors from beg to end in the chain
+  split pieces at both beg and end;
+  change looks in piece descriptors from beg to end
 END
 \end{verbatim}
-This shows that requirements 2.) and 3.) in the wish list are still satisfied.
-I have trained that man, says the laboratory rat, so that every time I press this lever
-he gives me food
-\begin{figure}
-  \label{fig:chain-generalized}
+This shows that wish list requirements 2 and 3 still satisfied.
+\begin{figure}[h!]
   \centering
-  \includegraphics[width=\textwidth]{i/g}
-  \caption{Generalized piece chain representing a text with looks}
+  \includegraphics[width=.8\textwidth]{i/g}
+  \caption{Generalized piece chain representing a rich text}
+  \label{fig:chain-generalized}
 \end{figure}
 
-Initially, the pieces are identical with runs, and the number of elements in the piece list is equal to
-the number of runs. Because this number is typically small in comparison with the total number of
-characters in a text requirement 6.) is still met.
+Initially, the pieces are identical with runs, and the number of elements in the piece list
+is equal to the one of runs.  Because this number is typically small in comparison with
+the total characters number in a text, requirement 6 is still met.
 
-We conclude that the new aspects do not invalidate the positive rating given above to the piece
-technique with regard to requirements 1.), 2.), 3.), 4.), 6.), and 7.) in our wish list. However, the
-requirement of efficient direct positioning remains. The problem is the necessity to scan through the
-piece list sequentially in order to locate the piece that contains the desired position. We investigated
-different solutions of this efficiency problem. They are based on different data structures connecting
-the piece descriptors, among them a piece tree and a variant of the piece list featuring an additional
-long-distance link like in a skip-list.
+We conclude that the new aspects do not invalidate the positive rating given above
+to the piece technique with regard to wish list requirements 1-4, 6 and 7.  However,
+requirement of efficient direct positioning remains.  The problem is the necessity
+to scan through the list sequentially to locate the piece that contains the desired position.
+We investigated different solutions of this efficiency problem.  They are based on
+different data structures connecting the piece descriptors, among them a piece tree
+and a variant of the piece list featuring an additional long-distance link like in a skip-list.
 
-Eventually, we decided in favor of a simpler solution that we can easily justify by pointing out that
-the typical editing scenario is zooming into a local region of text, i.e. positioning at an arbitrary
-location once and subsequently positioning at locations in its immediate neighborhood many times.
-Therefore, an appropriate solution is caching the most recently calculated values (pos, piece) of the
-translation map. Of course, this does not solve the problem of cache misses. Notice, however, that
-this problem is acute only in the case of extremely long piece lists that do not occur in ordinary texts
-and editing sessions.
+Eventually, we decided in favor of a simpler solution that we can easily justify
+by pointing out that the typical editing scenario is zooming into a local region of text,
+i.e. positioning at an arbitrary location once and subsequently positioning at locations
+in its immediate neighborhood many times.  Therefore, an appropriate solution is
+caching the most recently calculated values \verb|(pos, piece)| of the translation map.
+Of course, this does not solve the problem of cache misses.  Notice, however, that
+this problem is acute only in the case of extremely long piece lists that do not occur
+in ordinary texts and editing sessions.
 
-We shall now illustrate the piece technique in detail at the example of two important but basic
-operations: Insert and read. Let us start with an overview of the data types involved. Apart from
-some auxiliary private variables marked with an arrow, the types Text, Buffer, and Reader are
-already familiar to us from the previous Section. Type Piece is completely private and hidden from
-the clients.
+We shall now illustrate the piece technique in detail
+at the example of 2 important but basic operations: Insert and read.
+Let us start with an overview of the data types involved.
+Apart from some auxiliary private variables marked with an arrow,
+the types \verb|Text|, \verb|Buffer|, and \verb|Reader| are already familiar to us
+from the previous Section.  \verb|Piece| is completely private and hidden from the clients.
 \begin{verbatim}
-Text = POINTER TO TextDesc;
-Notifier = PROC (T: Text; op, beg, end: INT);
-
-TextDesc = RECORD
-len: INT;
-notify: Notifier;
---> trailer: Piece;
---> org: INT;
---> pce: Piece
-END;
-
-Buffer = POINTER TO BufDesc;
-BufDesc = RECORD
-len: INT;
---> header, last: Piece
-END;
-
-Reader = RECORD
-eot: BOOL;
-fnt: Fonts.Font;
-col, voff: INT;
---> ref: Piece;
---> org, off: INT;
-rider: Files.Rider
-END;
-
---> Piece = POINTER TO PieceDesc;
---> PieceDesc = RECORD
-f: Files.File;
-off, len: INT;
-fnt: Fonts.Font;
-col, voff: INT;
-prev, next: Piece
-END;
+  Text = POINTER TO TextDesc;
+  Notifier = PROC(T: Text; op, beg, end: INT);
+ 
+  TextDesc = RECORD len: INT; notify: Notifier;
+               --> trailer: Piece;
+               --> org: INT;
+               --> pce: Piece
+             END;
+ 
+  Buffer = POINTER TO BufDesc;
+  BufDesc = RECORD len: INT;
+              --> header, last: Piece
+            END;
+  
+  Reader = RECORD eot: BOOL; fnt: Fonts.Font;
+             col, voff: INT;
+             --> ref: Piece;
+             --> org, off: INT;
+             rider: Files.Rider
+           END;
+  
+  --> Piece = POINTER TO PieceDesc;
+  --> PieceDesc = RECORD f: Files.File;
+                    off, len: INT;
+                    fnt: Fonts.Font;
+                    col, voff: INT;
+                    prev, next: Piece
+                  END;
 \end{verbatim}
 
-As depicted in Figure 5.1, the piece list is implemented as a doubly linked list with a sentinel piece
-closing it to a ring. The field trailer in type TextDesc points to the sentinel piece. Fields org and pce
-implement a translation cache consisting of merely one entry (org, pce). It links a position org with a
-piece pce. The fields header and last in type Buffer refer to the implementation of buffers as piece
-lists. They point to the first and last piece descriptors respectively. Finally, the fields ref, org, and off
-in type Reader memorize the current piece, its origin, and the current offset within this piece.
-The fields f, off, and len in type Piece specify the underlying file, starting position in the file, and
-length of the piece. fnt, col, and voff are its looks. Finally prev and next are pointers to the previous
-piece and to the next piece in the list respectively.
+As depicted in Fig \ref{fig:chain}, the piece list is implemented as a doubly linked list
+with a sentinel piece closing it to a ring.
+The field trailer in \verb|TextDesc| points to the sentinel piece.
+Fields \verb|org| and \verb|pce| implement a translation cache consisting of merely one entry
+\verb|(org, pce)|.  It links a position \verb|org| with a piece \verb|pce|.
+The fields \verb|header| and \verb|last| in \verb|Buffer| refer to the implementation
+of buffers as piece lists.  They point to the first and last piece descriptors respectively.
+Finally, the fields \verb|ref|, \verb|org|, and \verb|off| in \verb|Reader|
+memorize the current piece, its origin, and the current offset within this piece.
+The fields \verb|f|, \verb|off|, and \verb|len| in \verb|Piece| specify the underlying file,
+starting position in the file, and length of the piece.
+\verb|fnt|, \verb|col|, and \verb|voff| are its looks.
+Finally \verb|prev| and \verb|next| are pointers to the previous and next piece in the list respectively.
 
-FindPiece and SplitPiece are auxiliary procedures that are used by almost all piece-oriented
-operations.
+\verb|FindPiece| and \verb|SplitPiece| are auxiliary procedures
+that are used by almost all piece-oriented operations.
 \begin{verbatim}
-PROC FindPiece (T: Text; pos: INT; VAR org: INT; VAR p: Piece);
-VAR p: Piece; porg: INT;
-BEGIN p := T.pce; porg := T.org;
+ PROC FindPiece(T: Text; pos: INT; VAR org: INT; VAR p: Piece);
+   VAR p: Piece; porg: INT;
+ BEGIN p := T.pce; porg := T.org;
 1) IF pos >= porg THEN
-WHILE pos >= porg + p.len DO INC(porg, p.len); p := p.next END
+     WHILE pos >= porg + p.len DO INC(porg, p.len); p := p.next END
 2) ELSE p := p.prev; DEC(porg, p.len);
-WHILE p < porg DO p := p.prev; DEC(porg, p.len) END
-END;
+     WHILE p < porg DO p := p.prev; DEC(porg, p.len) END
+   END;
 3) T.pce := p; R.org := porg; (*update cache*)
-pce := p; org := porg
-END FindPiece;
+   pce := p; org := porg
+ END FindPiece;
 \end{verbatim}
 
 Explanations (referring to the line numbers in the above code excerpt)
 1) search to the right (next)
 2) search to the left (prev)
 3) update cache if more than 50 pieces traversed
+
 \begin{verbatim}
 1) PROC SplitPiece (p: Piece; off: INT; VAR pr: Piece);
-VAR q: Piece;
-BEGIN
-2) IF off > 0 THEN NEW(q);
-q.fnt := p.fnt; q.col := p.col; q.voff := p.voff;
-q.len := p.len - off;
-q.f := p.f; q.off := p.off + off;
-p.len := off;
-q.next := p.next; p.next := q;
-q.prev := p; q.next.prev := q;
-pr := q
-ELSE pr := p
-END
-END SplitPiece;
-
-3)
-4)
+     VAR q: Piece;
+   BEGIN
+2)   IF off > 0 THEN NEW(q);
+       q.fnt := p.fnt; q.col := p.col; q.voff := p.voff;
+       q.len := p.len - off;
+       q.f := p.f; q.off := p.off + off;
+       p.len := off;
+3)     q.next := p.next; p.next := q;
+4)     q.prev := p; q.next.prev := q;
+       pr := q
+     ELSE pr := p
+     END
+   END SplitPiece;
 \end{verbatim}
 
 Explanations:
-1)
-2)
-3)
-4)
-
-return right part piece pr after split
-generate new piece only if remaining length > 0
-insert new piece in forward chain
-insert new piece in backward chain
+1) return right part piece pr after split
+2) generate new piece only if remaining length > 0
+3) insert new piece in forward chain
+4) insert new piece in backward chain
 
 Procedure Insert handles text insertion. It operates on a buffer that contains the stretch of text to be inserted:
 \begin{verbatim}
-PROC Insert (T: Text; pos: INT; B: Buffer);
-VAR pl, pr, p, qb, qe: Piece; org, end: INT;
-BEGIN
+ PROC Insert (T: Text; pos: INT; B: Buffer);
+   VAR pl, pr, p, qb, qe: Piece; org, end: INT;
+ BEGIN
 1) FindPiece(T, pos, org, p); SplitPiece(p, pos - org, pr);
 2) IF T.org >= org THEN
-T.org := org - p.prev.len; T.pce := p.prev
-END;
-pl := pr.prev; qb := B.header.next;
+     T.org := org - p.prev.len; T.pce := p.prev
+   END;
+   pl := pr.prev; qb := B.header.next;
 3) IF (qb # NIL) & (qb.f = pl.f) & (qb.off = pl.off + pl.len)
-& (qb.fnt = pl.fnt) & (qb.col = pl.col) & (qb.voff = pl.voff) THEN
-pl.len := pl.len + qb.len; qb := qb.next
-END;
-IF qb # NIL THEN qe := B.last;
-4)
-qb.prev := pl; pl.next := qb; qe.next := pr; pr.prev := qe
-END;
+    & (qb.fnt = pl.fnt) & (qb.col = pl.col) & (qb.voff = pl.voff) THEN
+     pl.len := pl.len + qb.len; qb := qb.next
+   END;
+   IF qb # NIL THEN qe := B.last;
+4)   qb.prev := pl; pl.next := qb; qe.next := pr; pr.prev := qe
+   END;
 5) T.len := T.len + B.len; end := pos + B.len;
 6) B.last := B.header; B.last.next := NIL; B.len := 0;
 7) T.notify(T, insert, pos, end)
-END Insert;
+ END Insert;
 \end{verbatim}
 
 Explanations:
-1)
-2)
-3)
-4)
-5)
-6)
-7)
-
-split piece to isolate point of insertion
-adjust cache if necessary
-merge pieces if possible
-insert buffer
-update text length
-empty buffer
-notify
+1) split piece to isolate point of insertion
+2) adjust cache if necessary
+3) merge pieces if possible
+4) insert buffer
+5) update text length
+6) empty buffer
+7) notify
 
 Procedure Read implements sequential reading of characters in texts. It operates on a text reader:
 \begin{verbatim}
-PROC Read (VAR R: Reader; VAR ch: CHAR);
-BEGIN
+ PROC Read (VAR R: Reader; VAR ch: CHAR);
+ BEGIN
 1) Files.Read(R.rider, ch); R.fnt := R.ref.fnt; R.col := R.ref.col; R.voff := R.ref.voff;
-INC(R.off);
+   INC(R.off);
 2) IF R.off = R.ref.len THEN
-3) IF R.ref.f = WFile THEN R.eot := TRUE END;
-R.org := R.org + R.off; R.off := 0;
-4) R.ref := R.ref.next; R.org := R.org + R.off; R.off := 0;
-5) Files.Set(R.rider, R.ref.f, R.ref.off)
-END
-END Read;
+3)   IF R.ref.f = WFile THEN R.eot := TRUE END;
+     R.org := R.org + R.off; R.off := 0;
+4)   R.ref := R.ref.next; R.org := R.org + R.off; R.off := 0;
+5)   Files.Set(R.rider, R.ref.f, R.ref.off)
+   END
+ END Read;
 \end{verbatim}
 
 Explanations:
-1)
-2)
-3)
-4)
-5)
-
-read character from file and update looks in reader
-if piece boundary reached
-check if sentinel piece reached
-move reader to next piece
-position file rider
+1) read character from file and update looks in reader
+2) if piece boundary reached
+3) check if sentinel piece reached
+4) move reader to next piece
+5) position file rider
 
 Procedure Read is typically used as a primitive by text scanners and in particular by the built-in
 scanner Scan for the recognition of universal tokens, as they were defined in the previous section.
@@ -379,7 +350,7 @@ offset are specifications of looks, and length is the run-length. In order to sa
 are coded as ordinal numbers within a text section. If and only if a font appears for the first time in a
 text block it is followed by the actual font name.
 
-Let us conclude this Section with two side-remarks and a summary.
+Let us conclude this Section with 2 side-remarks and a summary.
 Remarks:
 For compatibility reasons, plain ASCII-files are accepted as text files as well. They are mapped
 to texts consisting of a single run with standard looks.
