@@ -93,7 +93,7 @@ Predictability is essential in all real-time applications.
 	\label{fig:alu}
 \end{figure}
 
-The data processing unit consisting of ALU and registers is shown in Figure \ref{fig:alu}. Evidently, data
+The data processing unit consisting of ALU and registers is shown in Fig \ref{fig:alu}. Evidently, data
 cycle from registers through the ALU, where an operation is performed, and the result is deposited
 back into a register. The ALU embodies the circuits for arithmetic operations, logical operations,
 and shifts. The operations available are listed below. They are described in more detail in
@@ -297,7 +297,7 @@ into a single double register <$B$, $A$> with a shifting border line. At the end
 \end{verbatim}
 
 The multiplier is controlled by a rudimentary state machine $S$, actually a simple 5-bit counter
-running from 0 to 31. The multiplier is shown schematically in Figure \ref{fig:multiplier}.
+running from 0 to 31. The multiplier is shown schematically in Fig \ref{fig:multiplier}.
 
 \begin{figure}[h!]
 	\centering
@@ -319,7 +319,7 @@ change: Term 31 is subtracted instead of added (see complete program listing bel
 During execution of the 32 add-shift steps the processor must be stalled. The process proceeds
 and the counter $S$ advances as long as the input MUL is active (high). MUL indicates that the
 current operation is a multiplication, and the signal is stable until the processor advances to the
-next instruction. This happens when step 31 is reached (Figure \ref{fig:stall}).
+next instruction. This happens when step 31 is reached (Fig \ref{fig:stall}).
 
 \begin{figure}[h!]
 	\centering
@@ -437,7 +437,7 @@ shift register, and by shifting r to the left instead of y to the right. This re
   \end{tabular}
 \end{table}
 
-This scheme is represented by the circuit shown in Figure \ref{fig:divider}.
+This scheme is represented by the circuit shown in Fig \ref{fig:divider}.
 
 \begin{figure}[h!]
 	\centering
@@ -503,7 +503,7 @@ summand with the smaller exponent must be denormalized. m is shifted to the righ
 incremented accordingly. That is, if d is the difference of the two exponents, m is multiplied by 2d,
 and e is incremented by d. After the addition, the sum must be rounded and post-normalized. m is
 shifted to the left and e is decremented accordingly. The shift amount is determined by the
-position of the leftmost one-bit. This results in the scheme shown in Figure 16.7, and the module's
+position of the leftmost one-bit. This results in the scheme shown in Fig 16.7, and the module's
 interface is
 
 \begin{verbatim}
@@ -588,7 +588,7 @@ essentially only four cases:
   \item It is taken from a data register. (This is used for returning from procedures).
 \end{enumerate}
 
-This is reflected by the following program text, and shown in Figure \ref{fig:cu}.
+This is reflected by the following program text, and shown in Fig \ref{fig:cu}.
 
 \begin{figure}[h!]
 	\centering

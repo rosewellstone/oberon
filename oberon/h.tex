@@ -1,7 +1,7 @@
 \chapter{Processor's Environment}
 \label{ch:env}
 The RISC processor is embedded in an environment (module RISCTop.v) connecting it with elements that are
-FPGA-chip external, but whose are provided on the Spartan development board (Figure \ref{fig:cfg}). The
+FPGA-chip external, but whose are provided on the Spartan development board (Fig \ref{fig:cfg}). The
 environment consists of an address decoder, a data multiplexer, and interfaces to the memory and
 peripheral devices.
 \begin{figure}[h!]
@@ -36,7 +36,7 @@ several items are rather dependent on the given Spartan-3 board.
 \section{The SRAM memory}
 The design of the circuitry around a static RAM is quite straight forward. The only controls are a
 read (SRoe) and a write enable signal (SRwe). Since the SRAM multiplexes data lines for input and
-output, a tri-state driver (SRbuf) must be used on the FPGA. This is shown schematically in Figure \ref{fig:conn}.
+output, a tri-state driver (SRbuf) must be used on the FPGA. This is shown schematically in Fig \ref{fig:conn}.
 \begin{figure}[h!]
   \centering
   \includegraphics[width=\textwidth]{i/G/1.png}
@@ -48,7 +48,7 @@ However, there is a complication: the feature of byte-wise access. After all, th
 bits wide (actually there are two 512K x 16-bit chips in parallel). Evidently, some multiplexing is
 unavoidable. The task is significantly eased by the chip's feature of four separate write enables,
 one for each byte of a word. The selection of the byte affected is determined by address bits 0 an 1
-(which are ignored in the case of word-access). This scheme is shown in Figure \ref{fig:sram}. The
+(which are ignored in the case of word-access). This scheme is shown in Fig \ref{fig:sram}. The
 codebus bypasses the multiplexers.
 \begin{figure}[h!]
   \centering
@@ -149,7 +149,7 @@ An actual movement is recognized by a simple light sensor (we will restrict our 
 single coordinate x). The movement is transmitted to a wheel consisting of a transparent disc with
 intransparent spokes. A light beam shines through the disk and is received by the light sensor.
 Each time a spoke passes, the light is blocked. Any change in the sensor output signals a
-movement (see Figure \ref{fig:wheel}). Unfortunately, this scheme does not allow to recognize the direction
+movement (see Fig \ref{fig:wheel}). Unfortunately, this scheme does not allow to recognize the direction
 of the movement (left or right). A second light and sensor solve this problem. The distance between
 the two lights is half the distance of adjacent spokes.
 \begin{figure}[h!]
@@ -160,7 +160,7 @@ the two lights is half the distance of adjacent spokes.
 \end{figure}
 
 The signal pair x0, x1 originating from a movement (with constant speed) to the left or to the right is
-shown in Figure \ref{fig:sig}.
+shown in Fig \ref{fig:sig}.
 \begin{figure}[h!]
   \centering
   \includegraphics[width=\textwidth]{i/G/5.png}
@@ -221,7 +221,7 @@ endmodule
 \subsection{The SPI interface for the SD-card (disk) and the Net}
 \label{sub:spi}
 SPI (Standard Peripheral Interface) is similar to PS/2, and also synchronous. However, there may
-be many participants. They are configured in a loop as shown in Figure \ref{fig:ring}, and the clock is
+be many participants. They are configured in a loop as shown in Fig \ref{fig:ring}, and the clock is
 provided by a master, namely the RISC. SPI requires 3 wires (apart from ground).
 \begin{figure}[h!]
   \centering
@@ -260,7 +260,7 @@ endmodule
 \end{verbatim}
 
 The SPI specifications postulate that bytes are sent with the most significant bit first. This results in
-a somewhat twisted scheme for shifting bits (see Figure \ref{fig:msb}).
+a somewhat twisted scheme for shifting bits (see Fig \ref{fig:msb}).
 \begin{figure}[h!]
   \centering
   \includegraphics[width=\textwidth]{i/G/8.png}
@@ -324,9 +324,9 @@ rounded up to
 125 MHz
 
 The pixel buffer is fed from the video buffer driven by the system clock, and it is shifted and read by
-the pixel clock. This makes a double-buffering necessary, as shown in Figure \ref{fig:vo}. Also the
+the pixel clock. This makes a double-buffering necessary, as shown in Fig \ref{fig:vo}. Also the
 counters are driven by this pixel clock. The numbers for hcnt and vcnt shown are, of course, device-
-specific (see Figure \ref{fig:syn}).
+specific (see Fig \ref{fig:syn}).
 \begin{figure}[h!]
   \centering
   \includegraphics[width=.6\textwidth]{i/G/a.png}
@@ -366,7 +366,7 @@ assign SRadr = dspreq ? vidadr : adr[19:2];
 \label{sub:rs232}
 RS-232 is an old standard for serial data transmission (see also Sect. 9.4). We chose to describe it
 here in detail because of its frequent use and inherent simplicity. RS-232 uses 2 wires (apart from
-ground), one for input (RxD) and one for output (TxD) as shown in Figure \ref{fig:rs232cfg}. Data are
+ground), one for input (RxD) and one for output (TxD) as shown in Fig \ref{fig:rs232cfg}. Data are
 transmitted in packets of a fixed length, here of length 8, i.e. byte-wise.
 \begin{figure}[h!]
   \centering
@@ -376,7 +376,7 @@ transmitted in packets of a fixed length, here of length 8, i.e. byte-wise.
 \end{figure}
 Since there is no clock wire,
 bytes are transmitted asynchronously. Their beginning is marked by a start-bit, and at the end a
-stop-bit is appended. Hence, a packet is 10 bits long (see Figure \ref{fig:rs232pac}). Within a packet,
+stop-bit is appended. Hence, a packet is 10 bits long (see Fig \ref{fig:rs232pac}). Within a packet,
 transmission is synchronous, i.e. with a fixed clock rate, on which transmitter and receiver agree.
 The packet length is short enough to admit slight deviations. The standard defines several packet
 lengths and many clock rates. Here we use a rate of 19200 or 115200 bit/s.
