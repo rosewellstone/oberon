@@ -134,7 +134,7 @@ of pointer variable $p$ to a fixed register (\verb|R0|) and the type tag to anot
 (\verb|R1|). The type tag is a pointer to a type descriptor containing information required
 by GC. This includes the size of the space occupied and now to be allocated. The effect of
 \verb|NEW| is the assignment of the address of the allocated block to $p$, and the assignment
-of the tag to a prefix of the block. (see Fig. \ref{fig:allocation})
+of the tag to a prefix of the block. (see Fig \ref{fig:allocation})
 \begin{figure}[h!]
   \label{fig:allocation}
   \centering
@@ -221,8 +221,8 @@ and the algorithm by the procedure
 \end{figure}
 We note that only 3 local variables are required, independent of the size of the tree to be
 traversed. The 3rd, $r$, is in fact merely an auxiliary variable to perform the rotation of
-values $p.L$, $p.R$, $q$, and $p$ as shown in Fig. \ref{fig:rotation}. A snapshot of a tree
-traversal is shown in Fig. \ref{fig:tree-traversal}.
+values $p.L$, $p.R$, $q$, and $p$ as shown in Fig \ref{fig:rotation}. A snapshot of a tree
+traversal is shown in Fig \ref{fig:tree-traversal}.
 \begin{figure}[h!]
   \centering
   \includegraphics[width=\textwidth]{i/t}
@@ -237,7 +237,7 @@ the algorithm at an arbitrary node. We start with the hypothesis H that, given t
 state P, the algorithm will reach state Q, (see Fig \ref{fig:transition}). State Q differs
 from P by the node and its descendants B and C having been marked, and by an exchange of p
 and q. We now apply the algorithm to state P, assuming that B and C are not empty. The process
-is illustrated in Fig \ref{fig:transition}. P0 stands for P in Fig. \ref{fig:tree-traversal}.
+is illustrated in Fig \ref{fig:transition}. P0 stands for P in Fig \ref{fig:tree-traversal}.
 \begin{figure}[h!]
   \centering
   \includegraphics[width=\textwidth]{i/u}
@@ -251,7 +251,7 @@ hypothesis H being applied to the states P1 and P3: subtrees are marked and p, q
 We note in passing that the node is visited 3 times. Progress is recorded by the mark value
 which is incremented from 0 to 3.
 
-Fig. \ref{fig:transition-3-times}. demonstrates that, if H holds for steps $P1 \rightarrow P2$
+Fig \ref{fig:transition-3-times}. demonstrates that, if H holds for steps $P1 \rightarrow P2$
 and $P3 \rightarrow P4$, then it also holds for step $P1 \rightarrow P5$, which visits the
 subtree p. Hence, it also holds for the step root $\rightarrow$ root, which traverses the entire tree.
 \begin{figure}[h!]

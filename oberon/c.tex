@@ -83,7 +83,7 @@ The syntax is precisely and rigorously defined by a small set of syntactic equat
 the parser is a reasonably perspicuous and short program. In spite of the high degree of regularity
 of the target computer, the process of code generation is more complicated, as shown by module ORG.
 
-The resulting module structure of the compiler is shown in Fig. \ref{fig:modstruct} in a slightly
+The resulting module structure of the compiler is shown in Fig \ref{fig:modstruct} in a slightly
 simplified manner.  In reality OCS is imported by all other modules due to their need for procedure
 \verb|OCS.Mark|. This, however, will be explained later.
 \begin{figure}[h!]
@@ -130,7 +130,7 @@ address to a multiple of the variable's size. Alignment is performed for variabl
 as for record field offsets. The motivation for alignment is the avoidance of double memory
 references for variables being "distributed" over 2 adjacent words. Proper alignment enhances
 processing speed quite significantly. Variable allocation using alignment is shown by the example
-in Fig. \ref{fig:varalign}.
+in Fig \ref{fig:varalign}.
 \begin{figure}[h!]
   \centering
   \includegraphics[width=.75\textwidth]{i/C/2.png}
@@ -139,7 +139,7 @@ in Fig. \ref{fig:varalign}.
 \end{figure}
 
 We note in passing that a reordering of the four variables lessens the number of unused bytes, as
-shown in Fig. \ref{fig:varorder}.
+shown in Fig \ref{fig:varorder}.
 \begin{figure}[h!]
   \centering
   \includegraphics[width=.25\textwidth]{i/C/3.png}
@@ -682,7 +682,7 @@ allocated) variable is stored as a prefix to its record (with offset -8).
 A type descriptor contains - in addition to information stored for use by the garbage collector - a
 table of tags of all its base types. If, for instance, a type \verb|R2| is an extension of \verb|R1|
 which is an extension of \verb|R0|, the descriptor of \verb|R2| contains the tags of \verb|R1| and
-\verb|R0| as shown in Fig. \ref{fig:typdesc}.  The table has a fixed number of 3 entries.
+\verb|R0| as shown in Fig \ref{fig:typdesc}.  The table has a fixed number of 3 entries.
 \begin{figure}[h!]
   \centering
   \includegraphics[width=.8\textwidth]{i/C/4.png}
@@ -1014,7 +1014,7 @@ As an example, consider the following declarations:
   PROC P(x: INTEGER): INTEGER;
 \end{verbatim}
 
-The corresponding data structure is shown in Fig. \ref{fig:declrep}. For details, the reader is
+The corresponding data structure is shown in Fig \ref{fig:declrep}. For details, the reader is
 referred to the program listing of module ORB and the respective explanations.
 \begin{figure}[h!]
   \centering
@@ -1313,7 +1313,7 @@ The parser is designed according to the proven method of top-down, recursive des
 a look-ahead of a single symbol. The last symbol read is represented by the global variable sym.
 Syntactic entities are mirrored by procedures of the same name. Their goal is to recognize the
 specified construct in the source text. The start symbol and corresponding procedure is Module.
-The principal parser procedures are shown in Fig. \ref{fig:pararch}, which also exhibits their calling
+The principal parser procedures are shown in Fig \ref{fig:pararch}, which also exhibits their calling
 hierarchy.  Loops in the diagram indicate recursion in the syntactic definition.
 \begin{figure}[h!]
   \centering
@@ -1505,7 +1505,7 @@ shown here:
   END thisObj;
 \end{verbatim}
 
-A snapshot of a symbol table for an example with nested scopes is shown in Fig. \ref{fig:symsnap}.
+A snapshot of a symbol table for an example with nested scopes is shown in Fig \ref{fig:symsnap}.
 It is taken when the following declarations are parsed and when the statement \verb|S| is reached.
 \begin{verbatim}
   VAR x: INT;
@@ -2012,7 +2012,7 @@ address is deposited in R15 by the call instructions (BL, branch and link). The 
 size of the frame to be allocated, and thus merely decrements the stack pointer SP (R14) by this
 amount. Upon return, SP is incremented by the same amount, and PC is restored by a branch
 instruction. In the following example, a procedure P is called, calling itself Q, and Q calling P again
-(recursion). The stack then contains 3 frames (see Fig. \ref{fig:stackfrm}).
+(recursion). The stack then contains 3 frames (see Fig \ref{fig:stackfrm}).
 \begin{figure}[h!]
   \centering
   \includegraphics[width=.4\textwidth]{i/C/8.png}
@@ -2161,7 +2161,7 @@ References to TDs are called \emph{type tags}. They are required in 2 cases.
 
 A type test then consists of a test for equality of 2 type tags. In \verb|p IS T| the first tag is that
 of the n’th entry of the TD of \verb|p^|, where n is the extension level of \verb|T|. The second tag is
-that of type \verb|T|. This is shown in \S \ref{ssc:ptn12} (see also Fig. \ref{fig:typdesc}).
+that of type \verb|T|. This is shown in \S \ref{ssc:ptn12} (see also Fig \ref{fig:typdesc}).
 The test then is as follows:
 \begin{verbatim}
   p^.tag^[n] = adr(T)   n is the extension level to T

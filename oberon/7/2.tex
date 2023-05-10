@@ -35,7 +35,7 @@ bytes): Each file header contains a table of 64 entries, each pointing to a 1K b
 Additionally, it contains a table of 12 entries, the so-called extensions, each pointing to an index
 sector containing 256 further sector pointers. The file length is thereby limited to 64 + 12*256
 sectors, or 3'211'264 bytes (minus the length of the header). The chosen structure is illustrated in
-Fig. \ref{fig:file-header}. sec[0] always points to the sector containing the file header.
+Fig \ref{fig:file-header}. sec[0] always points to the sector containing the file header.
 \begin{figure}
 	\label{fig:file-header}
 	\centering
