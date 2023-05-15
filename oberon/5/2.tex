@@ -77,16 +77,16 @@ Splitting is superfluous if the desired splitting point happens to coincide with
 the piece beginning.  Fig \ref{fig:chain-after-insert} and \ref{fig:chain-generalized}
 show the resulting list after a delete, and an insert respectively:
 \begin{figure}[h!]
-  \label{fig:chain-after-delete}
   \centering
   \includegraphics[width=.8\textwidth]{i/e}
   \caption{Piece chain after delete operation}
+  \label{fig:chain-after-delete}
 \end{figure}
 \begin{figure}[h!]
-  \label{fig:chain-after-insert}
   \centering
   \includegraphics[width=.8\textwidth]{i/f}
   \caption{Piece chain after insert operation}
+  \label{fig:chain-after-insert}
 \end{figure}
 
 Checking our above wish list we immediately recognize the requirements 1, 2, and 3 as met.
@@ -294,15 +294,15 @@ digits into an internal floating-point representation and vice-versa. Scanning a
 recognizing m and d, and computing x = m*10d. This is done using procedure Ten(d) computing 10d
 by repeated multiplication maintaining the invariant t * pn = 10n0, where n0 is the initial value of n.
 \begin{verbatim}
-PROC Ten(n: INT): REAL;
-VAR t, p: REAL;
-BEGIN t := 1.0; p := 10.0;
-WHILE n > 0 DO
-IF ODD(n) THEN t := p * t END ;
-p := p*p; n := n DIV 2
-END ;
-RETURN t
-END Ten;
+  PROC Ten(n: INT): REAL;
+    VAR t, p: REAL;
+  BEGIN t := 1.0; p := 10.0;
+    WHILE n > 0 DO
+    IF ODD(n) THEN t := p * t END ;
+    p := p*p; n := n DIV 2
+    END ;
+    RETURN t
+  END Ten;
 \end{verbatim}
 
 Writing a real number in decimal form is more complicated. It involves the computation of m and d
@@ -329,8 +329,7 @@ And finally, typed characters that are supposed to be inserted into a text need 
 so-called keyboard file. For this (continuously growing) file, several readers and one writer must be
 allowed to coexist concurrently.
 
-As a consequence, the following qualities of the underlying FS are mandatory for the piece
-technique to work properly:
+As a consequence, the following qualities of the underlying FS are mandatory for the piece technique to work properly:
 \begin{enumerate}
   \item Once a file page is allocated it must not be reused (until system restart).
   \item A versatile file buffering mechanism supporting multiple buffers per file is required.
@@ -339,28 +338,33 @@ technique to work properly:
 The format of text sections in files obeys a set of syntactical rules (productions) that can easily be
 specified in EBNF-notation:
 \begin{verbatim}
-TextSection = ident header {char}.
-header = type offset run {run} null length.
-run = font [name] color offset length.
+  TextSection = ident header {char}.
+  header = type offset run {run} null length.
+  run = font [name] color offset length.
 \end{verbatim}
 
-In the TextSection production ident is an identifier for text blocks. In the header production type is a
-type-discriminator, offset is the offset to the character part, run is a run-descriptor, null is a nullcharacter, and length is the length of the character sequence. In the run production font, color, and
-offset are specifications of looks, and length is the run-length. In order to save space, font names
-are coded as ordinal numbers within a text section. If and only if a font appears for the first time in a
-text block it is followed by the actual font name.
+In the \verb|TextSection| production \verb|ident| is an identifier for text blocks. In the \verb|header| production
+\verb|type| is a type-discriminator, \verb|offset| is the offset to the character part, \verb|run| is a run-descriptor,
+\verb|null| is a nullcharacter, and \verb|length| is the length of the character sequence. In the \verb|run| production
+\verb|font|, \verb|color|, and \verb|offset| are specifications of looks, and \verb|length| is the run-length.
+In order to save space, font names are coded as ordinal numbers within a text section. If and only if a font appears
+for the first time in a text block it is followed by the actual font name.
 
 Let us conclude this Section with 2 side-remarks and a summary.
-Remarks:
-For compatibility reasons, plain ASCII-files are accepted as text files as well. They are mapped
-to texts consisting of a single run with standard looks.
+\begin{itemize}
+  \item Remarks:
+\begin{enumerate}
+  \item For compatibility reasons, plain ASCII-files are accepted as text files as well. They are mapped
+    to texts consisting of a single run with standard looks.
+  \item Internalizing a text section from a file is extremely efficient because it is obviously sufficient to
+    read the header and translate it into the initial state of the piece list.
+\end{enumerate}
 
-Internalizing a text section from a file is extremely efficient because it is obviously sufficient to
-read the header and translate it into the initial state of the piece list.
-
-Summary: The mechanism used for the implementation of the abstract data type Text is completely
-hidden from clients. It is a generalized version of the original piece list technique, adapted to texts
-with looks. The piece list technique in turn is based on the principle of indirection: Operations
-operate on descriptors of texts rather than on texts themselves. The benefits are efficiency and
-non-destructive operations. However, the technique works properly only in combination with an
-efficient (and reliable) garbage collector and a suitable FS.
+  \item Summary:\\
+    The mechanism used for the implementation of the abstract data type \verb|Text| is completely hidden
+    from clients. It is a generalized version of the original piece list technique, adapted to texts with
+    looks. The piece list technique in turn is based on the principle of indirection: Operations operate
+    on descriptors of texts rather than on texts themselves. The benefits are efficiency and non-destructive
+    operations. However, the technique works properly only in combination with an efficient (and reliable)
+    garbage collector and a suitable FS.
+\end{itemize}

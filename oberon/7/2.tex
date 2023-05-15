@@ -38,10 +38,10 @@ sector containing 256 further sector pointers. The file length is thereby limite
 sectors, or 3'211'264 bytes (minus the length of the header). The chosen structure is illustrated in
 Fig \ref{fig:file-header}. sec[0] always points to the sector containing the file header.
 \begin{figure}
-  \label{fig:file-header}
   \centering
   \includegraphics[width=\textwidth]{i/l}
   \caption{File header and extension sectors}
+  \label{fig:file-header}
 \end{figure}
 
 The header contains some additional data, namely the length of the file (in bytes), its name, and

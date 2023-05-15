@@ -75,10 +75,10 @@ complexity. Its side effects on execution speed are essentially unpredictable. T
 with MMU virtually unusable for applications with tight real-time constraints. The RISC processor
 does indeed not feature an address mapping unit.
 \begin{figure}[h!]
-  \label{fig:storage-layout}
   \centering
   \includegraphics[width=.6\textwidth]{i/q}
   \caption{Storage layout}
+  \label{fig:storage-layout}
 \end{figure}
 
 The RISC processor features 16 registers (of 32 bits). R0 - R11 are for expression evaluation.
@@ -136,10 +136,10 @@ by GC. This includes the size of the space occupied and now to be allocated. The
 \verb|NEW| is the assignment of the address of the allocated block to $p$, and the assignment
 of the tag to a prefix of the block. (see Fig \ref{fig:allocation})
 \begin{figure}[h!]
-  \label{fig:allocation}
   \centering
   \includegraphics[width=\textwidth]{i/r}
   \caption{Heap allocation of dynamic variable $p$\^{} by NEW($p$)}
+  \label{fig:allocation}
 \end{figure}
 
 In conclusion, we emphasize that this scheme makes the allocation of an object very efficient.
@@ -216,8 +216,8 @@ and the algorithm by the procedure
 \begin{figure}[h!]
   \centering
   \includegraphics[width=.25\textwidth]{i/s}
-  \label{fig:rotation}
   \caption{Rotation of four pointers}
+  \label{fig:rotation}
 \end{figure}
 We note that only 3 local variables are required, independent of the size of the tree to be
 traversed. The 3rd, $r$, is in fact merely an auxiliary variable to perform the rotation of
@@ -226,8 +226,8 @@ traversal is shown in Fig \ref{fig:tree-traversal}.
 \begin{figure}[h!]
   \centering
   \includegraphics[width=\textwidth]{i/t}
-  \label{fig:tree-traversal}
   \caption{Tree traversal (original at left, snapshot at right)}
+  \label{fig:tree-traversal}
 \end{figure}
 
 The pair $p$, $q$ of pointers marks the position of the process. The algorithm traverses
@@ -241,8 +241,8 @@ is illustrated in Fig \ref{fig:transition}. P0 stands for P in Fig \ref{fig:tree
 \begin{figure}[h!]
   \centering
   \includegraphics[width=\textwidth]{i/u}
-  \label{fig:transition}
   \caption{Transition from state P to Q}
+  \label{fig:transition}
 \end{figure}
 Transitions $P0 \rightarrow P1$, $P2 \rightarrow P3$, and $P4 \rightarrow P5$ are the direct
 results of applying the pointer rotation as specified by the sequence of five assignments
@@ -255,10 +255,10 @@ Fig \ref{fig:transition-3-times}. demonstrates that, if H holds for steps $P1 \r
 and $P3 \rightarrow P4$, then it also holds for step $P1 \rightarrow P5$, which visits the
 subtree p. Hence, it also holds for the step root $\rightarrow$ root, which traverses the entire tree.
 \begin{figure}[h!]
-  \label{fig:transition-3-times}
   \centering
   \includegraphics[width=.9\textwidth]{i/v}
   \caption{Transitions from P0 to P5, visiting nodes 3 times}
+  \label{fig:transition-3-times}
 \end{figure}
 
 This proof by recursion relies on the algorithm performing correct transitions also in the
@@ -267,10 +267,10 @@ case of p.L being NIL, i.e. B being the empty tree. In this case, state P1 is sk
 If p.L is again NIL, i.e. also C is empty, the next transition is $P2 \rightarrow P4$.
 This concludes the demonstration of the algorithm's correctness.
 \begin{figure}[h!]
-  \label{fig:transition-direct}
   \centering
   \includegraphics[width=\textwidth]{i/w}
   \caption{Direct transition from P0 to P2, if $p.L = NIL$}
+  \label{fig:transition-direct}
 \end{figure}
 
 We now modify the algorithm of tree traversal to the case where the structure is not confined
@@ -300,10 +300,10 @@ underlying data structure is shown in Fig \ref{fig:record}. Type descriptors con
   \end{tabular}
 \end{table}
 \begin{figure}[h!]
-  \label{fig:record}
   \centering
   \includegraphics[width=.9\textwidth]{i/x}
   \caption{Record and its type descriptor}
+  \label{fig:record}
 \end{figure}
 
 We note that the mark value, starting with zero (unmarked), is used as a counter of descendants
@@ -386,10 +386,10 @@ a multiple of 29 for the purpose of redundancy checks.
 Furthermore, the kernel contains a timer counting milliseconds and, perhaps, a real time
 clock, showing date and time. Clock data are packed into a single word as follows:
 \begin{figure}[h!]
-  \label{fig:datetime}
   \centering
   \includegraphics[width=\textwidth]{i/y}
   \caption{Encoding of date and time (year starting with 2000)}
+  \label{fig:datetime}
 \end{figure}
 \begin{verbatim}
   DEFINITION Kernel;(*NW/PR 11.4.86/27.12.95/15.5.2013*)

@@ -113,10 +113,10 @@ definitions of the data types for B-tree nodes, called \verb|DirPage|, and eleme
 in which all elements have keys \verb|p.p0.e[k].name < p.e[0].name|. We can visualize these conditions
 by Fig \ref{fig:b-tree}, where names have been replaced by integers as keys.
 \begin{figure}
-  \label{fig:b-tree}
   \centering
   \includegraphics[width=\textwidth]{i/n}
   \caption{Example of a B-tree of order 2}
+  \label{fig:b-tree}
 \end{figure}
 
 Procedure \verb|Search| starts by inspecting the root page. It performs a binary search among its
@@ -151,10 +151,10 @@ pages immediately. The process of a \emph{page split} is visualized by Fig \ref{
 in which we distinguish between three cases, namely $R < N$, $R = N$, and $R > N$, where $R$ marks
 the insertion point. $a$ denotes the overflowing, $b$ the new page, and $u$ the inserted element.
 \begin{figure}
-  \label{fig:page-split}
   \centering
   \includegraphics[width=.95\textwidth]{i/o}
   \caption{Page split when inserting element $u$}
+  \label{fig:page-split}
 \end{figure}
 
 The $2N + 1$ elements ($2N$ from the full page $a$, plus the one element $u$ to be inserted) are equally
@@ -195,10 +195,10 @@ ancestor; $s$ is the position in the ancestor page of (the pointer to the) under
 cases are distinguished, namely whether the underflowing page is the rightmost element ($s = c.m$)
 or not (see procedure \verb|underflow|).
 \begin{figure}
-  \label{fig:page-merge}
   \centering
   \includegraphics[width=.95\textwidth]{i/p}
   \caption{Page balancing and merging when deleting element}
+  \label{fig:page-merge}
 \end{figure}
 
 Similarly to the splitting process, merging may propagate, because the removal of an element
